@@ -2,11 +2,11 @@
 
 namespace Test_The_Evaluator_Console_App
 {
-    class Program
+    class EvaluatorTest
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine($"1*2 = {FormulaEvaluator.Evaluator.Evaluate("1*2", null)}");
         }
     }
 }
