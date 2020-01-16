@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace FormulaEvaluator
 {
-    public class Evaluator
+    public static class Evaluator
     {
         public delegate int Lookup(String variable_name);
 
@@ -15,22 +15,22 @@ namespace FormulaEvaluator
 
             string[] substrings = Regex.Split(expression, "(\\()|(\\))|(-)|(\\+)|(\\*)|(/)");
 
-            for(int index = 0; index < substrings.Length; index++)
+            for (int index = 0; index < substrings.Length; index++)
             {
-                String foundCharacter = substrings[index];
+                String token = substrings[index];
 
                 //If the String is a number value:
-                if(int.TryParse(foundCharacter, out int number))
+                if (int.TryParse(token, out int number))
                 {
-                    if(operators.Count != 0 && operators.Peek() == "*")
+                    if (operators.Count != 0 && operators.Peek() == "*")
                     {
                         int stackNumber = int.Parse(values.Pop());
-                        //Storing the operator into a value isn't necessary, but it still needs to be removed from the Stack.
+                        //Storing the operator into a variable isn't necessary, but it still needs to be removed from the Stack.
                         operators.Pop();
                         int result = stackNumber * number;
                         values.Push(result.ToString());
                     }
-                    else if(operators.Count != 0 && operators.Peek() == "/")
+                    else if (operators.Count != 0 && operators.Peek() == "/")
                     {
                         int stackNumber = int.Parse(values.Pop());
                         operators.Pop();
@@ -39,50 +39,116 @@ namespace FormulaEvaluator
                     }
                     else
                     {
-                        values.Push(foundCharacter);
+                        values.Push(token);
                     }
                 }
-                //Otherwise it is an operator, parentheses, or variable:
-                else
+                else if (token == "+" || token == "-")
                 {
-                    if(foundCharacter == "+" || foundCharacter == "-")
+                    if (operators.Count != 0 && operators.Peek() == "+")
                     {
-                        if(operators.Count != 0 && operators.Peek() == "+")
-                        {
-                            int firstStackNumber = int.Parse(values.Pop());
-                            int secondStackNumber = int.Parse(values.Pop());
-                            operators.Pop();
-                            int result = firstStackNumber + secondStackNumber;
-                            values.Push(result.ToString());
-                            operators.Push(foundCharacter);
-                        }
-                        else if (operators.Count != 0 && operators.Peek() == "-")
-                        {
-                            int firstStackNumber = int.Parse(values.Pop());
-                            int secondStackNumber = int.Parse(values.Pop());
-                            operators.Pop();
-                            int result = secondStackNumber - firstStackNumber;
-                            values.Push(result.ToString());
-                            operators.Push(foundCharacter);
-                        }
-                        else
-                        {
-                            operators.Push(foundCharacter);
-                        }
+                        int firstStackNumber = int.Parse(values.Pop());
+                        int secondStackNumber = int.Parse(values.Pop());
+                        operators.Pop();
+                        int result = firstStackNumber + secondStackNumber;
+                        values.Push(result.ToString());
+                        operators.Push(token);
                     }
-                    else if(foundCharacter == "*" || foundCharacter == "/" || foundCharacter == "(")
+                    else if (operators.Count != 0 && operators.Peek() == "-")
                     {
-                        operators.Push(foundCharacter);
+                        int firstStackNumber = int.Parse(values.Pop());
+                        int secondStackNumber = int.Parse(values.Pop());
+                        operators.Pop();
+                        int result = secondStackNumber - firstStackNumber;
+                        values.Push(result.ToString());
+                        operators.Push(token);
                     }
-                    else if(foundCharacter == ")")
+                    else
                     {
-
+                        operators.Push(token);
                     }
                 }
-
-                
+                else if (token == "*" || token == "/" || token == "(")
+                {
+                    operators.Push(token);
+                }
+                else if (token == ")")
+                {
+                    if (operators.Count != 0 && operators.Peek() == "+")
+                    {
+                        int firstStackNumber = int.Parse(values.Pop());
+                        int secondStackNumber = int.Parse(values.Pop());
+                        operators.Pop();
+                        int result = firstStackNumber + secondStackNumber;
+                        values.Push(result.ToString());
+                        operators.Pop(); // Assumes the first parenthesis ( is on the top of the Stack.
+                    }
+                    else if (operators.Count != 0 && operators.Peek() == "-")
+                    {
+                        int firstStackNumber = int.Parse(values.Pop());
+                        int secondStackNumber = int.Parse(values.Pop());
+                        operators.Pop();
+                        int result = secondStackNumber - firstStackNumber;
+                        values.Push(result.ToString());
+                        operators.Pop(); //Assumes the first parenthesis ( is on the top of the Stack.
+                    }
+                    if (operators.Count != 0 && operators.Peek() == "*")
+                    {
+                        int firstStackNumber = int.Parse(values.Pop());
+                        int secondStackNumber = int.Parse(values.Pop());
+                        operators.Pop();
+                        int result = firstStackNumber * secondStackNumber;
+                        values.Push(result.ToString());
+                    }
+                    else if (operators.Count != 0 && operators.Peek() == "/")
+                    {
+                        int firstStackNumber = int.Parse(values.Pop());
+                        int secondStackNumber = int.Parse(values.Pop());
+                        operators.Pop();
+                        int result = secondStackNumber / firstStackNumber;
+                        values.Push(result.ToString());
+                    }
+                }
             }
-            return int.Parse(values.Pop());
+
+            if (values.Count > 1)
+            {
+                int finalResult = 0;
+                for (int i = 0; i < operators.Count; i++)
+                {
+                    int firstNumber = int.Parse(values.Pop());
+                    if (operators.Peek() == "+")
+                    {
+                        int secondNumber = int.Parse(values.Pop());
+                        int result = secondNumber + firstNumber;
+                        finalResult += result;
+                    }
+                    else if (operators.Peek() == "-")
+                    {
+                        int secondNumber = int.Parse(values.Pop());
+                        int result = secondNumber - firstNumber;
+                        finalResult += result;
+                    }
+                    else if (operators.Peek() == "*")
+                    {
+                        int secondNumber = int.Parse(values.Pop());
+                        int result = secondNumber * firstNumber;
+                        finalResult += result;
+                    }
+                    else if (operators.Peek() == "/")
+                    {
+                        int secondNumber = int.Parse(values.Pop());
+                        int result = secondNumber / firstNumber;
+                        finalResult += result;
+                    }
+                }
+                return finalResult;
+            }
+            else
+            {
+                return int.Parse(values.Pop());
+            }
         }
     }
 }
+
+            
