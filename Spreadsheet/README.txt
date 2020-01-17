@@ -12,12 +12,13 @@ Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium dolor
 2. Assignment Specific Topics
 
     Expected Time to Complete: 10-15 hours.
-    Total Time: 2.5
+    Total Time: 9.0
 
 3. Consulted Peers:
 
-List any peers (or other people) in the class (or outside for that matter) that you talked with about the project for more than one minute.
+    1. Alejandro Serrano: Provided a test case expression of 2 + 5*(2 + 3), and (2 * 3) / 2 * 10 + (10 - 1). We also discussed how 
+    the variables in the Evaluator would be used and looked up.
 
 4. References:
 
-    1.
+    1. StackOverflow - Identify if a string is a number https://stackoverflow.com/questions/894263/identify-if-a-string-is-a-number
