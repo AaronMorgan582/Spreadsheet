@@ -10,7 +10,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.txt = README.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_The_Evaluator_Console_App", "Test_The_Evaluator_Console_App\Test_The_Evaluator_Console_App.csproj", "{CAB3B961-CB11-44F2-9981-F89A8E779F1E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_The_Evaluator_Console_App", "Test_The_Evaluator_Console_App\Test_The_Evaluator_Console_App.csproj", "{CAB3B961-CB11-44F2-9981-F89A8E779F1E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DependencyGraph", "DependencyGraph\DependencyGraph.csproj", "{1A83166C-9D9E-4F38-82E7-74105FBA2A63}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DependencyGraphTests", "DependencyGraphTests\DependencyGraphTests.csproj", "{557E1F21-0618-44AA-874F-A5F9BC45C8E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +30,14 @@ Global
 		{CAB3B961-CB11-44F2-9981-F89A8E779F1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAB3B961-CB11-44F2-9981-F89A8E779F1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CAB3B961-CB11-44F2-9981-F89A8E779F1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A83166C-9D9E-4F38-82E7-74105FBA2A63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A83166C-9D9E-4F38-82E7-74105FBA2A63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A83166C-9D9E-4F38-82E7-74105FBA2A63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A83166C-9D9E-4F38-82E7-74105FBA2A63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{557E1F21-0618-44AA-874F-A5F9BC45C8E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{557E1F21-0618-44AA-874F-A5F9BC45C8E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{557E1F21-0618-44AA-874F-A5F9BC45C8E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{557E1F21-0618-44AA-874F-A5F9BC45C8E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
