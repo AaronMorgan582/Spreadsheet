@@ -130,7 +130,15 @@ namespace SpreadsheetUtilities
         /// </summary>
         public IEnumerable<string> GetDependents(string s)
         {
-            return null;
+            HashSet<string> setOfDependents = new HashSet<string>();
+            if(dependents.TryGetValue(s, out setOfDependents))
+            {
+                return setOfDependents;
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
         }
 
         /// <summary>
@@ -138,7 +146,15 @@ namespace SpreadsheetUtilities
         /// </summary>
         public IEnumerable<string> GetDependees(string s)
         {
-            return null;
+            HashSet<string> setOfDependees = new HashSet<string>();
+            if(dependees.TryGetValue(s, out setOfDependees))
+            {
+                return setOfDependees;
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
         }
 
 
