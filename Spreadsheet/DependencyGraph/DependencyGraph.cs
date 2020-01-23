@@ -133,11 +133,13 @@ namespace SpreadsheetUtilities
             HashSet<string> setOfDependents = new HashSet<string>();
             if(dependents.TryGetValue(s, out setOfDependents))
             {
-                return setOfDependents;
+                HashSet<string> retrievedDependents = setOfDependents;
+                return retrievedDependents;
             }
             else
             {
-                throw new ArgumentException();
+                HashSet<string> emptySet = setOfDependents;
+                return emptySet;
             }
         }
 
@@ -149,11 +151,13 @@ namespace SpreadsheetUtilities
             HashSet<string> setOfDependees = new HashSet<string>();
             if(dependees.TryGetValue(s, out setOfDependees))
             {
-                return setOfDependees;
+                HashSet<string> retrievedDependess = setOfDependees;
+                return retrievedDependess;
             }
             else
             {
-                throw new ArgumentException();
+                HashSet<string> emptySet = setOfDependees;
+                return emptySet;
             }
         }
 
@@ -170,6 +174,34 @@ namespace SpreadsheetUtilities
         /// <param name="t"> t cannot be evaluated until s is</param>        /// 
         public void AddDependency(string s, string t)
         {
+            if (!dependents.ContainsKey(s))
+            {
+                HashSet<string> setOfDependents = new HashSet<string>();
+                HashSet<string> setOfDependees = new HashSet<string>();
+                setOfDependents.Add(t);
+
+                //This adds the depedendee ("s") to both Dictionaries.
+                dependents.Add(s, setOfDependents);
+                dependees.Add(s, setOfDependees);
+            }
+            else
+            {
+                dependents[s].Add(t);
+            }
+            if (!dependees.ContainsKey(t))
+            {
+                HashSet<string> setOfDependees = new HashSet<string>();
+                HashSet<string> setOfDependents = new HashSet<string>();
+                setOfDependees.Add(s);
+
+                //This adds the dependent ("t") to both Dictionaries.
+                dependees.Add(t, setOfDependees);
+                dependents.Add(t, setOfDependents);
+            }
+            else
+            {
+                dependees[t].Add(s);
+            }
         }
 
 
@@ -180,6 +212,15 @@ namespace SpreadsheetUtilities
         /// <param name="t"></param>
         public void RemoveDependency(string s, string t)
         {
+            if (dependents.ContainsKey(s))
+            {
+                dependents[s].Remove(t);
+                dependees[t].Remove(s);
+            }
+            else
+            {
+                throw new ArgumentException("Dependee does not exist");
+            }
         }
 
 
@@ -189,6 +230,33 @@ namespace SpreadsheetUtilities
         /// </summary>
         public void ReplaceDependents(string s, IEnumerable<string> newDependents)
         {
+            if (dependents.ContainsKey(s))
+            {
+                HashSet<string> oldDependents = dependents[s];
+                dependents.Remove(s);
+                dependents.Add(s, (HashSet<string>)newDependents);
+                foreach (string dependent in oldDependents)
+                {
+                    dependees[dependent].Remove(s);
+                }
+                foreach (string updatedDependent in newDependents)
+                {
+                    if (!dependees.ContainsKey(updatedDependent))
+                    {
+                        HashSet<string> setOfDependents = new HashSet<string>();
+                        setOfDependents.Add(s);
+                        dependees.Add(updatedDependent, setOfDependents);
+                    }
+                    else
+                    {
+                        dependees[updatedDependent].Add(s);
+                    }
+                }
+            }
+            else
+            {
+                dependents.Add(s, (HashSet<string>)newDependents);
+            }
         }
 
 
@@ -198,6 +266,33 @@ namespace SpreadsheetUtilities
         /// </summary>
         public void ReplaceDependees(string s, IEnumerable<string> newDependees)
         {
+            if (dependees.ContainsKey(s))
+            {
+                HashSet<string> oldDependees = dependees[s];//Stores a copy of the old dependees to update the dependents Dictionary.
+                dependees.Remove(s);
+                dependees.Add(s, (HashSet<string>)newDependees);
+                foreach(string dependee in oldDependees)
+                {
+                    dependents[dependee].Remove(s);//Removes all the old dependencies from the dependents Dictionary.
+                }
+                foreach(string updatedDependee in newDependees)
+                {
+                    if (!dependents.ContainsKey(updatedDependee))
+                    {
+                        HashSet<string> setOfDependees = new HashSet<string>();
+                        setOfDependees.Add(s);
+                        dependents.Add(updatedDependee, setOfDependees);
+                    }
+                    else
+                    {
+                        dependents[updatedDependee].Add(s);//Updates the dependencies in the dependents Dictionary, in accordance to the newDependees.
+                    } 
+                }
+            }
+            else
+            {
+                dependees.Add(s, (HashSet<string>)newDependees);
+            }
         }
 
     }

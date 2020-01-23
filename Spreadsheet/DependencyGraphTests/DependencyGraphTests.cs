@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SpreadsheetUtilities;
 
+
 namespace DevelopmentTests
 {
     /// <summary>
@@ -10,7 +11,7 @@ namespace DevelopmentTests
     ///to contain all DependencyGraphTest Unit Tests
     ///</summary>
     [TestClass()]
-    public class DependencyGraphTest
+    public class DependencyGraphTests
     {
 
         /// <summary>
@@ -65,7 +66,7 @@ namespace DevelopmentTests
         public void SimpleReplaceTest()
         {
             DependencyGraph t = new DependencyGraph();
-            t.AddDependency("x", "y"); 
+            t.AddDependency("x", "y");
             Assert.AreEqual(t.Size, 1);
             t.RemoveDependency("x", "y");
             t.ReplaceDependents("x", new HashSet<string>());
@@ -262,4 +263,3 @@ namespace DevelopmentTests
 
     }
 }
-

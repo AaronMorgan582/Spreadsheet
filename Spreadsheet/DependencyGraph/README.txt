@@ -13,9 +13,9 @@ Copyright:  CS 3500 and Aaron Morgan - This work may not be copied for use in Ac
 
     Expected Time to Complete: 15 hours.
     Time spent on Analysis: 3 hours.
-    Time spent on Implementation:
-    Time spent Debugging:
-    Time spent Testing:
+    Time spent on Implementation: 3 hours.
+    Time spent Debugging: 1 hour.
+    Time spent Testing: 3 hours.
     Total Time:
 
 3. Consulted Peers:
@@ -24,5 +24,3 @@ Copyright:  CS 3500 and Aaron Morgan - This work may not be copied for use in Ac
 
 4. References:
 
-    1. StackOverflow - Identify if a string is a number https://stackoverflow.com/questions/894263/identify-if-a-string-is-a-number
-    2. StackOverflow - C# Regex: Checking for “a-z” and “A-Z” https://stackoverflow.com/questions/6017778/c-sharp-regex-checking-for-a-z-and-a-z
