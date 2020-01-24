@@ -80,13 +80,15 @@ namespace SpreadsheetUtilities
             get
             {
                 HashSet<string> setOfDependees = new HashSet<string>();
+                //If the dependent is in the Dictionary, it'll be copied into setOfDependees.
                 if(dependees.TryGetValue(s, out setOfDependees))
                 {
                     return setOfDependees.Count;
                 }
+                //If the dependent is not in the Dictionary, then it has no dependees, and the empty setOfDependees's count can be used.
                 else
                 {
-                    return 0;
+                    return setOfDependees.Count;
                 }
             }
         }
@@ -99,8 +101,17 @@ namespace SpreadsheetUtilities
             HashSet<string> setOfDependents = new HashSet<string>();
             if(dependents.TryGetValue(s, out setOfDependents))
             {
-                return true;
+                if(setOfDependents.Count > 0)
+                {
+                    return true;
+                }
+                //It's possible that the given dependee key is in the Dictionary, but has no dependents.
+                else
+                {
+                    return false;
+                }
             }
+            //If the dependee key is not in the Dictionary, it has no dependents.
             else
             {
                 return false;
@@ -116,8 +127,17 @@ namespace SpreadsheetUtilities
             HashSet<string> setOfDependees = new HashSet<string>();
             if(dependees.TryGetValue(s, out setOfDependees))
             {
-                return true;
+                if(setOfDependees.Count > 0)
+                {
+                    return true;
+                }
+                //It's possible that the given dependent key is in the Dictionary, but has no dependees.
+                else
+                {
+                    return false;
+                }
             }
+            //If the given dependent key is not in the Dictionary, then it has no dependees.
             else
             {
                 return false;
@@ -133,13 +153,11 @@ namespace SpreadsheetUtilities
             HashSet<string> setOfDependents = new HashSet<string>();
             if(dependents.TryGetValue(s, out setOfDependents))
             {
-                HashSet<string> retrievedDependents = setOfDependents;
-                return retrievedDependents;
+                return setOfDependents;
             }
             else
             {
-                HashSet<string> emptySet = setOfDependents;
-                return emptySet;
+                return setOfDependents;//This should be safe to return, since it's just an empty HashSet, and has no connection to the Dictionary.
             }
         }
 
@@ -151,13 +169,11 @@ namespace SpreadsheetUtilities
             HashSet<string> setOfDependees = new HashSet<string>();
             if(dependees.TryGetValue(s, out setOfDependees))
             {
-                HashSet<string> retrievedDependess = setOfDependees;
-                return retrievedDependess;
+                return setOfDependees;
             }
             else
             {
-                HashSet<string> emptySet = setOfDependees;
-                return emptySet;
+                return setOfDependees;
             }
         }
 
@@ -176,11 +192,11 @@ namespace SpreadsheetUtilities
         {
             if (!dependents.ContainsKey(s))
             {
-                HashSet<string> setOfDependents = new HashSet<string>();
-                HashSet<string> setOfDependees = new HashSet<string>();
+                HashSet<string> setOfDependents = new HashSet<string>();//Empty set to add to the dependents Dictionary.
+                HashSet<string> setOfDependees = new HashSet<string>();//Empty set to add to the dependees Dictionary.
                 setOfDependents.Add(t);
 
-                //This adds the depedendee ("s") to both Dictionaries.
+                //This adds the dependee ("s") to both Dictionaries.
                 dependents.Add(s, setOfDependents);
                 dependees.Add(s, setOfDependees);
             }
@@ -217,10 +233,6 @@ namespace SpreadsheetUtilities
                 dependents[s].Remove(t);
                 dependees[t].Remove(s);
             }
-            else
-            {
-                throw new ArgumentException("Dependee does not exist");
-            }
         }
 
 
@@ -232,14 +244,16 @@ namespace SpreadsheetUtilities
         {
             if (dependents.ContainsKey(s))
             {
-                HashSet<string> oldDependents = dependents[s];
-                dependents.Remove(s);
-                dependents.Add(s, (HashSet<string>)newDependents);
-                foreach (string dependent in oldDependents)
+                HashSet<string> oldDependents = dependents[s];//Store the old dependent list.
+                dependents.Remove(s);//Remove the given key entirely from the Dictionary.
+                dependents.Add(s, (HashSet<string>) newDependents);//Cast the parameter newDependents as a HashSet, and add it normally.
+
+                foreach (string dependent in oldDependents)//Iterate over the old dependent list to ensure the dependee Dictionary gets updated.
                 {
-                    dependees[dependent].Remove(s);
+                    dependees[dependent].Remove(s);//It's not necessary to remove the HashSet entirely, just remove the given dependee.
                 }
-                foreach (string updatedDependent in newDependents)
+
+                foreach (string updatedDependent in newDependents)//For each of the given newDependents, check to see if they're in the dependees Dictionary.
                 {
                     if (!dependees.ContainsKey(updatedDependent))
                     {
@@ -253,9 +267,30 @@ namespace SpreadsheetUtilities
                     }
                 }
             }
+            //If the given dependee is not in the dependent Dictionary yet:
             else
             {
-                dependents.Add(s, (HashSet<string>)newDependents);
+                HashSet<string> updatedDependents = (HashSet<string>) newDependents;
+                //In the scenario where the given dependee is not in the dependent Dictionary, and the replacement list is empty,
+                //only the given dependee needs to be added to both Dictionaries.
+                if (updatedDependents.Count == 0)
+                {
+                    dependents.Add(s, updatedDependents);
+                    dependees.Add(s, new HashSet<string>());
+                }
+                //If it's any other size, then the dependee needs to be added to the dependent Dictionary, and each
+                //dependent in the given replacement list also needs to be added to (potentially) both lists, which 
+                //AddDependency will take care of.
+                else
+                {
+                    dependents.Add(s, updatedDependents);
+                    foreach (string dependent in newDependents)
+                    {
+                        this.AddDependency(s, dependent);
+                    }
+                }
+
+
             }
         }
 
@@ -268,14 +303,16 @@ namespace SpreadsheetUtilities
         {
             if (dependees.ContainsKey(s))
             {
-                HashSet<string> oldDependees = dependees[s];//Stores a copy of the old dependees to update the dependents Dictionary.
-                dependees.Remove(s);
-                dependees.Add(s, (HashSet<string>)newDependees);
-                foreach(string dependee in oldDependees)
+                HashSet<string> oldDependees = dependees[s];//Stores the old list of dependees.
+                dependees.Remove(s);//Remove the given key from the Dictionary.
+                dependees.Add(s, (HashSet<string>)newDependees);//Cast the parameter newDependees as a HashSet, and add it normally.
+
+                foreach (string dependee in oldDependees)//Iterate over the old dependee list to ensure the dependent Dictionary gets updated.
                 {
-                    dependents[dependee].Remove(s);//Removes all the old dependencies from the dependents Dictionary.
+                    dependents[dependee].Remove(s);//It's not necessary to remove the HashSet entirely, just remove the given dependee.
                 }
-                foreach(string updatedDependee in newDependees)
+
+                foreach(string updatedDependee in newDependees)//For each of the given newDependees, check to see if they're in the dependents Dictionary.
                 {
                     if (!dependents.ContainsKey(updatedDependee))
                     {
@@ -285,16 +322,33 @@ namespace SpreadsheetUtilities
                     }
                     else
                     {
-                        dependents[updatedDependee].Add(s);//Updates the dependencies in the dependents Dictionary, in accordance to the newDependees.
+                        dependents[updatedDependee].Add(s);
                     } 
                 }
             }
+            //If the given dependent is not in the dependee Dictionary yet:
             else
             {
-                dependees.Add(s, (HashSet<string>)newDependees);
+                HashSet<string> updatedDependees = (HashSet<string>)newDependees;
+                //In the scenario where the given dependent is not in the dependee Dictionary, and the replacement list is empty,
+                //only the given dependent needs to be added to both Dictionaries.
+                if(updatedDependees.Count == 0)
+                {
+                    dependees.Add(s, updatedDependees);
+                    dependents.Add(s, new HashSet<string>());
+                }
+                //If it's any other size, then the dependent needs to be added to the dependee Dictionary, and each
+                //dependee in the given replacement list also needs to be added to (potentially) both lists, which 
+                //AddDependency will take care of.
+                else
+                {
+                    dependees.Add(s, updatedDependees);
+                    foreach (string dependee in newDependees)
+                    {
+                        this.AddDependency(dependee, s);
+                    }
+                }
             }
         }
-
     }
-
 }

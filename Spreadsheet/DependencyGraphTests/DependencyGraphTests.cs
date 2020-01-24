@@ -14,6 +14,49 @@ namespace DevelopmentTests
     public class DependencyGraphTests
     {
 
+        [TestMethod()]
+        public void DependeeSizeTest()
+        {
+            DependencyGraph graph = new DependencyGraph();
+            graph.AddDependency("a", "b");
+            graph.AddDependency("c", "b");
+            graph.AddDependency("d", "b");
+
+            Assert.AreEqual(3, graph["b"]);
+        }
+
+        [TestMethod()]
+        public void DependeeSizeEmptyTest()
+        {
+            DependencyGraph graph = new DependencyGraph();
+            graph.AddDependency("a", "b");
+            graph.AddDependency("c", "b");
+            graph.AddDependency("d", "b");
+
+            Assert.AreEqual(0, graph["a"]);
+        }
+
+        [TestMethod()]
+        public void TestReplaceDependentsNewAdditionWithEmpty()
+        {
+            DependencyGraph t = new DependencyGraph();
+            t.AddDependency("a", "b");
+            t.AddDependency("c", "z");
+            t.ReplaceDependents("d", new HashSet<string>());
+            Assert.AreEqual(0, t["d"]);
+        }
+
+        [TestMethod()]
+        public void TestReplaceDependeesEmptyNewAddition()
+        {
+            DependencyGraph t = new DependencyGraph();
+            t.AddDependency("a", "b");
+            t.AddDependency("c", "z");
+            t.ReplaceDependees("d", new HashSet<string>());
+            Assert.AreEqual(0, t["d"]);
+            Assert.AreEqual(false, t.HasDependees("d"));
+        }
+
         /// <summary>
         ///Empty graph should contain nothing
         ///</summary>
@@ -38,7 +81,6 @@ namespace DevelopmentTests
             Assert.AreEqual(0, t.Size);
         }
 
-
         /// <summary>
         ///Empty graph should contain nothing
         ///</summary>
@@ -58,7 +100,6 @@ namespace DevelopmentTests
             Assert.IsFalse(t.GetDependents("x").GetEnumerator().MoveNext());
         }
 
-
         /// <summary>
         ///Replace on an empty DG shouldn't fail
         ///</summary>
@@ -73,8 +114,6 @@ namespace DevelopmentTests
             t.ReplaceDependees("y", new HashSet<string>());
         }
 
-
-
         ///<summary>
         ///It should be possibe to have more than one DG at a time.
         ///</summary>
@@ -87,9 +126,6 @@ namespace DevelopmentTests
             Assert.AreEqual(1, t1.Size);
             Assert.AreEqual(0, t2.Size);
         }
-
-
-
 
         /// <summary>
         ///Non-empty graph contains something
@@ -104,7 +140,6 @@ namespace DevelopmentTests
             t.AddDependency("b", "d");
             Assert.AreEqual(4, t.Size);
         }
-
 
         /// <summary>
         ///Non-empty graph contains something
@@ -140,9 +175,6 @@ namespace DevelopmentTests
             Assert.IsFalse(e.MoveNext());
         }
 
-
-
-
         /// <summary>
         ///Non-empty graph contains something
         ///</summary>
@@ -158,6 +190,7 @@ namespace DevelopmentTests
             t.AddDependency("w", "d");
             t.ReplaceDependees("b", new HashSet<string>() { "a", "c" });
             t.ReplaceDependees("d", new HashSet<string>() { "b" });
+            t.ReplaceDependees("s", new HashSet<string>() { "k", "u" });
 
             IEnumerator<string> e = t.GetDependees("a").GetEnumerator();
             Assert.IsFalse(e.MoveNext());
@@ -170,6 +203,14 @@ namespace DevelopmentTests
             Assert.IsFalse(e.MoveNext());
             Assert.IsTrue(((s1 == "a") && (s2 == "c")) || ((s1 == "c") && (s2 == "a")));
 
+            e = t.GetDependees("s").GetEnumerator();
+            Assert.IsTrue(e.MoveNext());
+            s1 = e.Current;
+            Assert.IsTrue(e.MoveNext());
+            s2 = e.Current;
+            Assert.IsFalse(e.MoveNext());
+            Assert.IsTrue(((s1 == "k") && (s2 == "u")) || ((s1 == "u") && (s2 == "k")));
+
             e = t.GetDependees("c").GetEnumerator();
             Assert.IsTrue(e.MoveNext());
             Assert.AreEqual("a", e.Current);
@@ -180,8 +221,6 @@ namespace DevelopmentTests
             Assert.AreEqual("b", e.Current);
             Assert.IsFalse(e.MoveNext());
         }
-
-
 
         /// <summary>
         ///Using lots of data
