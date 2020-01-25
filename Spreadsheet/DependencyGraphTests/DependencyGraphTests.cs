@@ -1,8 +1,19 @@
+/// <summary> 
+/// Author:    Aaron Morgan
+/// Partner:   None
+/// Date:      1/25/2020
+/// Course:    CS 3500, University of Utah, School of Computing 
+/// Copyright: CS 3500 and Aaron Morgan
+/// 
+/// I, Aaron Morgan, certify that I wrote the code for the following tests, EXCEPT: SimpleEmptyTest(), SimpleEmptyRemoveTest(),
+/// EmptyEnumeratorTest(), SimpleReplaceTest(), StaticTest(), SizeTest(), EnumeratorTest(), ReplaceThenEnumerate(), and StressTest().
+/// 
+/// The aforementioned tests were provided by starter code provided by the University of Utah's School of Computing.
+/// </summary>
 using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SpreadsheetUtilities;
-
 
 namespace DevelopmentTests
 {
@@ -13,7 +24,9 @@ namespace DevelopmentTests
     [TestClass()]
     public class DependencyGraphTests
     {
-
+        /// <summary>
+        /// Testing the Indexer.
+        /// </summary>
         [TestMethod()]
         public void DependeeSizeTest()
         {
@@ -25,6 +38,9 @@ namespace DevelopmentTests
             Assert.AreEqual(3, graph["b"]);
         }
 
+        /// <summary>
+        /// Testing the Indexer with a value that isn't known.
+        /// </summary>
         [TestMethod()]
         public void DependeeSizeWithInvalidEntryTest()
         {
@@ -33,6 +49,9 @@ namespace DevelopmentTests
             Assert.AreEqual(0, graph["b"]);
         }
 
+        /// <summary>
+        /// Testing Indexer with a value that is known, but has no dependees.
+        /// </summary>
         [TestMethod()]
         public void DependeeSizeEmptyTest()
         {
@@ -44,6 +63,9 @@ namespace DevelopmentTests
             Assert.AreEqual(0, graph["a"]);
         }
 
+        /// <summary>
+        /// Testing ReplaceDependents to add a new value, but with no given dependents.
+        /// </summary>
         [TestMethod()]
         public void ReplaceDependentsEmptyNewAdditionTest()
         {
@@ -52,8 +74,15 @@ namespace DevelopmentTests
             t.AddDependency("c", "z");
             t.ReplaceDependents("d", new HashSet<string>());
             Assert.AreEqual(0, t["d"]);
+            Assert.IsFalse(t.HasDependees("d"));
+            Assert.IsFalse(t.HasDependents("d"));//Should be false because a blank list was passed in.
+            Assert.IsTrue(t.HasDependents("c"));
+            Assert.IsTrue(t.HasDependees("b"));
         }
 
+        /// <summary>
+        /// Testing ReplaceDependees with a new addition, but with no given dependees.
+        /// </summary>
         [TestMethod()]
         public void ReplaceDependeesEmptyNewAdditionTest()
         {
@@ -63,8 +92,14 @@ namespace DevelopmentTests
             t.ReplaceDependees("d", new HashSet<string>());
             Assert.AreEqual(0, t["d"]);
             Assert.IsFalse(t.HasDependees("d"));
+            Assert.IsFalse(t.HasDependents("d"));
+            Assert.IsTrue(t.HasDependents("a"));
+            Assert.IsTrue(t.HasDependees("z"));
         }
 
+        /// <summary>
+        /// Testing ReplaceDependents with multiple values, some known to the graph, and some not known.
+        /// </summary>
         [TestMethod()]
         public void ReplaceDependentsAdditionWithMultiplesTest()
         {
@@ -93,15 +128,14 @@ namespace DevelopmentTests
             dependentsOfA += aEnumerator.Current + " ";
             aEnumerator.MoveNext();
             dependentsOfA += aEnumerator.Current;
-            Console.WriteLine("The Dependents of A are: " + dependentsOfA);
+            Console.WriteLine("The Dependents of A are: " + dependentsOfA); //"b" should not be part of the list.
         }
 
         /// <summary>
         ///With a given dependency, both variables should have dependent lists, but only one of those lists should be non-empty.
-        ///
         ///</summary>
         [TestMethod()]
-        public void HasDependeeTest()
+        public void HasDependentsTest()
         {
             DependencyGraph t = new DependencyGraph();
             t.AddDependency("a", "b");
@@ -120,6 +154,29 @@ namespace DevelopmentTests
         }
 
         /// <summary>
+        ///With a given dependency, both variables should have dependee lists, but only one of those lists should be non-empty.
+        ///
+        ///</summary>
+        [TestMethod()]
+        public void HasDependeeTest()
+        {
+            DependencyGraph t = new DependencyGraph();
+            t.AddDependency("a", "b");
+            Assert.IsFalse(t.HasDependees("a"));
+            Assert.IsTrue(t.HasDependees("b"));
+            Assert.IsFalse(t.HasDependees("z"));
+
+            IEnumerator<string> aEnumerator = t.GetDependees("a").GetEnumerator();
+            Assert.IsFalse(aEnumerator.MoveNext());
+
+            IEnumerator<string> bEnumerator = t.GetDependees("b").GetEnumerator();
+            string dependeesOfB = "";
+            bEnumerator.MoveNext();
+            dependeesOfB += bEnumerator.Current;
+            Console.WriteLine("The Dependees of B are: " + dependeesOfB);
+        }
+
+        /// <summary>
         ///Empty graph should contain nothing
         ///</summary>
         [TestMethod()]
@@ -128,7 +185,6 @@ namespace DevelopmentTests
             DependencyGraph t = new DependencyGraph();
             Assert.AreEqual(0, t.Size);
         }
-
 
         /// <summary>
         ///Empty graph should contain nothing
@@ -383,6 +439,5 @@ namespace DevelopmentTests
                 Assert.IsTrue(dees[i].SetEquals(new HashSet<string>(t.GetDependees(letters[i]))));
             }
         }
-
     }
 }

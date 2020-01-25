@@ -1,8 +1,23 @@
-﻿// Skeleton implementation written by Joe Zachary for CS 3500, September 2013.
-// Version 1.1 (Fixed error in comment for RemoveDependency.)
-// Version 1.2 - Daniel Kopta 
-//               (Clarified meaning of dependent and dependee.)
-//               (Clarified names in solution/project structure.)
+﻿/// <summary> 
+/// Author:    Aaron Morgan
+/// Partner:   None
+/// Date:      1/25/2020
+/// Course:    CS 3500, University of Utah, School of Computing 
+/// Copyright: CS 3500 and Aaron Morgan
+/// 
+/// I, Aaron Morgan, certify that I wrote this code from scratch and did not copy it in part
+/// or in whole from another source, with the exception of the skeleton implementation.
+/// 
+/// Skeleton implementation written by Joe Zachary for CS 3500, September 2013.
+/// Version 1.1 (Fixed error in comment for RemoveDependency.)
+/// Version 1.2 - Daniel Kopta 
+///               (Clarified meaning of dependent and dependee.)
+///               (Clarified names in solution/project structure.)
+///               
+/// File Contents
+/// 
+/// Contains the Dependency Graph implementation for usage in the Spreadsheet solution.
+/// </summary>
 
 using System;
 using System.Collections.Generic;
@@ -79,7 +94,6 @@ namespace SpreadsheetUtilities
         {
             get
             {
-                //If the dependent is in the Dictionary, it'll be copied into setOfDependees.
                 if(dependees.TryGetValue(s, out HashSet<string> setOfDependees))
                 {
                     return setOfDependees.Count;
@@ -116,7 +130,6 @@ namespace SpreadsheetUtilities
             }
         }
 
-
         /// <summary>
         /// Reports whether dependees(s) is non-empty.
         /// </summary>
@@ -140,7 +153,6 @@ namespace SpreadsheetUtilities
                 return false;
             }
         }
-
 
         /// <summary>
         /// Enumerates dependents(s).
@@ -173,7 +185,6 @@ namespace SpreadsheetUtilities
                 return emptySet;
             }
         }
-
 
         /// <summary>
         /// <para>Adds the ordered pair (s,t), if it doesn't exist</para>
@@ -217,7 +228,6 @@ namespace SpreadsheetUtilities
             }
         }
 
-
         /// <summary>
         /// Removes the ordered pair (s,t), if it exists
         /// </summary>
@@ -231,7 +241,6 @@ namespace SpreadsheetUtilities
                 dependees[t].Remove(s);
             }
         }
-
 
         /// <summary>
         /// Removes all existing ordered pairs of the form (s,r).  Then, for each
@@ -275,7 +284,7 @@ namespace SpreadsheetUtilities
                     dependents.Add(s, updatedDependents);
                     dependees.Add(s, new HashSet<string>());
                 }
-                //If it's any other size, then the dependee needs to be added to the dependent Dictionary, and each
+                //If it's any other size, then the dependee needs to be added to both Dictionaries, and each
                 //dependent in the given replacement list also needs to be added to (potentially) both lists, which 
                 //AddDependency will take care of.
                 else
@@ -287,11 +296,8 @@ namespace SpreadsheetUtilities
                         this.AddDependency(s, dependent);
                     }
                 }
-
-
             }
         }
-
 
         /// <summary>
         /// Removes all existing ordered pairs of the form (r,s).  Then, for each 
@@ -335,7 +341,7 @@ namespace SpreadsheetUtilities
                     dependees.Add(s, updatedDependees);
                     dependents.Add(s, new HashSet<string>());
                 }
-                //If it's any other size, then the dependent needs to be added to the dependee Dictionary, and each
+                //If it's any other size, then the dependent needs to be added to both Dictionaries, and each
                 //dependee in the given replacement list also needs to be added to (potentially) both lists, which 
                 //AddDependency will take care of.
                 else

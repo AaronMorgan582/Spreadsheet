@@ -12,11 +12,12 @@ Copyright:  CS 3500 and Aaron Morgan - This work may not be copied for use in Ac
 2. Assignment Specific Topics
 
     Expected Time to Complete: 15 hours.
+
     Time spent on Analysis: 3 hours.
     Time spent on Implementation: 3.5 hours.
     Time spent Debugging: 1 hour.
-    Time spent Testing: 3.5 hours.
-    Total Time:
+    Time spent Testing: 5 hours.
+    Total Time: 12.5 hours.
 
 3. Consulted Peers:
 
