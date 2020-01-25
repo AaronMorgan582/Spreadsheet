@@ -79,16 +79,15 @@ namespace SpreadsheetUtilities
         {
             get
             {
-                HashSet<string> setOfDependees = new HashSet<string>();
                 //If the dependent is in the Dictionary, it'll be copied into setOfDependees.
-                if(dependees.TryGetValue(s, out setOfDependees))
+                if(dependees.TryGetValue(s, out HashSet<string> setOfDependees))
                 {
                     return setOfDependees.Count;
                 }
-                //If the dependent is not in the Dictionary, then it has no dependees, and the empty setOfDependees's count can be used.
+                //If the dependent is not in the Dictionary, then it has no dependees.
                 else
                 {
-                    return setOfDependees.Count;
+                    return 0;
                 }
             }
         }
@@ -98,8 +97,7 @@ namespace SpreadsheetUtilities
         /// </summary>
         public bool HasDependents(string s)
         {
-            HashSet<string> setOfDependents = new HashSet<string>();
-            if(dependents.TryGetValue(s, out setOfDependents))
+            if(dependents.TryGetValue(s, out HashSet<string> setOfDependents))
             {
                 if(setOfDependents.Count > 0)
                 {
@@ -124,8 +122,7 @@ namespace SpreadsheetUtilities
         /// </summary>
         public bool HasDependees(string s)
         {
-            HashSet<string> setOfDependees = new HashSet<string>();
-            if(dependees.TryGetValue(s, out setOfDependees))
+            if(dependees.TryGetValue(s, out HashSet<string> setOfDependees))
             {
                 if(setOfDependees.Count > 0)
                 {
@@ -150,14 +147,14 @@ namespace SpreadsheetUtilities
         /// </summary>
         public IEnumerable<string> GetDependents(string s)
         {
-            HashSet<string> setOfDependents = new HashSet<string>();
-            if(dependents.TryGetValue(s, out setOfDependents))
+            if(dependents.TryGetValue(s, out HashSet<string> setOfDependents))
             {
                 return setOfDependents;
             }
             else
             {
-                return setOfDependents;//This should be safe to return, since it's just an empty HashSet, and has no connection to the Dictionary.
+                HashSet<string> emptySet = new HashSet<string>();
+                return emptySet;
             }
         }
 
@@ -166,14 +163,14 @@ namespace SpreadsheetUtilities
         /// </summary>
         public IEnumerable<string> GetDependees(string s)
         {
-            HashSet<string> setOfDependees = new HashSet<string>();
-            if(dependees.TryGetValue(s, out setOfDependees))
+            if(dependees.TryGetValue(s, out HashSet<string> setOfDependees))
             {
                 return setOfDependees;
             }
             else
             {
-                return setOfDependees;
+                HashSet<string> emptySet = new HashSet<string>();
+                return emptySet;
             }
         }
 
@@ -284,6 +281,7 @@ namespace SpreadsheetUtilities
                 else
                 {
                     dependents.Add(s, updatedDependents);
+                    dependees.Add(s, new HashSet<string>());
                     foreach (string dependent in newDependents)
                     {
                         this.AddDependency(s, dependent);
@@ -343,6 +341,7 @@ namespace SpreadsheetUtilities
                 else
                 {
                     dependees.Add(s, updatedDependees);
+                    dependents.Add(s, new HashSet<string>());
                     foreach (string dependee in newDependees)
                     {
                         this.AddDependency(dependee, s);

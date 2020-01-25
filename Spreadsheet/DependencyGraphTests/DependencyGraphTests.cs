@@ -26,6 +26,14 @@ namespace DevelopmentTests
         }
 
         [TestMethod()]
+        public void DependeeSizeWithInvalidEntryTest()
+        {
+            DependencyGraph graph = new DependencyGraph();
+
+            Assert.AreEqual(0, graph["b"]);
+        }
+
+        [TestMethod()]
         public void DependeeSizeEmptyTest()
         {
             DependencyGraph graph = new DependencyGraph();
@@ -37,7 +45,7 @@ namespace DevelopmentTests
         }
 
         [TestMethod()]
-        public void TestReplaceDependentsNewAdditionWithEmpty()
+        public void ReplaceDependentsEmptyNewAdditionTest()
         {
             DependencyGraph t = new DependencyGraph();
             t.AddDependency("a", "b");
@@ -47,14 +55,68 @@ namespace DevelopmentTests
         }
 
         [TestMethod()]
-        public void TestReplaceDependeesEmptyNewAddition()
+        public void ReplaceDependeesEmptyNewAdditionTest()
         {
             DependencyGraph t = new DependencyGraph();
             t.AddDependency("a", "b");
             t.AddDependency("c", "z");
             t.ReplaceDependees("d", new HashSet<string>());
             Assert.AreEqual(0, t["d"]);
-            Assert.AreEqual(false, t.HasDependees("d"));
+            Assert.IsFalse(t.HasDependees("d"));
+        }
+
+        [TestMethod()]
+        public void ReplaceDependentsAdditionWithMultiplesTest()
+        {
+            DependencyGraph t = new DependencyGraph();
+            t.AddDependency("a", "b");
+            t.AddDependency("m", "g");
+            t.ReplaceDependents("a", new HashSet<string>() { "g", "h" });
+            t.AddDependency("c", "z");
+            t.ReplaceDependents("d", new HashSet<string>() { "z", "f" });
+            Assert.AreEqual(0, t["d"]);
+            Assert.AreEqual(2, t["z"]);
+            Assert.AreEqual(6, t.Size);
+            Assert.AreEqual(2, t["g"]);
+
+            IEnumerator<string> zEnumerator = t.GetDependees("z").GetEnumerator();
+            string dependeesOfZ = "";
+            zEnumerator.MoveNext();
+            dependeesOfZ += zEnumerator.Current + " ";
+            zEnumerator.MoveNext();
+            dependeesOfZ += zEnumerator.Current;
+            Console.WriteLine("The Dependees of Z are: " + dependeesOfZ);
+
+            IEnumerator<string> aEnumerator = t.GetDependents("a").GetEnumerator();
+            string dependentsOfA = "";
+            aEnumerator.MoveNext();
+            dependentsOfA += aEnumerator.Current + " ";
+            aEnumerator.MoveNext();
+            dependentsOfA += aEnumerator.Current;
+            Console.WriteLine("The Dependents of A are: " + dependentsOfA);
+        }
+
+        /// <summary>
+        ///With a given dependency, both variables should have dependent lists, but only one of those lists should be non-empty.
+        ///
+        ///</summary>
+        [TestMethod()]
+        public void HasDependeeTest()
+        {
+            DependencyGraph t = new DependencyGraph();
+            t.AddDependency("a", "b");
+            Assert.IsTrue(t.HasDependents("a"));
+            Assert.IsFalse(t.HasDependents("b"));
+            Assert.IsFalse(t.HasDependents("z"));
+
+            IEnumerator<string> aEnumerator = t.GetDependents("a").GetEnumerator();
+            string dependentsOfA = "";
+            aEnumerator.MoveNext();
+            dependentsOfA += aEnumerator.Current;
+            Console.WriteLine("The Dependents of A are: " + dependentsOfA);
+
+            IEnumerator<string> bEnumerator = t.GetDependents("b").GetEnumerator();
+            Assert.IsFalse(bEnumerator.MoveNext());
         }
 
         /// <summary>
@@ -79,6 +141,28 @@ namespace DevelopmentTests
             Assert.AreEqual(1, t.Size);
             t.RemoveDependency("x", "y");
             Assert.AreEqual(0, t.Size);
+        }
+
+        /// <summary>
+        ///Even if the variable is not in the graph, it should still return an IEnumerator when GetDependees is called.
+        ///</summary>
+        [TestMethod()]
+        public void GetDependeesEnumeratorInvalidTest()
+        {
+            DependencyGraph t = new DependencyGraph();
+            IEnumerator<string> enumerator = t.GetDependees("a").GetEnumerator();
+            Assert.IsFalse(enumerator.MoveNext());
+        }
+
+        /// <summary>
+        ///Even if the variable is not in the graph, it should still return an IEnumerator when GetDependents is called.
+        ///</summary>
+        [TestMethod()]
+        public void GetDependentsEnumeratorInvalidTest()
+        {
+            DependencyGraph t = new DependencyGraph();
+            IEnumerator<string> enumerator = t.GetDependents("a").GetEnumerator();
+            Assert.IsFalse(enumerator.MoveNext());
         }
 
         /// <summary>
