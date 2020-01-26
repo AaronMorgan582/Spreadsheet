@@ -105,7 +105,6 @@ namespace FormulaEvaluator
                             {
                                 throw new ArgumentException();
                             }
-
                         }
                         else if (operators.Count != 0 && operators.Peek() == "-")
                         {
@@ -124,6 +123,14 @@ namespace FormulaEvaluator
                                 throw new ArgumentException();
                             }
                         }
+                        //Special case for multiple parentheses, such as (5*(3+2)). If a right parentheses is processed, but the top of the stack
+                        //is a left parentheses, the left parentheses needs to be removed, because it could be preventing other operators from being
+                        //processed.
+                        else if (operators.Count != 0 && operators.Peek() == "(")
+                        {
+                            throw new ArgumentException(); ;
+                        }
+
                         if (operators.Count != 0 && operators.Peek() == "*")
                         {
                             int firstStackNumber = values.Pop();
@@ -131,6 +138,10 @@ namespace FormulaEvaluator
                             operators.Pop();
                             int result = firstStackNumber * secondStackNumber;
                             values.Push(result);
+                            if(operators.Count !=0 && operators.Peek() == "(")
+                            {
+                                operators.Pop();
+                            }
                         }
                         else if (operators.Count != 0 && operators.Peek() == "/")
                         {
@@ -139,13 +150,10 @@ namespace FormulaEvaluator
                             operators.Pop();
                             int result = secondStackNumber / firstStackNumber;
                             values.Push(result);
-                        }
-                        //Special case for multiple parentheses, such as (5*(3+2)). If a right parentheses is processed, but the top of the stack
-                        //is a left parentheses, the left parentheses needs to be removed, because it could be preventing other operators from being
-                        //processed.
-                        else if (operators.Count != 0 && operators.Peek() == "(")
-                        {
-                            operators.Pop();
+                            if (operators.Count != 0 && operators.Peek() == "(")
+                            {
+                                operators.Pop();
+                            }
                         }
                     }
                     //If the token is anything else, it should be a variable that needs to be looked up via the delegate.
@@ -190,7 +198,7 @@ namespace FormulaEvaluator
 
             //If the Value Stack has exactly one number, but there are operators left in the Operator Stack, that means the expression was not
             //properly formatted.
-            if (values.Count == 1 && operators.Count != 0)
+            if (values.Count == 1 && operators.Count != 0 || values.Count == 0 && operators.Count != 0 || values.Count == 0 && operators.Count == 0)
             {
                 throw new ArgumentException();
             }
@@ -220,13 +228,29 @@ namespace FormulaEvaluator
                 operators.Pop();
                 int result = stackNumber * number;
                 values.Push(result);
+                if (operators.Count != 0 && operators.Peek() == "(")
+                {
+                    operators.Pop();
+                }
             }
             else if (operators.Count != 0 && operators.Peek() == "/")
             {
-                int stackNumber = values.Pop();
-                operators.Pop();
-                int result = stackNumber / number;
-                values.Push(result);
+                if(number == 0)
+                {
+                    throw new ArgumentException();
+                }
+                else
+                {
+                    int stackNumber = values.Pop();
+                    operators.Pop();
+                    int result = stackNumber / number;
+                    values.Push(result);
+                }
+
+                if (operators.Count != 0 && operators.Peek() == "(")
+                {
+                    operators.Pop();
+                }
             }
             else
             {
