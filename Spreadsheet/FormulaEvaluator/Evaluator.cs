@@ -25,7 +25,7 @@ namespace FormulaEvaluator
         public delegate int Lookup(String variable_name);
 
         /// <summary>
-        /// This function calculates a given expression. You should be aware of the following edge cases:
+        /// This function calculates a given expression using infix notation. You should be aware of the following edge cases:
         /// - Multiplication by parentheses, such as 4(5) is not supported.
         /// - Improperly formatted equations, such as 4+ or 3-3).
         /// - Negative numbers are not supported.
