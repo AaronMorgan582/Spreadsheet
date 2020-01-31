@@ -195,7 +195,40 @@ namespace SpreadsheetUtilities
         /// </summary>
         public override bool Equals(object obj)
         {
-            return false;
+            string objectExpression = obj.ToString();
+
+            string[] expressionTokens = GetTokens(expression).ToArray();
+            string[] objectTokens = GetTokens(objectExpression).ToArray();
+
+            //After being split into tokens, if they differ in length, they can't be equal.
+            if(expressionTokens.Length != objectTokens.Length) { return false; }
+
+            for (int index = 0; index < expressionTokens.Length; index++)
+            {
+                string expToken = expressionTokens[index];
+                string objToken = objectTokens[index];
+
+                //Check to see if the expression token is a number.
+                if (Double.TryParse(expToken, out double expressionNumber)){
+                    //If it is, check to see if the passed object token is also a number.
+                    if (Double.TryParse(objToken, out double objNumber)) {
+                        //If it is, the ToString method will determine equality.
+                        if (expressionNumber.ToString() != objNumber.ToString())
+                        {
+                            return false;
+                        }
+                    }
+                    //If the passed object token isn't a number, the two objects are not equal.
+                    else
+                    {
+                        return false;
+                    }
+                }
+                //For all other inputs, each token should just be a string, and the string's Equals function can be used.
+                else if (!expToken.Equals(objToken)) { return false; }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -256,7 +289,6 @@ namespace SpreadsheetUtilities
                     yield return s;
                 }
             }
-
         }
 
         private void ParsingRules(string formula)

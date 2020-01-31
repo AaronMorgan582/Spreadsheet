@@ -1,7 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SpreadsheetUtilities;
 using System;
-using System.Collections.Generic;
 
 namespace FormulaTests
 {
@@ -59,6 +58,12 @@ namespace FormulaTests
             Formula test = new Formula("5++10");
         }
 
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void TestInvalidCharacter()
+        {
+            Formula test = new Formula("5@20");
+        }
         /// Function tests.
 
         [TestMethod()]
@@ -82,7 +87,29 @@ namespace FormulaTests
             Assert.AreEqual("x+y", test.ToString());
         }
 
+        [TestMethod()]
+        public void TestEqualsFalse()
+        {
+            Formula test = new Formula("x + y");
+            Formula testUpper = new Formula("X+Y");
+            Assert.IsFalse(test.Equals(testUpper));
+        }
 
+        [TestMethod()]
+        public void TestEqualsTrueWithIntAndDecimal()
+        {
+            Formula test = new Formula("2 + x7");
+            Formula testDecimal = new Formula("2.000 + x7");
+            Assert.IsTrue(test.Equals(testDecimal));
+        }
+
+        [TestMethod()]
+        public void TestEqualsTrueWithOnlyDecimal()
+        {
+            Formula test = new Formula("2.0 + x7");
+            Formula testDecimal = new Formula("2.000 + x7");
+            Assert.IsTrue(test.Equals(testDecimal));
+        }
 
     }
 }
