@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using FormulaEvaluator;
 
 namespace SpreadsheetUtilities
 {
@@ -89,15 +90,7 @@ namespace SpreadsheetUtilities
         /// </summary>
         public Formula(String formula, Func<string, string> normalize, Func<string, bool> isValid)
         {
-            formula = normalize(formula);
-            if(isValid(formula) == true)
-            {
-                expression = formula;
-            }
-            else
-            {
-                throw new FormulaFormatException("Invalid formula format."); 
-            }
+            ParsingRules(formula);
         }
 
         /// <summary>
@@ -123,10 +116,6 @@ namespace SpreadsheetUtilities
         /// </summary>
         public object Evaluate(Func<string, double> lookup)
         {
-            List<string> tokens = GetTokens(expression).ToList();
-            foreach(string token in tokens)
-            {
-            }
             return null;
         }
 
@@ -245,6 +234,67 @@ namespace SpreadsheetUtilities
                 }
             }
 
+        }
+
+        private void checkFirstToken(string[] tokens)
+        {
+            string firstToken = tokens[0];
+            Regex numbers = new Regex(@"(?: \d+\.\d* | \d*\.\d+ | \d+ ) (?: [eE][\+-]?\d+)?");
+            Regex operators = new Regex(@"[\+\-*/]");
+            Regex leftParenthesis = new Regex(@"\(");
+            Regex rightParenthesis = new Regex(@"\(");
+            Regex variables = new Regex(@"[a-zA-Z_](?: [a-zA-Z_]|\d)*");
+
+            if (!numbers.Match(firstToken).Success || !variables.Match(firstToken).Success || !leftParenthesis.Match(firstToken).Success)
+            {
+                throw new FormulaFormatException("Formula must begin with a number, a variable, or an open parenthesis.");
+            }
+            else if (numbers.Match(firstToken).Success || variables.Match(firstToken).Success)
+            {
+                string secondToken = tokens[1];
+                if (!operators.Match(secondToken).Success || !rightParenthesis.Match(secondToken).Success)
+                {
+                    throw new FormulaFormatException("Any number or variable must be followed by an operator or closing parenthesis.");
+                }
+            }
+        }
+
+        private void checkFinalToken (string[] tokens)
+        {
+            string lastToken = tokens[tokens.Length - 1];
+
+            Regex numbers = new Regex(@"(?: \d+\.\d* | \d*\.\d+ | \d+ ) (?: [eE][\+-]?\d+)?");
+            Regex operators = new Regex(@"[\+\-*/]");
+            Regex leftParenthesis = new Regex(@"\(");
+            Regex rightParenthesis = new Regex(@"\(");
+            Regex variables = new Regex(@"[a-zA-Z_](?: [a-zA-Z_]|\d)*");
+
+            if (!numbers.Match(lastToken).Success || !variables.Match(lastToken).Success || !rightParenthesis.Match(lastToken).Success)
+            {
+                throw new FormulaFormatException("Formula must end with a number, a variable, or a closing parenthesis.");
+            }
+        }
+
+        private void checkFormula (string[] tokens)
+        {
+            for(int index = 1; index < tokens.Length -1; index++)
+            {
+
+            }
+        }
+
+        private bool ParsingRules(string formula)
+        {
+            string[] tokens = GetTokens(formula).ToArray();
+            if (tokens.Length == 0)
+            {
+                throw new FormulaFormatException("Formula is empty.");
+            }
+
+            checkFirstToken(tokens);
+            checkFinalToken(tokens);
+
+            return true;
         }
     }
 

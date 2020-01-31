@@ -22,7 +22,7 @@ namespace FormulaEvaluator
 {
     public static class Evaluator
     {
-        public delegate int Lookup(String variable_name);
+        public delegate int Lookup(string variable_name);
 
         /// <summary>
         /// This function calculates a given expression using infix notation. You should be aware of the following edge cases:
@@ -37,7 +37,7 @@ namespace FormulaEvaluator
         public static int Evaluate(String expression, Lookup variableEvaluator)
         {
             Stack<int> values = new Stack<int>();
-            Stack<String> operators = new Stack<String>();
+            Stack<string> operators = new Stack<string>();
 
             string[] substrings = Regex.Split(expression, "(\\()|(\\))|(-)|(\\+)|(\\*)|(/)");
             //Regex expression to capture any string that starts with upper/lower case letters, followed by any length of numbers 0-9.
@@ -45,7 +45,7 @@ namespace FormulaEvaluator
 
             for (int index = 0; index < substrings.Length; index++)
             {
-                String token = substrings[index];
+                string token = substrings[index];
 
                 //Ignores white spaces and empty characters found within the substring array.
                 if (token != "" && token != " ")
@@ -53,7 +53,7 @@ namespace FormulaEvaluator
                     //If the token is a number value:
                     if (int.TryParse(token, out int number))
                     {
-                        processNumber(number, operators, values);
+                        ProcessNumber(number, operators, values);
                     }
 
                     else if (token == "+" || token == "-")
@@ -160,7 +160,7 @@ namespace FormulaEvaluator
                     else if (reg.Match(token).Success)
                     {
                         int variableValue = variableEvaluator(token);
-                        processNumber(variableValue, operators, values);
+                        ProcessNumber(variableValue, operators, values);
                     }
                     else
                     {
@@ -196,8 +196,8 @@ namespace FormulaEvaluator
                 return finalResult;
             }
 
-            //If the Value Stack has exactly one number, but there are operators left in the Operator Stack, that means the expression was not
-            //properly formatted.
+            //To indicate improper formats: If the Operator Stack is not empty, and there is exactly one Value left; if Values is empty,
+            //but there are Operators left; if both Stacks are empty, then an empty space was passed in originally.
             if (values.Count == 1 && operators.Count != 0 || values.Count == 0 && operators.Count != 0 || values.Count == 0 && operators.Count == 0)
             {
                 throw new ArgumentException();
@@ -220,7 +220,7 @@ namespace FormulaEvaluator
         /// <param name="number">The number to be processed.</param>
         /// <param name="operators">The name of the Stack that holds the operators.</param>
         /// <param name="values">The name of the Stack that holds the numbers.</param>
-        private static void processNumber(int number, Stack<String> operators, Stack<int> values)
+        private static void ProcessNumber(int number, Stack<string> operators, Stack<int> values)
         {
             if (operators.Count != 0 && operators.Peek() == "*")
             {
