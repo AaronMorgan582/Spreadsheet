@@ -13,15 +13,15 @@ Copyright:  CS 3500 and Aaron Morgan - This work may not be copied for use in Ac
 
     Expected Time to Complete: 12 hours.
 
-    Time spent on Analysis/Design: 3 hours.
-    Time spent on Implementation: 0.5 hours.
-    Time spent Debugging: 0 hours.
-    Time spent Testing: 0 hours.
-    Total Time: 3.5 hours.
+    Time spent on Analysis/Design: 4 hours.
+    Time spent on Implementation: 2.5 hours.
+    Time spent Debugging: 0.5 hours.
+    Time spent Testing: 1 hours.
+    Total Time: 8 hours.
 
 3. Consulted Peers:
 
-    1. Alejandro Serrano: Discussion on both constructors, as well as what the Evaluate function should do.
+    1. Alejandro Serrano: Discussion on both constructors, what the Evaluate function should do, and how the Parsing Rules should be implemented.
 
 4. References:
 
