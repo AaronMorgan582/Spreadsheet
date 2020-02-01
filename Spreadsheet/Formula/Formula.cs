@@ -38,7 +38,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using FormulaEvaluator;
 
 namespace SpreadsheetUtilities
 {
@@ -165,14 +164,7 @@ namespace SpreadsheetUtilities
                 {
                     if (operators.Count != 0 && operators.Peek() == "*")
                     {
-                        double stackNumber = values.Pop();
-                        operators.Pop();
-                        double result = stackNumber * number;
-                        values.Push(result);
-                        if (operators.Count != 0 && operators.Peek() == "(")
-                        {
-                            operators.Pop();
-                        }
+                        MultOrDivide(values, operators, number);
                     }
                     else if (operators.Count != 0 && operators.Peek() == "/")
                     {
@@ -182,15 +174,7 @@ namespace SpreadsheetUtilities
                         }
                         else
                         {
-                            double stackNumber = values.Pop();
-                            operators.Pop();
-                            double result = stackNumber / number;
-                            values.Push(result);
-
-                            if (operators.Count != 0 && operators.Peek() == "(")
-                            {
-                                operators.Pop();
-                            }
+                            MultOrDivide(values, operators, number);
                         }
                     }
                     else
@@ -199,25 +183,17 @@ namespace SpreadsheetUtilities
                     }
                 }
 
+                //Otherwise, if it's a + or -:
                 else if (token == "+" || token == "-")
                 {
                     if (operators.Count != 0 && operators.Peek() == "+")
                     {
-                        double firstStackNumber = values.Pop();
-                        double secondStackNumber = values.Pop();
-                        //Operator needs to be removed since it will be applied to the above stack numbers.
-                        operators.Pop();
-                        double result = firstStackNumber + secondStackNumber;
-                        values.Push(result);
+                        AddOrSubtract(values, operators);
                         operators.Push(token);
                     }
                     else if (operators.Count != 0 && operators.Peek() == "-")
                     {
-                        double firstStackNumber = values.Pop();
-                        double secondStackNumber = values.Pop();
-                        operators.Pop();
-                        double result = secondStackNumber - firstStackNumber;
-                        values.Push(result);
+                        AddOrSubtract(values, operators);
                         operators.Push(token);
                     }
                     else
@@ -226,66 +202,35 @@ namespace SpreadsheetUtilities
                     }
                 }
 
+                //Otherwise, if it's a *, /, or (:
                 else if (token == "*" || token == "/" || token == "(")
                 {
                     operators.Push(token);
                 }
 
+                //Otherwise, if it's a ):
                 else if (token == ")")
                 {
                     if (operators.Count != 0 && operators.Peek() == "+")
                     {
-                        double firstStackNumber = values.Pop();
-                        double secondStackNumber = values.Pop();
-                        operators.Pop();
-                        double result = firstStackNumber + secondStackNumber;
-                        values.Push(result);
-                        if (operators.Count != 0 && operators.Peek() == "(")
-                        {
-                            operators.Pop(); // Assumes the first parenthesis ( is on the top of the Stack.
-                        }
+                        AddOrSubtract(values, operators);
+                        CheckParentheses(operators);
                     }
                     else if (operators.Count != 0 && operators.Peek() == "-")
                     {
-
-                        double firstStackNumber = values.Pop();
-                        double secondStackNumber = values.Pop();
-                        operators.Pop();
-                        double result = secondStackNumber - firstStackNumber;
-                        values.Push(result);
-                        if(operators.Count != 0 && operators.Peek() == "(")
-                        {
-                            operators.Pop(); // Assumes the first parenthesis ( is on the top of the Stack.
-                        }
+                        AddOrSubtract(values, operators);
+                        CheckParentheses(operators);
                     }
 
                     if (operators.Count != 0 && operators.Peek() == "*")
                     {
                         double firstStackNumber = values.Pop();
-                        double secondStackNumber = values.Pop();
-                        operators.Pop();
-                        double result = firstStackNumber * secondStackNumber;
-                        values.Push(result);
-                        if (operators.Count != 0 && operators.Peek() == "(")
-                        {
-                            operators.Pop(); // Assumes the first parenthesis ( is on the top of the Stack.
-                        }
+                        MultOrDivide(values, operators, firstStackNumber);
                     }
                     else if (operators.Count != 0 && operators.Peek() == "/")
                     {
                         double firstStackNumber = values.Pop();
-                        if (firstStackNumber == 0)
-                        {
-                            return new FormulaError("Cannot divide by zero.");
-                        }
-                        double secondStackNumber = values.Pop();
-                        operators.Pop();
-                        double result = secondStackNumber / firstStackNumber;
-                        values.Push(result);
-                        if (operators.Count != 0 && operators.Peek() == "(")
-                        {
-                            operators.Pop(); // Assumes the first parenthesis ( is on the top of the Stack.
-                        }
+                        MultOrDivide(values, operators, firstStackNumber);
                     }
                 }
                 //If the token is anything else, it should be a variable that needs to be looked up via the delegate.
@@ -294,14 +239,7 @@ namespace SpreadsheetUtilities
                     double variableValue = lookup(token);
                     if (operators.Count != 0 && operators.Peek() == "*")
                     {
-                        double stackNumber = values.Pop();
-                        operators.Pop();
-                        double result = stackNumber * variableValue;
-                        values.Push(result);
-                        if (operators.Count != 0 && operators.Peek() == "(")
-                        {
-                            operators.Pop();
-                        }
+                        MultOrDivide(values, operators, variableValue);
                     }
                     else if (operators.Count != 0 && operators.Peek() == "/")
                     {
@@ -311,14 +249,7 @@ namespace SpreadsheetUtilities
                         }
                         else
                         {
-                            double stackNumber = values.Pop();
-                            operators.Pop();
-                            double result = stackNumber / variableValue;
-                            values.Push(result);
-                            if (operators.Count != 0 && operators.Peek() == "(")
-                            {
-                                operators.Pop();
-                            }
+                            MultOrDivide(values, operators, variableValue);
                         }
                     }
                     else
@@ -471,8 +402,6 @@ namespace SpreadsheetUtilities
         /// </summary>
         public static bool operator ==(Formula f1, Formula f2)
         {
-            if (f1 == null && f2 == null) { return true; }
-
             if (f1.Equals(f2)) { return true; }
             else { return false; }
         }
@@ -484,8 +413,6 @@ namespace SpreadsheetUtilities
         /// </summary>
         public static bool operator !=(Formula f1, Formula f2)
         {
-            if (f1 == null && f2 == null) { return false; }
-
             if (f1.Equals(f2)) { return false; }
             else { return true; }
         }
@@ -617,6 +544,16 @@ namespace SpreadsheetUtilities
             }
         }
 
+        /// <summary>
+        /// This private helper method checks the first token of the token array,
+        /// to ensure it is following proper formatting rules.
+        /// 
+        /// If the rules are not properly followed, it will throw a FormulaFormatException.
+        /// Please refer to the generated message for each FormulaFormatException for more
+        /// information about what the specific rule is.
+        /// </summary>
+        /// <param name="tokens">The token array.</param>
+        /// <returns>If the method found an opening parenthesis, it will return a count of 1.</returns>
         private int CheckFirstToken(string[] tokens)
         {
             string firstToken = tokens[0];
@@ -636,19 +573,23 @@ namespace SpreadsheetUtilities
                         throw new FormulaFormatException("Any number or variable must be followed by an operator or closing parenthesis.");
                     }
                 }
-                else if (firstToken.Equals("("))
-                {
-                    leftParenthesisCount += 1;
-                }
+                else if (firstToken.Equals("(")){ leftParenthesisCount += 1; }
             }
-            else
-            {
-                throw new FormulaFormatException("Formula must begin with a number, a variable, or an open parenthesis.");
-            }
+            else { throw new FormulaFormatException("Formula must begin with a number, a variable, or an open parenthesis."); }
 
             return leftParenthesisCount;
         }
 
+        /// <summary>
+        /// This private helper method checks the last token of the array, to
+        /// ensure it is following proper format rules.
+        /// 
+        /// If the rules are not properly followed, it will throw a FormulaFormatException.
+        /// Please refer to the generated message for each FormulaFormatException for more
+        /// information about what the specific rule is.
+        /// </summary>
+        /// <param name="tokens">The token array.</param>
+        /// <returns>If the method found a closing parenthesis, it will return a count of 1.</returns>
         private int CheckFinalToken(string[] tokens)
         {
             string lastToken = tokens[tokens.Length - 1];
@@ -696,9 +637,71 @@ namespace SpreadsheetUtilities
         private bool CheckOperators(string token)
         {
             if (!token.Equals("+") && !token.Equals("-") && !token.Equals("/") && !token.Equals("*")) { return true; }
-            else
+            else { return false; }
+        }
+
+        /// <summary>
+        /// This private helper method helps condense the Evaluate method by checking to see
+        /// if there is a left parentheses (to remove) on the Operators Stack.
+        /// </summary>
+        /// <param name="operators">The Operators Stack.</param>
+        private void CheckParentheses(Stack<string> operators)
+        {
+            if (operators.Count != 0 && operators.Peek() == "(") { operators.Pop(); }
+        }
+
+        /// <summary>
+        /// This private helper method helps condense the Evaluate method by checking
+        /// to see if there is a * (for multiplication) or / (for division) on the
+        /// Operators Stack.
+        /// </summary>
+        /// <param name="values">The Values Stack</param>
+        /// <param name="operators">The Operators Stack</param>
+        /// <param name="number">The first number, which is given from the Values stack, the original formula, or from the Lookup delegate.</param>
+        private void MultOrDivide(Stack<double> values, Stack<string> operators, double number)
+        {
+            if(operators.Peek() == "*")
             {
-                return false;
+                double stackNumber = values.Pop();
+                operators.Pop();
+                double result = stackNumber * number;
+                values.Push(result);
+                CheckParentheses(operators);
+            }
+            else if(operators.Peek() == "/")
+            {
+                double stackNumber = values.Pop();
+                operators.Pop();
+                double result = stackNumber / number;
+                values.Push(result);
+                CheckParentheses(operators);
+            }
+        }
+
+        /// <summary>
+        /// This private helper method helps condense the Evaluate method by checking to see
+        /// if there is a + (for addition) or a - (for subtraction) on the Operators Stack.
+        /// </summary>
+        /// <param name="values">The Values Stack.</param>
+        /// <param name="operators">The Operators Stack.</param>
+        private void AddOrSubtract(Stack<double> values, Stack<string> operators)
+        {
+            if(operators.Peek() == "+")
+            {
+                double firstStackNumber = values.Pop();
+                double secondStackNumber = values.Pop();
+                //Operator needs to be removed since it will be applied to the above stack numbers.
+                operators.Pop();
+                double result = firstStackNumber + secondStackNumber;
+                values.Push(result);
+            }
+            else if(operators.Peek() == "-")
+            {
+                double firstStackNumber = values.Pop();
+                double secondStackNumber = values.Pop();
+                operators.Pop();
+                double result = secondStackNumber - firstStackNumber;
+                values.Push(result);
             }
         }
     }

@@ -7,22 +7,22 @@ Copyright:  CS 3500 and Aaron Morgan - This work may not be copied for use in Ac
 
 1. Comments to Evaluators:
 
-   For some strange reason, I could not get a test for the operators (== and !=) to run. After I set one up, my message window
-   would say the test was aborted in < 1 ms. Every other test ran without problems.
+   None at this time.
 
 2. Assignment Specific Topics
 
     Expected Time to Complete: 12 hours.
 
-    Time spent on Analysis/Design: 4 hours.
-    Time spent on Implementation: 3.0 hours.
-    Time spent Debugging: 0.5 hours.
-    Time spent Testing: 1.5 hours.
-    Total Time: 9 hours.
+    Time spent on Analysis/Design: 6.0 hours.
+    Time spent on Implementation: 7.0 hours.
+    Time spent Debugging: 1.0 hours.
+    Time spent Testing: 3.0 hours.
+    Total Time: 17 hours.
 
 3. Consulted Peers:
 
-    1. Alejandro Serrano: Discussion on both constructors, what the Evaluate function should do, and how the Parsing Rules should be implemented.
+    1. Alejandro Serrano: Discussion on both constructors, what the Evaluate method should do, and how the parsing rules should be implemented.
+    He also gave suggestions on how to condense the code in the Evaluate method.
 
 4. References:
 

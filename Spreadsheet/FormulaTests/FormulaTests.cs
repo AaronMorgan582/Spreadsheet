@@ -30,7 +30,7 @@ namespace FormulaTests
     public class FormulaTests
     {
         /// <summary>
-        /// This is the delegate that is used when creating a Formula object.
+        /// This is the delegate that can be used when creating a Formula object.
         /// 
         /// The given string should be part of the total formula. This method will check to see if it is a letter, 
         /// and if it is, it will change it to upper-case.
@@ -46,7 +46,7 @@ namespace FormulaTests
         }
 
         /// <summary>
-        /// This is the second delegate that is used when creating a Formula object.
+        /// This is the second delegate that can be used when creating a Formula object.
         /// 
         /// The given string should be part of the total formula. This method checks to see if it passes the formatting requirement
         /// (in this case, if the variable is a letter followed by a number).
@@ -88,6 +88,13 @@ namespace FormulaTests
         public void TestConstructorIsValidError()
         {
             Formula test = new Formula("x+y3", Normalize, IsValid);
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void TestParenthesesFollowingRule()
+        {
+            Formula test = new Formula("(5+(+4))");
         }
 
         [TestMethod()]
@@ -155,6 +162,13 @@ namespace FormulaTests
 
         [TestMethod()]
         [ExpectedException(typeof(FormulaFormatException))]
+        public void TestExtraFollowingRule()
+        {
+            Formula test = new Formula("2x+1");
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
         public void TestInvalidCharacter()
         {
             Formula test = new Formula("5@20");
@@ -163,7 +177,7 @@ namespace FormulaTests
         [TestMethod()]
         public void TestDivideByZero()
         {
-            Formula test = new Formula("5/0");
+            Formula test = new Formula("(5/0)");
             FormulaError testObject = new FormulaError("Cannot divide by zero.");
             Assert.AreEqual(testObject, test.Evaluate(null));
         }
@@ -244,6 +258,17 @@ namespace FormulaTests
         }
 
         [TestMethod()]
+        public void TestGetVariablesWithNormalize()
+        {
+            Formula test = new Formula("3+x+X*z-5", Normalize, s => true);
+            IEnumerable<string> variables = test.GetVariables();
+            foreach (string variable in variables)
+            {
+                Console.Write(variable + " ");
+            }
+        }
+
+        [TestMethod()]
         public void TestSimpleAddition()
         {
             Formula test = new Formula("1+1");
@@ -280,6 +305,14 @@ namespace FormulaTests
         {
             Formula test = new Formula("(5+3)");
             double value = 8;
+            Assert.AreEqual(value, test.Evaluate(null));
+        }
+
+        [TestMethod()]
+        public void TestSubtractionWithParentheses()
+        {
+            Formula test = new Formula("(5-3)");
+            double value = 2;
             Assert.AreEqual(value, test.Evaluate(null));
         }
 
@@ -372,11 +405,67 @@ namespace FormulaTests
         }
 
         [TestMethod()]
-        public void TestEqualsWithNumber()
+        public void TestEqualsTrueWithNumber()
         {
             Formula test = new Formula("2+Y");
             Formula equivTest = new Formula("2.000+y", Normalize, s => true);
             Assert.IsTrue(test.Equals(equivTest));
+        }
+
+        [TestMethod()]
+        public void TestEqualsWithDifferentNumbers()
+        {
+            Formula test = new Formula("25+Y");
+            Formula equivTest = new Formula("2.000+y", Normalize, s => true);
+            Assert.IsFalse(test.Equals(equivTest));
+        }
+
+        [TestMethod()]
+        public void TestEqualsFalseWithNumber()
+        {
+            Formula test = new Formula("25+Y");
+            Formula equivTest = new Formula("x+y", Normalize, s => true);
+            Assert.IsFalse(test.Equals(equivTest));
+        }
+
+        [TestMethod()]
+        public void TestEqualsWithDifferentObject()
+        {
+            Formula test = new Formula("25+Y");
+            int[] arr = new int[5];
+            Assert.IsFalse(test.Equals(arr));
+        }
+
+        [TestMethod()]
+        public void TestEqualOperatorTrue()
+        {
+            Formula test = new Formula("X+Y");
+            Formula equivTest = new Formula("x+y", Normalize, s => true);
+            Assert.IsTrue(test == equivTest);
+        }
+
+        [TestMethod()]
+        public void TestEqualOperatorFalse()
+        {
+            Formula test = new Formula("X+Y");
+            Formula equivTest = new Formula("4+y", Normalize, s => true);
+            Assert.IsFalse(test == equivTest);
+        }
+
+        [TestMethod()]
+        public void TestNotEqualOperatorTrue()
+        {
+            Formula test = new Formula("X+Y");
+            Formula equivTest = new Formula("4+y", Normalize, s => true);
+            Assert.IsTrue(test != equivTest);
+        }
+
+        [TestMethod()]
+        public void TestNotEqualOperatorFalse()
+        {
+            Formula test = new Formula("X+Y");
+            Formula equivTest = new Formula("x+y", Normalize, s => true);
+            Assert.IsFalse(test != equivTest);
         }
     }
 }
