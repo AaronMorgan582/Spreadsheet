@@ -26,3 +26,4 @@ Copyright:  CS 3500 and Aaron Morgan - This work may not be copied for use in Ac
 4. References:
 
     1. StackOverflow: Casting IEnumerable<T> to List<T> https://stackoverflow.com/questions/961375/casting-ienumerablet-to-listt
+    2. Microsoft: Type.IsInstanceOfType(Object) Method https://docs.microsoft.com/en-us/dotnet/api/system.type.isinstanceoftype?view=netframework-4.8

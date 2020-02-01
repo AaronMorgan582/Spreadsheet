@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SpreadsheetUtilities;
 using System;
+using System.Collections.Generic;
 
 namespace FormulaTests
 {
@@ -111,5 +112,16 @@ namespace FormulaTests
             Assert.IsTrue(test.Equals(testDecimal));
         }
 
+        [TestMethod()]
+        public void TestGetVariables()
+        {
+            Formula test = new Formula("3+x+X*z-5");
+            IEnumerable<string> variables = test.GetVariables();
+            foreach(string variable in variables)
+            {
+                Console.Write(variable + " ");
+            }
+
+        }
     }
 }
