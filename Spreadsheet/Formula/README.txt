@@ -7,7 +7,8 @@ Copyright:  CS 3500 and Aaron Morgan - This work may not be copied for use in Ac
 
 1. Comments to Evaluators:
 
-   None at this time.
+   For some strange reason, I could not get a test for the operators (== and !=) to run. After I set one up, my message window
+   would say the test was aborted in < 1 ms. Every other test ran without problems.
 
 2. Assignment Specific Topics
 

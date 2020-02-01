@@ -1,21 +1,37 @@
-﻿// Skeleton written by Joe Zachary for CS 3500, September 2013
-// Read the entire skeleton carefully and completely before you
-// do anything else!
-
-// Version 1.1 (9/22/13 11:45 a.m.)
-
-// Change log:
-//  (Version 1.1) Repaired mistake in GetTokens
-//  (Version 1.1) Changed specification of second constructor to
-//                clarify description of how validation works
-
-// (Daniel Kopta) 
-// Version 1.2 (9/10/17) 
-
-// Change log:
-//  (Version 1.2) Changed the definition of equality with regards
-//                to numeric tokens
-
+﻿///<summary>
+/// Author:    Aaron Morgan
+/// Partner:   None
+/// Date:      2/1/2020
+/// Course:    CS 3500, University of Utah, School of Computing 
+/// Copyright: CS 3500 and Aaron Morgan
+/// 
+/// I, Aaron Morgan, certify that I wrote this code from scratch and did not copy it in part
+/// or in whole from another source, with the exception of the skeleton implementation (read below).
+/// 
+///Skeleton written by Joe Zachary for CS 3500, September 2013
+/// Read the entire skeleton carefully and completely before you
+/// do anything else!
+///
+/// Version 1.1 (9/22/13 11:45 a.m.)
+///
+/// Change log:
+///  (Version 1.1) Repaired mistake in GetTokens
+///  (Version 1.1) Changed specification of second constructor to
+///                clarify description of how validation works
+///
+/// (Daniel Kopta) 
+/// Version 1.2 (9/10/17) 
+///
+/// Change log:
+///  (Version 1.2) Changed the definition of equality with regards
+///                to numeric tokens
+///
+/// File Contents
+/// 
+/// This file contains the Formula class and its respective methods. The Formula
+/// class takes a string, in proper infix notation format, to be stored or calculated.
+/// 
+/// </summary>
 
 using System;
 using System.Collections.Generic;
@@ -48,7 +64,6 @@ namespace SpreadsheetUtilities
     {
 
         public delegate string normalizeFormula(string formula);
-
         public delegate bool validateFormula(string formula);
 
         private string expression;
@@ -384,7 +399,6 @@ namespace SpreadsheetUtilities
         /// </summary>
         public override string ToString()
         {
-            expression = Regex.Replace(expression, @"\s", "");
             return expression;
         }
 
