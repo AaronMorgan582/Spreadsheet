@@ -2,13 +2,58 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SpreadsheetUtilities;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace FormulaTests
 {
+
     [TestClass]
     public class FormulaTests
     {
+        public static string Normalize(string formula)
+        {
+            Regex variable = new Regex("^[a-zA-Z]+");
+            if (variable.IsMatch(formula)){ formula = formula.ToUpper();}
+
+            return formula;
+        }
+
+        public static bool IsValid(string formula)
+        {
+            Regex variableStart = new Regex("^[a-zA-Z]+");
+            Regex validVariable = new Regex("^[a-zA-Z]+[0-9]+");
+
+            if (variableStart.IsMatch(formula))
+            {
+                if (!validVariable.IsMatch(formula)) { return false; }
+            }
+
+            return true;
+        }
+
+        public static double LookUp(string variable)
+        {
+            if(variable == "X1") { return 5; }
+            if(variable == "X2") { return 1; }
+            else throw new ArgumentException();
+        }
+
+
         ///Error Tests
+        
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void TestConstructorIsValidError()
+        {
+            Formula test = new Formula("x+y3", Normalize, IsValid);
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void TestConstructorInvalidFormat()
+        {
+            Formula test = new Formula("2x+y3", Normalize, IsValid);
+        }
 
         [TestMethod()]
         [ExpectedException(typeof(FormulaFormatException))]
@@ -65,7 +110,25 @@ namespace FormulaTests
         {
             Formula test = new Formula("5@20");
         }
-        /// Function tests.
+
+        [TestMethod()]
+        public void TestDivideByZero()
+        {
+            Formula test = new Formula("5/0");
+            FormulaError testObject = new FormulaError("Cannot divide by zero.");
+            Assert.AreEqual(testObject, test.Evaluate(null));
+        }
+
+
+        /// Method tests
+
+        [TestMethod()]
+        public void TestSimpleVariableFormula()
+        {
+            Formula test = new Formula("x1+x2", Normalize, IsValid);
+            double value = 6;
+            Assert.AreEqual(value, test.Evaluate(LookUp));
+        }
 
         [TestMethod()]
         public void TestSimpleFormulaToString()
@@ -121,7 +184,53 @@ namespace FormulaTests
             {
                 Console.Write(variable + " ");
             }
+        }
 
+        [TestMethod()]
+        public void TestSimpleAddition()
+        {
+            Formula test = new Formula("1+1");
+            double value = 2;
+            Assert.AreEqual(value, test.Evaluate(null));
+        }
+
+        [TestMethod()]
+        public void TestSimpleSubtract()
+        {
+            Formula test = new Formula("4-1");
+            double value = 3;
+            Assert.AreEqual(value, test.Evaluate(null));
+        }
+        [TestMethod()]
+        public void TestSimpleMultiply()
+        {
+            Formula test = new Formula("5*3");
+            double value = 15;
+            Assert.AreEqual(value, test.Evaluate(null));
+        }
+
+        [TestMethod()]
+        public void TestSimpleParentheses()
+        {
+            Formula test = new Formula("(5+3)");
+            double value = 8;
+            Assert.AreEqual(value, test.Evaluate(null));
+        }
+
+        [TestMethod()]
+        public void TestSimpleDivision()
+        {
+            Formula test = new Formula("(6/2)");
+            double value = 3;
+            Assert.AreEqual(value, test.Evaluate(null));
+        }
+
+        [TestMethod()]
+        public void TestComplexFormula()
+        {
+            Formula test = new Formula("(30*2) - (4*(4+1))/2*2");
+            double value = 40;
+            Assert.AreEqual(value, test.Evaluate(null));
         }
     }
 }

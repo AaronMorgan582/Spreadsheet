@@ -60,7 +60,7 @@ namespace SpreadsheetUtilities
         /// described in the class comment.  If the expression is syntactically invalid,
         /// throws a FormulaFormatException with an explanatory Message.
         /// 
-        /// The associated normalizer is the identity function, and the associated validator
+        /// The associated normalizer is the identity method, and the associated validator
         /// maps every string to true.  
         /// </summary>
         public Formula(String formula) :
@@ -93,15 +93,20 @@ namespace SpreadsheetUtilities
         public Formula(String formula, Func<string, string> normalize, Func<string, bool> isValid)
         {
             ParsingRules(formula);
-            formula = normalize(formula);
 
-            if (isValid(formula))
+            string[] tokens = GetTokens(formula).ToArray();
+
+            for (int index = 0; index < tokens.Length; index++)
             {
-                expression = formula;
-            }
-            else
-            {
-                throw new FormulaFormatException("Variable is not in the proper format.");
+                string token = normalize(tokens[index]);
+                if (isValid(token) == true)
+                {
+                    expression += token;
+                }
+                else
+                {
+                    throw new FormulaFormatException("Invalid variable format.");
+                }
             }
         }
 
@@ -140,91 +145,173 @@ namespace SpreadsheetUtilities
             {
                 string token = substrings[index];
 
-                    //If the token is a number value:
-                    if (double.TryParse(token, out double number))
+                //If the token is a number value:
+                if (double.TryParse(token, out double number))
+                {
+                    if (operators.Count != 0 && operators.Peek() == "*")
                     {
-                        ProcessNumber(number, operators, values);
-                    }
-
-                    else if (token == "+" || token == "-")
-                    {
-                        if (operators.Count != 0 && operators.Peek() == "+")
+                        double stackNumber = values.Pop();
+                        operators.Pop();
+                        double result = stackNumber * number;
+                        values.Push(result);
+                        if (operators.Count != 0 && operators.Peek() == "(")
                         {
-                            double firstStackNumber = values.Pop();
-                            double secondStackNumber = values.Pop();
-                            //Operator needs to be removed since it will be applied to the above stack numbers.
                             operators.Pop();
-                            double result = firstStackNumber + secondStackNumber;
-                            values.Push(result);
-                            operators.Push(token);
                         }
-                        else if (operators.Count != 0 && operators.Peek() == "-")
+                    }
+                    else if (operators.Count != 0 && operators.Peek() == "/")
+                    {
+                        if (number == 0)
                         {
-                            double firstStackNumber = values.Pop();
-                            double secondStackNumber = values.Pop();
-                            operators.Pop();
-                            double result = secondStackNumber - firstStackNumber;
-                            values.Push(result);
-                            operators.Push(token);
+                            return new FormulaError("Cannot divide by zero.");
                         }
                         else
                         {
-                            operators.Push(token);
+                            double stackNumber = values.Pop();
+                            operators.Pop();
+                            double result = stackNumber / number;
+                            values.Push(result);
+
+                            if (operators.Count != 0 && operators.Peek() == "(")
+                            {
+                                operators.Pop();
+                            }
                         }
                     }
+                    else
+                    {
+                        values.Push(number);
+                    }
+                }
 
-                    else if (token == "*" || token == "/" || token == "(")
+                else if (token == "+" || token == "-")
+                {
+                    if (operators.Count != 0 && operators.Peek() == "+")
+                    {
+                        double firstStackNumber = values.Pop();
+                        double secondStackNumber = values.Pop();
+                        //Operator needs to be removed since it will be applied to the above stack numbers.
+                        operators.Pop();
+                        double result = firstStackNumber + secondStackNumber;
+                        values.Push(result);
+                        operators.Push(token);
+                    }
+                    else if (operators.Count != 0 && operators.Peek() == "-")
+                    {
+                        double firstStackNumber = values.Pop();
+                        double secondStackNumber = values.Pop();
+                        operators.Pop();
+                        double result = secondStackNumber - firstStackNumber;
+                        values.Push(result);
+                        operators.Push(token);
+                    }
+                    else
                     {
                         operators.Push(token);
                     }
+                }
 
-                    else if (token == ")")
+                else if (token == "*" || token == "/" || token == "(")
+                {
+                    operators.Push(token);
+                }
+
+                else if (token == ")")
+                {
+                    if (operators.Count != 0 && operators.Peek() == "+")
                     {
-                        if (operators.Count != 0 && operators.Peek() == "+")
+                        double firstStackNumber = values.Pop();
+                        double secondStackNumber = values.Pop();
+                        operators.Pop();
+                        double result = firstStackNumber + secondStackNumber;
+                        values.Push(result);
+                        if (operators.Count != 0 && operators.Peek() == "(")
                         {
-                            double firstStackNumber = values.Pop();
-                            double secondStackNumber = values.Pop();
-                            operators.Pop();
-                            double result = firstStackNumber + secondStackNumber;
-                            values.Push(result);
                             operators.Pop(); // Assumes the first parenthesis ( is on the top of the Stack.
                         }
-                        else if (operators.Count != 0 && operators.Peek() == "-")
-                        {
+                    }
+                    else if (operators.Count != 0 && operators.Peek() == "-")
+                    {
 
-                            double firstStackNumber = values.Pop();
-                            double secondStackNumber = values.Pop();
-                            operators.Pop();
-                            double result = secondStackNumber - firstStackNumber;
-                            values.Push(result);
+                        double firstStackNumber = values.Pop();
+                        double secondStackNumber = values.Pop();
+                        operators.Pop();
+                        double result = secondStackNumber - firstStackNumber;
+                        values.Push(result);
+                        if(operators.Count != 0 && operators.Peek() == "(")
+                        {
                             operators.Pop(); // Assumes the first parenthesis ( is on the top of the Stack.
                         }
+                    }
 
-                        if (operators.Count != 0 && operators.Peek() == "*")
+                    if (operators.Count != 0 && operators.Peek() == "*")
+                    {
+                        double firstStackNumber = values.Pop();
+                        double secondStackNumber = values.Pop();
+                        operators.Pop();
+                        double result = firstStackNumber * secondStackNumber;
+                        values.Push(result);
+                        if (operators.Count != 0 && operators.Peek() == "(")
                         {
-                            double firstStackNumber = values.Pop();
-                            double secondStackNumber = values.Pop();
-                            operators.Pop();
-                            double result = firstStackNumber * secondStackNumber;
-                            values.Push(result);
-                            operators.Pop();
+                            operators.Pop(); // Assumes the first parenthesis ( is on the top of the Stack.
                         }
-                        else if (operators.Count != 0 && operators.Peek() == "/")
+                    }
+                    else if (operators.Count != 0 && operators.Peek() == "/")
+                    {
+                        double firstStackNumber = values.Pop();
+                        if (firstStackNumber == 0)
                         {
-                            double firstStackNumber = values.Pop();
-                            double secondStackNumber = values.Pop();
-                            operators.Pop();
-                            double result = secondStackNumber / firstStackNumber;
-                            values.Push(result);
+                            return new FormulaError("Cannot divide by zero.");
+                        }
+                        double secondStackNumber = values.Pop();
+                        operators.Pop();
+                        double result = secondStackNumber / firstStackNumber;
+                        values.Push(result);
+                        if (operators.Count != 0 && operators.Peek() == "(")
+                        {
+                            operators.Pop(); // Assumes the first parenthesis ( is on the top of the Stack.
+                        }
+                    }
+                }
+                //If the token is anything else, it should be a variable that needs to be looked up via the delegate.
+                else if (reg.Match(token).Success)
+                {
+                    double variableValue = lookup(token);
+                    if (operators.Count != 0 && operators.Peek() == "*")
+                    {
+                        double stackNumber = values.Pop();
+                        operators.Pop();
+                        double result = stackNumber * variableValue;
+                        values.Push(result);
+                        if (operators.Count != 0 && operators.Peek() == "(")
+                        {
                             operators.Pop();
                         }
                     }
-                    //If the token is anything else, it should be a variable that needs to be looked up via the delegate.
-                    else if (reg.Match(token).Success)
+                    else if (operators.Count != 0 && operators.Peek() == "/")
                     {
-                        double variableValue = lookup(token);
-                        ProcessNumber(variableValue, operators, values);
+                        if (variableValue == 0)
+                        {
+                            return new FormulaError("Cannot divide by zero.");
+                        }
+                        else
+                        {
+                            double stackNumber = values.Pop();
+                            operators.Pop();
+                            double result = stackNumber / variableValue;
+                            values.Push(result);
+                            if (operators.Count != 0 && operators.Peek() == "(")
+                            {
+                                operators.Pop();
+                            }
+                        }
                     }
+                    else
+                    {
+                        values.Push(variableValue);
+                    }
+                }
+                else { return new FormulaError("Invalid variable"); }
             }
             //If the Value Stack has more than 1 number in it, then the calculation is not finished.
             if (values.Count > 1)
@@ -275,11 +362,11 @@ namespace SpreadsheetUtilities
             //A HashSet should be used for potential duplicates (e.g. new Formula("x+X*z", N, s => true)).
             HashSet<string> variableSet = new HashSet<string>();
 
-            foreach(string token in tokens)
+            foreach (string token in tokens)
             {
                 if (variables.IsMatch(token))
                 {
-                    variableSet.Add(token);
+                    if (!variableSet.Contains(token)) { variableSet.Add(token); }
                 }
             }
             return variableSet;
@@ -323,7 +410,7 @@ namespace SpreadsheetUtilities
         /// </summary>
         public override bool Equals(object obj)
         {
-            if(obj == null || !typeof(Formula).IsInstanceOfType(obj)) { return false; }
+            if (obj == null || !typeof(Formula).IsInstanceOfType(obj)) { return false; }
 
             string objectExpression = obj.ToString();
 
@@ -331,7 +418,7 @@ namespace SpreadsheetUtilities
             string[] objectTokens = GetTokens(objectExpression).ToArray();
 
             //After being split into tokens, if they differ in length, they can't be equal.
-            if(expressionTokens.Length != objectTokens.Length) { return false; }
+            if (expressionTokens.Length != objectTokens.Length) { return false; }
 
             for (int index = 0; index < expressionTokens.Length; index++)
             {
@@ -339,9 +426,11 @@ namespace SpreadsheetUtilities
                 string objToken = objectTokens[index];
 
                 //Check to see if the expression token is a number.
-                if (Double.TryParse(expToken, out double expressionNumber)){
+                if (Double.TryParse(expToken, out double expressionNumber))
+                {
                     //If it is, check to see if the passed object token is also a number.
-                    if (Double.TryParse(objToken, out double objNumber)) {
+                    if (Double.TryParse(objToken, out double objNumber))
+                    {
                         //If it is, the ToString method will determine equality.
                         if (expressionNumber.ToString() != objNumber.ToString())
                         {
@@ -354,7 +443,7 @@ namespace SpreadsheetUtilities
                         return false;
                     }
                 }
-                //For all other inputs, each token should just be a string, and the string's Equals function can be used.
+                //For all other inputs, each token should just be a string, and the string's Equals method can be used.
                 else if (!expToken.Equals(objToken)) { return false; }
             }
 
@@ -368,7 +457,7 @@ namespace SpreadsheetUtilities
         /// </summary>
         public static bool operator ==(Formula f1, Formula f2)
         {
-            if(f1 == null && f2 == null){ return true;}
+            if (f1 == null && f2 == null) { return true; }
 
             if (f1.Equals(f2)) { return true; }
             else { return false; }
@@ -381,8 +470,8 @@ namespace SpreadsheetUtilities
         /// </summary>
         public static bool operator !=(Formula f1, Formula f2)
         {
-            if(f1 == null && f2 == null) { return false; }
-        
+            if (f1 == null && f2 == null) { return false; }
+
             if (f1.Equals(f2)) { return false; }
             else { return true; }
         }
@@ -426,13 +515,23 @@ namespace SpreadsheetUtilities
                 }
             }
         }
-
+        /// <summary>
+        /// To check if the given string is valid for a formula, it has to follow specific formatting rules.
+        /// 
+        /// To do this, this private helper method parses the string into specific tokens (see private method GetVariables). If
+        /// the token array is empty, this method will throw a FormulaFormatException.
+        /// 
+        /// Otherwise, it utilizes two other private helper methods (CheckValidCharacters and CheckFormula) to ensure
+        /// that the other formatting rules are being followed. Please refer to the documentation of those two
+        /// aforementioned private helper methods if more information is required about the specific rules.
+        /// </summary>
+        /// <param name="formula">The formula that needs to be checked before a Formula object is created.</param>
         private void ParsingRules(string formula)
         {
             string[] tokens = GetTokens(formula).ToArray();
-            if (tokens.Length == 0) { throw new FormulaFormatException("Formula is empty.");}
+            if (tokens.Length == 0) { throw new FormulaFormatException("Formula is empty."); }
 
-            foreach(string token in tokens)
+            foreach (string token in tokens)
             {
                 CheckValidCharacters(token);
             }
@@ -440,6 +539,15 @@ namespace SpreadsheetUtilities
             CheckFormula(tokens);
         }
 
+        /// <summary>
+        /// Checks the given string to see if it is in the proper format for a formula.
+        /// 
+        /// The first and last tokens of the given string are checked separately, via the private
+        /// methods CheckFirstToken and CheckFinalToken. Each conditional statement throws
+        /// a FormulaFormatException if the formatting rule isn't followed; refer to 
+        /// the output message for the FormulaFormatException for more information.
+        /// </summary>
+        /// <param name="tokens">The token array that should have been established in the ParsingRules method.</param>
         private void CheckFormula(string[] tokens)
         {
             int leftParenthesisCount = CheckFirstToken(tokens);
@@ -448,6 +556,7 @@ namespace SpreadsheetUtilities
             Regex numbers = new Regex("^[0-9]+");
             Regex variables = new Regex("^[a-zA-Z]+");
 
+            /// Since the first and last tokens are already checked, the index needs to be adjusted to account for it.
             for (int index = 1; index < tokens.Length - 1; index++)
             {
                 string token = tokens[index];
@@ -464,7 +573,7 @@ namespace SpreadsheetUtilities
                 else if (token.Equals("+") || token.Equals("-") || token.Equals("/") || token.Equals("*"))
                 {
                     string nextToken = tokens[index + 1];
-                    
+
                     if (!numbers.IsMatch(nextToken) && !variables.IsMatch(nextToken) && !nextToken.Equals("("))
                     {
                         throw new FormulaFormatException("An operator must be followed by a number, variable, or another opening parenthesis.");
@@ -478,7 +587,7 @@ namespace SpreadsheetUtilities
                     }
 
                     string nextToken = tokens[index + 1];
-                    
+
                     if (CheckOperators(nextToken) && !nextToken.Equals(")"))
                     {
                         throw new FormulaFormatException("An operator or closing parenthesis must follow each number, variable, and closing parenthesis.");
@@ -522,11 +631,11 @@ namespace SpreadsheetUtilities
             {
                 throw new FormulaFormatException("Formula must begin with a number, a variable, or an open parenthesis.");
             }
-           
+
             return leftParenthesisCount;
         }
 
-        private int CheckFinalToken (string[] tokens)
+        private int CheckFinalToken(string[] tokens)
         {
             string lastToken = tokens[tokens.Length - 1];
             int rightParenthesisCount = 0;
@@ -536,19 +645,23 @@ namespace SpreadsheetUtilities
 
             if (numbers.IsMatch(lastToken) || variables.IsMatch(lastToken) || lastToken.Equals(")"))
             {
-                if (lastToken.Equals(")"))
-                {
-                    rightParenthesisCount += 1;
-                }
+                if (lastToken.Equals(")")) { rightParenthesisCount += 1; }
             }
-            else
-            {
-                throw new FormulaFormatException("Formula must end with a number, a variable, or a closing parenthesis.");
-            }
-            
+            else { throw new FormulaFormatException("Formula must end with a number, a variable, or a closing parenthesis."); }
+
             return rightParenthesisCount;
         }
 
+        /// <summary>
+        /// Private helper method to check for proper formatting of a given formula.
+        /// 
+        /// Valid tokens in a properly formatted formula are:
+        /// (, ), +, -, /, *,
+        /// 
+        /// As well as numbers in integer or double format. Variables are also accepted, assuming they
+        /// are stary with an upper or lower-case letter.
+        /// </summary>
+        /// <param name="token">The token (from the token array) that needs to be checked.</param>
         private void CheckValidCharacters(string token)
         {
             Regex numbers = new Regex("^[0-9]+");
@@ -560,83 +673,20 @@ namespace SpreadsheetUtilities
             }
         }
 
+        /// <summary>
+        /// This private helper method is used exclusively to condense the conditional statements
+        /// found within the CheckFormula, CheckFirstToken, and CheckValidCharacters method.
+        /// </summary>
+        /// <param name="token">The current token (from the token array) being checked.</param>
+        /// <returns>Returns true if the given token is NOT a +, -, /, or * (i.e an operator), returns false otherwise.</returns>
         private bool CheckOperators(string token)
         {
-            if(!token.Equals("+") && !token.Equals("-") && !token.Equals("/") && !token.Equals("*"))
-            {
-                return true;
-            }
+            if (!token.Equals("+") && !token.Equals("-") && !token.Equals("/") && !token.Equals("*")) { return true; }
             else
             {
                 return false;
             }
         }
-
-        /// <summary>
-        /// Private helper method to process the numbers found within the String array, to help
-        /// determine their usage with the two Stacks; if the Operator Stack has a * or / on top,
-        /// then the number gets processed immediately, and the new value gets pushed onto the Value Stack.
-        /// Otherwise, the number is immediately put on the Value Stack.
-        /// 
-        /// Edge cases to be aware of: Each operation assumes that there are at least 2 numbers on the
-        /// Value Stack.
-        /// </summary>
-        /// <param name="number">The number to be processed.</param>
-        /// <param name="operators">The name of the Stack that holds the operators.</param>
-        /// <param name="values">The name of the Stack that holds the numbers.</param>
-        private static void ProcessNumber(double number, Stack<string> operators, Stack<double> values)
-        {
-            if (operators.Count != 0 && operators.Peek() == "*")
-            {
-                double stackNumber = values.Pop();
-                operators.Pop();
-                double result = stackNumber * number;
-                values.Push(result);
-                if (operators.Count != 0 && operators.Peek() == "(")
-                {
-                    operators.Pop();
-                }
-            }
-            else if (operators.Count != 0 && operators.Peek() == "/")
-            {
-                if (number == 0)
-                {
-                    throw new ArgumentException();
-                }
-                else
-                {
-                    double stackNumber = values.Pop();
-                    operators.Pop();
-                    double result = stackNumber / number;
-                    values.Push(result);
-                }
-
-                if (operators.Count != 0 && operators.Peek() == "(")
-                {
-                    operators.Pop();
-                }
-            }
-            else
-            {
-                values.Push(number);
-            }
-        }
-
-        private double ProcessOperator(Stack<double> values, Stack<string> operators)
-        {
-
-            if(operators.Peek() == "+")
-            {
-                double firstStackNumber = values.Pop();
-                double secondStackNumber = values.Pop();
-                //Operator needs to be removed since it will be applied to the above stack numbers.
-                operators.Pop();
-                double result = firstStackNumber + secondStackNumber;
-                return result;
-            }
-            return 0;
-        }
-
     }
 
     /// <summary>

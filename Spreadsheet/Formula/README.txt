@@ -7,7 +7,7 @@ Copyright:  CS 3500 and Aaron Morgan - This work may not be copied for use in Ac
 
 1. Comments to Evaluators:
 
-    None at this time.
+   None at this time.
 
 2. Assignment Specific Topics
 
