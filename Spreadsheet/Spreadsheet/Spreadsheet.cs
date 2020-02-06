@@ -17,6 +17,10 @@ namespace SS
             public Cell(object input)
             {
                 cellContents = input;
+                if(input is double || input is string)
+                {
+                    cellValue = input;
+                }
             }
 
             public object Contents{ 
