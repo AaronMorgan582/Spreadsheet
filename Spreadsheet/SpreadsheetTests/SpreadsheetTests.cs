@@ -22,5 +22,12 @@ namespace SpreadsheetTests
             Spreadsheet s = new Spreadsheet();
             s.GetCellContents(null);
         }
+
+        [TestMethod]
+        public void TestGetContentsEmpty()
+        {
+            Spreadsheet s = new Spreadsheet();
+            Assert.AreEqual("", s.GetCellContents("x1"));
+        }
     }
 }

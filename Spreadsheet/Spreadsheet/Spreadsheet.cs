@@ -1,5 +1,6 @@
 ﻿using SpreadsheetUtilities;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -63,7 +64,26 @@ namespace SS
 
         public override IList<string> SetCellContents(string name, double number)
         {
-            throw new NotImplementedException();
+            if (name is null || !variable.IsMatch(name)) { throw new InvalidNameException(); }
+            else
+            {
+                if(cellDictionary.TryGetValue(name, out Cell cell))
+                {
+                    cell.Contents = number;
+                    List<string> effectedCells = CreateEffectedCellsList(name);
+
+                    return effectedCells;
+                }
+                else
+                {
+                    Cell newCell = new Cell(number);
+                    cellDictionary.Add(name, newCell);
+                    graph.ReplaceDependents(name, new HashSet<string>());
+                    List<string> effectedCells = CreateEffectedCellsList(name);
+
+                    return effectedCells;
+                }
+            }
         }
 
         public override IList<string> SetCellContents(string name, string text)
@@ -79,6 +99,19 @@ namespace SS
         protected override IEnumerable<string> GetDirectDependents(string name)
         {
             throw new NotImplementedException();
+        }
+
+        private List<string> CreateEffectedCellsList(string name)
+        {
+            IEnumerable<string> dependents = graph.GetDependents(name);
+            List<string> effectedCells = new List<string>();
+            effectedCells.Add(name);
+
+            foreach (string dependent in dependents)
+            {
+                effectedCells.Add(dependent);
+            }
+            return effectedCells;
         }
     }
 }
