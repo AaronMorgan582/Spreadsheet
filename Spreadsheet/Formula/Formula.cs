@@ -106,22 +106,37 @@ namespace SpreadsheetUtilities
         /// </summary>
         public Formula(String formula, Func<string, string> normalize, Func<string, bool> isValid)
         {
-            ParsingRules(formula);
 
             string[] tokens = GetTokens(formula).ToArray();
-
-            for (int index = 0; index < tokens.Length; index++)
+            if (tokens.Length == 1)
             {
-                string token = normalize(tokens[index]);
-                if (isValid(token) == true)
+                if(double.TryParse(tokens[0], out double number))
                 {
-                    expression += token;
+                    expression = formula;
                 }
                 else
                 {
-                    throw new FormulaFormatException("Invalid variable format.");
+                    throw new FormulaFormatException("Invalid Formula.");
                 }
             }
+            else
+            {
+                ParsingRules(formula);
+
+                for (int index = 0; index < tokens.Length; index++)
+                {
+                    string token = normalize(tokens[index]);
+                    if (isValid(token) == true)
+                    {
+                        expression += token;
+                    }
+                    else
+                    {
+                        throw new FormulaFormatException("Invalid variable format.");
+                    }
+                }
+            }
+            
         }
 
         /// <summary>
@@ -153,7 +168,7 @@ namespace SpreadsheetUtilities
             string[] substrings = GetTokens(expression).ToArray();
 
             //Regex expression to capture any string that starts with upper/lower case letters, followed by any length of numbers 0-9.
-            Regex reg = new Regex("^[a-zA-Z]+[0-9]+");
+            Regex reg = new Regex("^[_a-zA-Z]+[0-9]+");
 
             for (int index = 0; index < substrings.Length; index++)
             {
@@ -303,7 +318,7 @@ namespace SpreadsheetUtilities
         public IEnumerable<String> GetVariables()
         {
             string[] tokens = GetTokens(expression).ToArray();
-            Regex variables = new Regex("^[a-zA-Z]+");
+            Regex variables = new Regex("^[_a-zA-Z]+");
 
             //A HashSet should be used for potential duplicates (e.g. new Formula("x+X*z", N, s => true)).
             HashSet<string> variableSet = new HashSet<string>();
@@ -401,9 +416,8 @@ namespace SpreadsheetUtilities
         /// null and one is not, this method should return false.
         /// </summary>
         public static bool operator ==(Formula f1, Formula f2)
-        {
-            if (f1.Equals(f2)) { return true; }
-            else { return false; }
+        { 
+            return f1.Equals(f2);
         }
 
         /// <summary>
@@ -413,8 +427,7 @@ namespace SpreadsheetUtilities
         /// </summary>
         public static bool operator !=(Formula f1, Formula f2)
         {
-            if (f1.Equals(f2)) { return false; }
-            else { return true; }
+            return !f1.Equals(f2);
         }
 
         /// <summary>
@@ -467,7 +480,7 @@ namespace SpreadsheetUtilities
         /// aforementioned private helper methods if more information is required about the specific rules.
         /// </summary>
         /// <param name="formula">The formula that needs to be checked before a Formula object is created.</param>
-        private void ParsingRules(string formula)
+        private static void ParsingRules(string formula)
         {
             string[] tokens = GetTokens(formula).ToArray();
             if (tokens.Length == 0) { throw new FormulaFormatException("Formula is empty."); }
@@ -489,13 +502,13 @@ namespace SpreadsheetUtilities
         /// the output message for the FormulaFormatException for more information.
         /// </summary>
         /// <param name="tokens">The token array that should have been established in the ParsingRules method.</param>
-        private void CheckFormula(string[] tokens)
+        private static void CheckFormula(string[] tokens)
         {
             int leftParenthesisCount = CheckFirstToken(tokens);
             int rightParenthesisCount = 0;
 
             Regex numbers = new Regex("^[0-9]+");
-            Regex variables = new Regex("^[a-zA-Z]+");
+            Regex variables = new Regex("^[_a-zA-Z]+");
 
             /// Since the first and last tokens are already checked, the index needs to be adjusted to account for it.
             for (int index = 1; index < tokens.Length - 1; index++)
@@ -554,13 +567,13 @@ namespace SpreadsheetUtilities
         /// </summary>
         /// <param name="tokens">The token array.</param>
         /// <returns>If the method found an opening parenthesis, it will return a count of 1.</returns>
-        private int CheckFirstToken(string[] tokens)
+        private static int CheckFirstToken(string[] tokens)
         {
             string firstToken = tokens[0];
             int leftParenthesisCount = 0;
 
             Regex numbers = new Regex("^[0-9]+");
-            Regex variables = new Regex("^[a-zA-Z]+");
+            Regex variables = new Regex("^[_a-zA-Z]+");
 
             if (numbers.IsMatch(firstToken) || variables.IsMatch(firstToken) || firstToken.Equals("("))
             {
@@ -590,13 +603,13 @@ namespace SpreadsheetUtilities
         /// </summary>
         /// <param name="tokens">The token array.</param>
         /// <returns>If the method found a closing parenthesis, it will return a count of 1.</returns>
-        private int CheckFinalToken(string[] tokens)
+        private static int CheckFinalToken(string[] tokens)
         {
             string lastToken = tokens[tokens.Length - 1];
             int rightParenthesisCount = 0;
 
             Regex numbers = new Regex("^[0-9]+");
-            Regex variables = new Regex("^[a-zA-Z]+");
+            Regex variables = new Regex("^[_a-zA-Z]+");
 
             if (numbers.IsMatch(lastToken) || variables.IsMatch(lastToken) || lastToken.Equals(")"))
             {
@@ -617,10 +630,10 @@ namespace SpreadsheetUtilities
         /// are stary with an upper or lower-case letter.
         /// </summary>
         /// <param name="token">The token (from the token array) that needs to be checked.</param>
-        private void CheckValidCharacters(string token)
+        private static void CheckValidCharacters(string token)
         {
             Regex numbers = new Regex("^[0-9]+");
-            Regex variables = new Regex("^[a-zA-Z]+");
+            Regex variables = new Regex("^[_a-zA-Z]+");
 
             if (!numbers.IsMatch(token) && !variables.IsMatch(token) && CheckOperators(token) && !token.Equals("(") && !token.Equals(")"))
             {
@@ -634,7 +647,7 @@ namespace SpreadsheetUtilities
         /// </summary>
         /// <param name="token">The current token (from the token array) being checked.</param>
         /// <returns>Returns true if the given token is NOT a +, -, /, or * (i.e an operator), returns false otherwise.</returns>
-        private bool CheckOperators(string token)
+        private static bool CheckOperators(string token)
         {
             if (!token.Equals("+") && !token.Equals("-") && !token.Equals("/") && !token.Equals("*")) { return true; }
             else { return false; }
@@ -645,7 +658,7 @@ namespace SpreadsheetUtilities
         /// if there is a left parentheses (to remove) on the Operators Stack.
         /// </summary>
         /// <param name="operators">The Operators Stack.</param>
-        private void CheckParentheses(Stack<string> operators)
+        private static void CheckParentheses(Stack<string> operators)
         {
             if (operators.Count != 0 && operators.Peek() == "(") { operators.Pop(); }
         }
@@ -658,7 +671,7 @@ namespace SpreadsheetUtilities
         /// <param name="values">The Values Stack</param>
         /// <param name="operators">The Operators Stack</param>
         /// <param name="number">The first number, which is given from the Values stack, the original formula, or from the Lookup delegate.</param>
-        private void MultOrDivide(Stack<double> values, Stack<string> operators, double number)
+        private static void MultOrDivide(Stack<double> values, Stack<string> operators, double number)
         {
             if(operators.Peek() == "*")
             {
@@ -684,7 +697,7 @@ namespace SpreadsheetUtilities
         /// </summary>
         /// <param name="values">The Values Stack.</param>
         /// <param name="operators">The Operators Stack.</param>
-        private void AddOrSubtract(Stack<double> values, Stack<string> operators)
+        private static void AddOrSubtract(Stack<double> values, Stack<string> operators)
         {
             if(operators.Peek() == "+")
             {
