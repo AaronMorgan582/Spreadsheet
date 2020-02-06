@@ -60,21 +60,12 @@ namespace FormulaEvaluator
                     {
                         if (operators.Count != 0 && operators.Peek() == "+")
                         {
-                            int firstStackNumber = values.Pop();
-                            int secondStackNumber = values.Pop();
-                            //Operator needs to be removed since it will be applied to the above stack numbers.
-                            operators.Pop();
-                            int result = firstStackNumber + secondStackNumber;
-                            values.Push(result);
+                            AddOrSubtract(values, operators);
                             operators.Push(token);
                         }
                         else if (operators.Count != 0 && operators.Peek() == "-")
                         {
-                            int firstStackNumber = values.Pop();
-                            int secondStackNumber = values.Pop();
-                            operators.Pop();
-                            int result = secondStackNumber - firstStackNumber;
-                            values.Push(result);
+                            AddOrSubtract(values, operators);
                             operators.Push(token);
                         }
                         else
@@ -92,36 +83,13 @@ namespace FormulaEvaluator
                     {
                         if (operators.Count != 0 && operators.Peek() == "+")
                         {
-                            int firstStackNumber = values.Pop();
-                            int secondStackNumber = values.Pop();
-                            operators.Pop();
-                            int result = firstStackNumber + secondStackNumber;
-                            values.Push(result);
-                            if (operators.Count != 0 && operators.Peek() == "(")
-                            {
-                                operators.Pop(); // Assumes the first parenthesis ( is on the top of the Stack.
-                            }
-                            else
-                            {
-                                throw new ArgumentException();
-                            }
+                            AddOrSubtract(values, operators);
+                            CheckParentheses(operators);
                         }
                         else if (operators.Count != 0 && operators.Peek() == "-")
                         {
-
-                            int firstStackNumber = values.Pop();
-                            int secondStackNumber = values.Pop();
-                            operators.Pop();
-                            int result = secondStackNumber - firstStackNumber;
-                            values.Push(result);
-                            if (operators.Count != 0 && operators.Peek() == "(")
-                            {
-                                operators.Pop(); // Assumes the first parenthesis ( is on the top of the Stack.
-                            }
-                            else
-                            {
-                                throw new ArgumentException();
-                            }
+                            AddOrSubtract(values, operators);
+                            CheckParentheses(operators);
                         }
                         //Special case for multiple parentheses, such as (5*(3+2)). If a right parentheses is processed, but the top of the stack
                         //is a left parentheses, the left parentheses needs to be removed, because it could be preventing other operators from being
@@ -134,26 +102,12 @@ namespace FormulaEvaluator
                         if (operators.Count != 0 && operators.Peek() == "*")
                         {
                             int firstStackNumber = values.Pop();
-                            int secondStackNumber = values.Pop();
-                            operators.Pop();
-                            int result = firstStackNumber * secondStackNumber;
-                            values.Push(result);
-                            if(operators.Count !=0 && operators.Peek() == "(")
-                            {
-                                operators.Pop();
-                            }
+                            MultOrDivide(values, operators, firstStackNumber);
                         }
                         else if (operators.Count != 0 && operators.Peek() == "/")
                         {
                             int firstStackNumber = values.Pop();
-                            int secondStackNumber = values.Pop();
-                            operators.Pop();
-                            int result = secondStackNumber / firstStackNumber;
-                            values.Push(result);
-                            if (operators.Count != 0 && operators.Peek() == "(")
-                            {
-                                operators.Pop();
-                            }
+                            MultOrDivide(values, operators, firstStackNumber);
                         }
                     }
                     //If the token is anything else, it should be a variable that needs to be looked up via the delegate.
@@ -206,6 +160,62 @@ namespace FormulaEvaluator
             {
                 return values.Pop();
             }
+        }
+
+        private static void MultOrDivide(Stack<int> values, Stack<string> operators, int number)
+        {
+            if (operators.Peek() == "*")
+            {
+                int stackNumber = values.Pop();
+                operators.Pop();
+                int result = stackNumber * number;
+                values.Push(result);
+            }
+            else if (operators.Peek() == "/")
+            {
+                int stackNumber = values.Pop();
+                operators.Pop();
+                int result = stackNumber / number;
+                values.Push(result);
+            }
+        }
+
+        /// <summary>
+        /// This private helper method helps condense the Evaluate method by checking to see
+        /// if there is a + (for addition) or a - (for subtraction) on the Operators Stack.
+        /// </summary>
+        /// <param name="values">The Values Stack.</param>
+        /// <param name="operators">The Operators Stack.</param>
+        private static void AddOrSubtract(Stack<int> values, Stack<string> operators)
+        {
+            if (operators.Peek() == "+")
+            {
+                int firstStackNumber = values.Pop();
+                int secondStackNumber = values.Pop();
+                //Operator needs to be removed since it will be applied to the above stack numbers.
+                operators.Pop();
+                int result = firstStackNumber + secondStackNumber;
+                values.Push(result);
+            }
+            else if (operators.Peek() == "-")
+            {
+                int firstStackNumber = values.Pop();
+                int secondStackNumber = values.Pop();
+                operators.Pop();
+                int result = secondStackNumber - firstStackNumber;
+                values.Push(result);
+            }
+        }
+
+        /// <summary>
+        /// This private helper method helps condense the Evaluate method by checking to see
+        /// if there is a left parentheses (to remove) on the Operators Stack.
+        /// </summary>
+        /// <param name="operators">The Operators Stack.</param>
+        private static void CheckParentheses(Stack<string> operators)
+        {
+            if (operators.Count != 0 && operators.Peek() == "(") { operators.Pop(); }
+            else throw new ArgumentException();
         }
 
         /// <summary>

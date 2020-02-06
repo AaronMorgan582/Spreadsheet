@@ -467,5 +467,11 @@ namespace FormulaTests
             Formula equivTest = new Formula("x+y", Normalize, s => true);
             Assert.IsFalse(test != equivTest);
         }
+
+        [TestMethod()]
+        public void TestConstructorSingle()
+        {
+            Formula test = new Formula("5");
+        }
     }
 }

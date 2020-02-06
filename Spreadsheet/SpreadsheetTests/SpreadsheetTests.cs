@@ -1,5 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using SS;
 
 namespace SpreadsheetTests
 {
@@ -7,8 +8,19 @@ namespace SpreadsheetTests
     public class SpreadsheetTests
     {
         [TestMethod]
-        public void TestMethod1()
+        [ExpectedException(typeof(InvalidNameException))]
+        public void TestGetContentsInvalidName()
         {
+            Spreadsheet s = new Spreadsheet();
+            s.GetCellContents("24");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidNameException))]
+        public void TestGetContentsNull()
+        {
+            Spreadsheet s = new Spreadsheet();
+            s.GetCellContents(null);
         }
     }
 }
