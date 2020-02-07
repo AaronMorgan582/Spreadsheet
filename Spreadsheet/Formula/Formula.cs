@@ -8,7 +8,7 @@
 /// I, Aaron Morgan, certify that I wrote this code from scratch and did not copy it in part
 /// or in whole from another source, with the exception of the skeleton implementation (read below).
 /// 
-///Skeleton written by Joe Zachary for CS 3500, September 2013
+/// Skeleton written by Joe Zachary for CS 3500, September 2013
 /// Read the entire skeleton carefully and completely before you
 /// do anything else!
 ///
@@ -68,6 +68,9 @@ namespace SpreadsheetUtilities
         private string expression;
         private Stack<double> values;
         private Stack<string> operators;
+        private static Regex variables = new Regex("^[_a-zA-Z]+[0-9]*$");
+        private static Regex numbers = new Regex("^[.0-9]+");
+        private static Regex variableStart = new Regex("^[_a-zA-Z]+");
 
         /// <summary>
         /// Creates a Formula from a string that consists of an infix expression written as
@@ -125,6 +128,7 @@ namespace SpreadsheetUtilities
 
                 for (int index = 0; index < tokens.Length; index++)
                 {
+                    
                     string token = normalize(tokens[index]);
                     if (isValid(token) == true)
                     {
@@ -168,7 +172,7 @@ namespace SpreadsheetUtilities
             string[] substrings = GetTokens(expression).ToArray();
 
             //Regex expression to capture any string that starts with upper/lower case letters, followed by any length of numbers 0-9.
-            Regex reg = new Regex("^[_a-zA-Z]+[0-9]+");
+
 
             for (int index = 0; index < substrings.Length; index++)
             {
@@ -249,30 +253,38 @@ namespace SpreadsheetUtilities
                     }
                 }
                 //If the token is anything else, it should be a variable that needs to be looked up via the delegate.
-                else if (reg.Match(token).Success)
+                else if (variables.Match(token).Success)
                 {
-                    double variableValue = lookup(token);
-                    if (operators.Count != 0 && operators.Peek() == "*")
+                    try
                     {
-                        MultOrDivide(values, operators, variableValue);
-                    }
-                    else if (operators.Count != 0 && operators.Peek() == "/")
-                    {
-                        if (variableValue == 0)
-                        {
-                            return new FormulaError("Cannot divide by zero.");
-                        }
-                        else
+                        double variableValue = lookup(token);
+                        if (operators.Count != 0 && operators.Peek() == "*")
                         {
                             MultOrDivide(values, operators, variableValue);
                         }
+                        else if (operators.Count != 0 && operators.Peek() == "/")
+                        {
+                            if (variableValue == 0)
+                            {
+                                return new FormulaError("Cannot divide by zero.");
+                            }
+                            else
+                            {
+                                MultOrDivide(values, operators, variableValue);
+                            }
+                        }
+                        else
+                        {
+                            values.Push(variableValue);
+                        }
+
                     }
-                    else
+                    catch (ArgumentException)
                     {
-                        values.Push(variableValue);
+                        throw new FormulaFormatException("Unknown variable");
                     }
+
                 }
-                else { return new FormulaError("Invalid variable"); }
             }
             //If the Value Stack has more than 1 number in it, then the calculation is not finished.
             if (values.Count > 1)
@@ -507,9 +519,6 @@ namespace SpreadsheetUtilities
             int leftParenthesisCount = CheckFirstToken(tokens);
             int rightParenthesisCount = 0;
 
-            Regex numbers = new Regex("^[0-9]+");
-            Regex variables = new Regex("^[_a-zA-Z]+");
-
             /// Since the first and last tokens are already checked, the index needs to be adjusted to account for it.
             for (int index = 1; index < tokens.Length - 1; index++)
             {
@@ -519,7 +528,7 @@ namespace SpreadsheetUtilities
                     leftParenthesisCount += 1;
                     string nextToken = tokens[index + 1];
 
-                    if (!numbers.IsMatch(nextToken) && !variables.IsMatch(nextToken) && !nextToken.Equals("("))
+                    if (!numbers.IsMatch(nextToken) && !variableStart.IsMatch(nextToken) && !nextToken.Equals("("))
                     {
                         throw new FormulaFormatException("An opening parenthesis must be followed by a number, variable, or another opening parenthesis.");
                     }
@@ -528,12 +537,12 @@ namespace SpreadsheetUtilities
                 {
                     string nextToken = tokens[index + 1];
 
-                    if (!numbers.IsMatch(nextToken) && !variables.IsMatch(nextToken) && !nextToken.Equals("("))
+                    if (!numbers.IsMatch(nextToken) && !variableStart.IsMatch(nextToken) && !nextToken.Equals("("))
                     {
                         throw new FormulaFormatException("An operator must be followed by a number, variable, or another opening parenthesis.");
                     }
                 }
-                else if (numbers.IsMatch(token) || variables.IsMatch(token) || token.Equals(")"))
+                else if (numbers.IsMatch(token) || variableStart.IsMatch(token) || token.Equals(")"))
                 {
                     if (token.Equals(")"))
                     {
@@ -572,12 +581,9 @@ namespace SpreadsheetUtilities
             string firstToken = tokens[0];
             int leftParenthesisCount = 0;
 
-            Regex numbers = new Regex("^[0-9]+");
-            Regex variables = new Regex("^[_a-zA-Z]+");
-
-            if (numbers.IsMatch(firstToken) || variables.IsMatch(firstToken) || firstToken.Equals("("))
+            if (numbers.IsMatch(firstToken) || variableStart.IsMatch(firstToken) || firstToken.Equals("("))
             {
-                if (numbers.IsMatch(firstToken) || variables.IsMatch(firstToken))
+                if (numbers.IsMatch(firstToken) || variableStart.IsMatch(firstToken))
                 {
                     string secondToken = tokens[1];
 
@@ -608,10 +614,7 @@ namespace SpreadsheetUtilities
             string lastToken = tokens[tokens.Length - 1];
             int rightParenthesisCount = 0;
 
-            Regex numbers = new Regex("^[0-9]+");
-            Regex variables = new Regex("^[_a-zA-Z]+");
-
-            if (numbers.IsMatch(lastToken) || variables.IsMatch(lastToken) || lastToken.Equals(")"))
+            if (numbers.IsMatch(lastToken) || variableStart.IsMatch(lastToken) || lastToken.Equals(")"))
             {
                 if (lastToken.Equals(")")) { rightParenthesisCount += 1; }
             }
@@ -632,10 +635,8 @@ namespace SpreadsheetUtilities
         /// <param name="token">The token (from the token array) that needs to be checked.</param>
         private static void CheckValidCharacters(string token)
         {
-            Regex numbers = new Regex("^[0-9]+");
-            Regex variables = new Regex("^[_a-zA-Z]+");
 
-            if (!numbers.IsMatch(token) && !variables.IsMatch(token) && CheckOperators(token) && !token.Equals("(") && !token.Equals(")"))
+            if (!numbers.IsMatch(token) && !variableStart.IsMatch(token) && CheckOperators(token) && !token.Equals("(") && !token.Equals(")"))
             {
                 throw new FormulaFormatException("Invalid character found");
             }
