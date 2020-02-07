@@ -68,6 +68,8 @@ namespace SpreadsheetUtilities
         private string expression;
         private Stack<double> values;
         private Stack<string> operators;
+        private string[] tokens;
+
         private static Regex variables = new Regex("^[_a-zA-Z]+[0-9]*$");
         private static Regex numbers = new Regex("^[.0-9]+");
         private static Regex variableStart = new Regex("^[_a-zA-Z]+");
@@ -110,7 +112,7 @@ namespace SpreadsheetUtilities
         public Formula(String formula, Func<string, string> normalize, Func<string, bool> isValid)
         {
 
-            string[] tokens = GetTokens(formula).ToArray();
+            tokens = GetTokens(formula).ToArray();
             if (tokens.Length == 1)
             {
                 if(double.TryParse(tokens[0], out double number))
@@ -128,19 +130,25 @@ namespace SpreadsheetUtilities
 
                 for (int index = 0; index < tokens.Length; index++)
                 {
-                    
                     string token = normalize(tokens[index]);
-                    if (isValid(token) == true)
+                    if (variables.IsMatch(token))
                     {
-                        expression += token;
+                        if (isValid(token) == true)
+                        {
+                            expression += token;
+                        }
+                        else
+                        {
+                            throw new FormulaFormatException("Invalid variable format.");
+                        }
                     }
                     else
                     {
-                        throw new FormulaFormatException("Invalid variable format.");
+                        expression += token;
                     }
+
                 }
-            }
-            
+            }     
         }
 
         /// <summary>
@@ -170,9 +178,6 @@ namespace SpreadsheetUtilities
             operators = new Stack<string>();
 
             string[] substrings = GetTokens(expression).ToArray();
-
-            //Regex expression to capture any string that starts with upper/lower case letters, followed by any length of numbers 0-9.
-
 
             for (int index = 0; index < substrings.Length; index++)
             {
@@ -329,9 +334,6 @@ namespace SpreadsheetUtilities
         /// </summary>
         public IEnumerable<String> GetVariables()
         {
-            string[] tokens = GetTokens(expression).ToArray();
-            Regex variables = new Regex("^[_a-zA-Z]+");
-
             //A HashSet should be used for potential duplicates (e.g. new Formula("x+X*z", N, s => true)).
             HashSet<string> variableSet = new HashSet<string>();
 
@@ -492,9 +494,8 @@ namespace SpreadsheetUtilities
         /// aforementioned private helper methods if more information is required about the specific rules.
         /// </summary>
         /// <param name="formula">The formula that needs to be checked before a Formula object is created.</param>
-        private static void ParsingRules(string formula)
+        private void ParsingRules(string formula)
         {
-            string[] tokens = GetTokens(formula).ToArray();
             if (tokens.Length == 0) { throw new FormulaFormatException("Formula is empty."); }
 
             foreach (string token in tokens)
