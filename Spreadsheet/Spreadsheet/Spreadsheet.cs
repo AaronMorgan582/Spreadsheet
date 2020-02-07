@@ -36,7 +36,7 @@ namespace SS
 
         private DependencyGraph graph;
         private Dictionary<string, Cell> cellDictionary;
-        private static Regex variable = new Regex("^[a-zA-Z_]+");
+        private static Regex variable = new Regex("^[a-zA-Z_]+[0-9]*$");
 
         public Spreadsheet()
         {
@@ -71,28 +71,20 @@ namespace SS
             if (name is null || !variable.IsMatch(name)) { throw new InvalidNameException(); }
             else
             {
-                if(cellDictionary.TryGetValue(name, out Cell cell))
-                {
-                    cell.Contents = number;
-                    List<string> effectedCells = CreateEffectedCellsList(name);
-
-                    return effectedCells;
-                }
-                else
-                {
-                    Cell newCell = new Cell(number);
-                    cellDictionary.Add(name, newCell);
-                    graph.ReplaceDependents(name, new HashSet<string>());
-                    List<string> effectedCells = CreateEffectedCellsList(name);
-
-                    return effectedCells;
-                }
+                List<string> effectedCellList = CreateCell(name, number);
+                return effectedCellList;
             }
         }
 
         public override IList<string> SetCellContents(string name, string text)
         {
-            throw new NotImplementedException();
+            if (name is null || !variable.IsMatch(name)) { throw new InvalidNameException(); }
+            else if(text == null) { throw new ArgumentNullException(); }
+            else
+            {
+                List<string> effectedCellList = CreateCell(name, text);
+                return effectedCellList;
+            }
         }
 
         public override IList<string> SetCellContents(string name, Formula formula)
@@ -116,6 +108,26 @@ namespace SS
                 effectedCells.Add(dependent);
             }
             return effectedCells;
+        }
+
+        private List<string> CreateCell(string name, object input)
+        {
+            if (cellDictionary.TryGetValue(name, out Cell cell))
+            {
+                cell.Contents = input;
+                List<string> effectedCells = CreateEffectedCellsList(name);
+
+                return effectedCells;
+            }
+            else
+            {
+                Cell newCell = new Cell(input);
+                cellDictionary.Add(name, newCell);
+                graph.ReplaceDependents(name, new HashSet<string>());
+                List<string> effectedCells = CreateEffectedCellsList(name);
+
+                return effectedCells;
+            }
         }
     }
 }

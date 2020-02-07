@@ -32,12 +32,21 @@ namespace SpreadsheetTests
         }
 
         [TestMethod]
-        public void TestSetContents()
+        public void TestSetContentsWithNumber()
         {
             Spreadsheet s = new Spreadsheet();
             IList<string> testList = s.SetCellContents("a1", 5);
             double value = 5;
             Assert.AreEqual(value, s.GetCellContents("a1"));
+            Assert.AreEqual("a1", testList[0]);
+        }
+
+        [TestMethod]
+        public void TestSetContentsWithString()
+        {
+            Spreadsheet s = new Spreadsheet();
+            IList<string> testList = s.SetCellContents("a1", "hello");
+            Assert.AreEqual("hello", s.GetCellContents("a1"));
             Assert.AreEqual("a1", testList[0]);
         }
     }
