@@ -49,5 +49,22 @@ namespace SpreadsheetTests
             Assert.AreEqual("hello", s.GetCellContents("a1"));
             Assert.AreEqual("a1", testList[0]);
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidNameException))]
+        public void TestSetWithInvalidName()
+        {
+            Spreadsheet s = new Spreadsheet();
+            s.SetCellContents("65x", 3433);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TestSetWithNullStringEntry()
+        {
+            Spreadsheet s = new Spreadsheet();
+            string test = null;
+            s.SetCellContents("x35", test);
+        }
     }
 }

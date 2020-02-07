@@ -94,7 +94,11 @@ namespace SS
 
         protected override IEnumerable<string> GetDirectDependents(string name)
         {
-            throw new NotImplementedException();
+            IEnumerable<string> gatheredDependents = graph.GetDependents(name);
+            HashSet<string> dependents = new HashSet<string>();
+            foreach(string dependent in gatheredDependents) { dependents.Add(dependent); }
+
+            return dependents;
         }
 
         private List<string> CreateEffectedCellsList(string name)
