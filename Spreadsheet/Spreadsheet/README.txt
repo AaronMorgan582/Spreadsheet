@@ -30,3 +30,18 @@ Copyright:  CS 3500 and Aaron Morgan - This work may not be copied for use in Ac
     1. Dot Net Perls: C# Property Examples (get, set) https://www.dotnetperls.com/property
     2. Microsoft: C# Dictionary<TKey,TValue>.Keys Property https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2.keys?view=netframework-4.8 
 
+5. My Software Practices:
+
+    1. I noticed that the implementation of SetCellContents was roughly the same for each input, regardless of whether it was
+    a double, a string, or a Formula. For that reason I decided to implement a helper method that takes an object in order to generalize
+    the procedure.
+
+    2. Despite all of the SetCellContents methods being similar, there were specific differences with SetCellContents(Formula),
+    namely the checking of circular dependencies. I decided to write comments describing the process to check for those
+    dependencies.
+
+    3. In my testing, I knew that there were special cases that the comments and instructions did not explicitly illustrate.
+    Even though the header comments in AbstractSpreadsheet mentioned "direct or indirect dependents", the example it gave
+    did not explicitly illustrate an indirect dependency, so I knew I had to test for it. Replacing a cell with something else
+    was also something I noticed I needed to test for, because if a cell had been set to a Formula, but then replaced with
+    a double, it wouldn't be a dependent anymore.

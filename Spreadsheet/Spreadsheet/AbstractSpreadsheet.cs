@@ -192,26 +192,61 @@ namespace SS
       return GetCellsToRecalculate(new HashSet<String>() { name });
     }
 
-
     /// <summary>
-    /// A helper for the GetCellsToRecalculate method.
+    /// A helper method for GetCellsToRecalculate.
     /// 
-    ///   -- You should fully comment what is going on below --
+    /// <exception cref="CircularException">
+    /// If any dependent found results in naming a prior dependent as a
+    /// dependee, this results in a circular dependency, and throws
+    /// a CircularException.
+    /// </exception>
+    /// 
+    /// <para>
+    /// This recursive method visits each cell (or variable) that is returned
+    /// when GetDirectDependents is called, to ensure there are no circular dependencies.
+    /// For example:
+    /// </para>
+    /// 
+    /// <list type="bullet">
+    ///     <item>A1 contains B1</item>
+    ///     <item>B1 contains C1</item>
+    ///     <item>C1 contains D1</item>
+    ///     <item>D1 contains A1</item>
+    /// </list>
+    /// 
+    /// <para>
+    /// In that example, the circular dependency is not immediate, and needs to traverse
+    /// multiple "layers" in order to discover it. A1 has the initial dependee of B1, but
+    /// B1 is also a dependent of something else. This relation can go on for multiple
+    /// cells, so it's necessary to continue to check the dependents of each cell
+    /// to ensure that none of the previous entries are named as a dependee.
+    /// </para>
+    /// 
     /// </summary>
+    /// <param name="start">The starting point, which will (initially) be the given cell that is passed in with SetCellContents</param>
+    /// <param name="name">Each cell named in the Formula. Recursively, this in turn becomes any cell named in subsequent Formulas found.</param>
+    /// <param name="visited">The set that indicates what cells have been visited.</param>
+    /// <param name="changed">The List that contains the direct and indirect dependencies of the given cell (start).</param>
     private void Visit(String start, String name, ISet<String> visited, LinkedList<String> changed)
     {
-      visited.Add(name);
+      visited.Add(name);//Mark the initial cell found within the Formula as visited.
+
+      //Using GetDirectDependents of the cell found within the Formula will return a list of all of its dependents.
       foreach (String n in GetDirectDependents(name))
       {
+        //If the found dependent (n) is equal to the start cell, then there is a circular dependency.
         if (n.Equals(start))
         {
           throw new CircularException();
         }
+        //If there is no circular dependency, then the found dependent (n) also needs to be checked,
+        //if it has its own dependents.
         else if (!visited.Contains(n))
         {
           Visit(start, n, visited, changed);
         }
       }
+      //Once the check has occurred, it can be safely added to the list that includes the direct/indirect dependents.
       changed.AddFirst(name);
     }
 
