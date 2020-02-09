@@ -1,3 +1,19 @@
+/// <summary> 
+/// Author:    Aaron Morgan
+/// Partner:   None
+/// Date:      2/9/2020
+/// Course:    CS 3500, University of Utah, School of Computing 
+/// Copyright: CS 3500 and Aaron Morgan
+/// 
+/// I, Aaron Morgan, certify that I wrote this code from scratch and did not copy it in part
+/// or in whole from another source.
+/// 
+/// File Contents
+/// 
+/// This file contains the tests for the Spreadsheet class.
+/// 
+/// </summary>
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using SS;
@@ -6,6 +22,10 @@ using SpreadsheetUtilities;
 
 namespace SpreadsheetTests
 {
+    /// <summary>
+    /// This is the test class for the Spreadsheet class and is intended
+    /// to contain all the SpreadsheetTest Unit Tests.
+    /// </summary>
     [TestClass]
     public class SpreadsheetTests
     {
@@ -59,7 +79,8 @@ namespace SpreadsheetTests
         public void TestSetCellWithNullFormula()
         {
             Spreadsheet s = new Spreadsheet();
-            s.SetCellContents("x35", new Formula(null));
+            Formula test = null;
+            s.SetCellContents("x35", test);
         }
 
         [TestMethod]
