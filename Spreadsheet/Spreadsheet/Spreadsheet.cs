@@ -9,6 +9,11 @@ namespace SS
 {
     public class Spreadsheet : AbstractSpreadsheet
     {
+        /// <summary>
+        /// Private class to hold the contents/values of each cell in the spreadsheet.
+        /// 
+        /// Getters and Setters are implemented for both the value and contents of the Cell.
+        /// </summary>
         private class Cell
         {
             private object cellValue;
@@ -36,6 +41,7 @@ namespace SS
 
         private DependencyGraph graph;
         private Dictionary<string, Cell> cellDictionary;
+        //Static Regex to define variables: Starting with upper/lower case, or underscore, followed by any number of the digits 0-9.
         private static Regex variable = new Regex("^[a-zA-Z_]+[0-9]*$");
 
         public Spreadsheet()

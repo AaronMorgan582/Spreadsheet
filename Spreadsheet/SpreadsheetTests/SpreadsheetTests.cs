@@ -55,6 +55,20 @@ namespace SpreadsheetTests
             s.SetCellContents("x6", new Formula("c4+10"));
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(CircularException))]
+        public void TestComplexCircularDependency()
+        {
+            Spreadsheet s = new Spreadsheet();
+            s.SetCellContents("a1", new Formula("b1 + b2"));
+            s.SetCellContents("b1", new Formula("c1+c2"));
+            s.SetCellContents("b2", 10);
+            s.SetCellContents("c1", 5);
+            s.SetCellContents("c2", 5);
+
+            s.SetCellContents("c1", new Formula("a1"));
+        }
+
         /// <summary>
         /// Method testing. Refer to the test name for what each test is validating.
         /// </summary>
@@ -112,7 +126,7 @@ namespace SpreadsheetTests
             s.SetCellContents("a3", "world");
 
             IEnumerable<string> test = s.GetNamesOfAllNonemptyCells();
-            foreach(string contents in test)
+            foreach (string contents in test)
             {
                 testList.Add(contents);
             }
