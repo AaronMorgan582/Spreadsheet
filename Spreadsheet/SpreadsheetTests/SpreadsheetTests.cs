@@ -31,7 +31,7 @@ namespace SpreadsheetTests
 
         [TestMethod]
         [ExpectedException(typeof(InvalidNameException))]
-        public void TestSetWithInvalidName()
+        public void TestSetCellWithInvalidName()
         {
             Spreadsheet s = new Spreadsheet();
             s.SetCellContents("65x", 3433);
@@ -39,11 +39,20 @@ namespace SpreadsheetTests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void TestSetWithNullStringEntry()
+        public void TestSetCellWithNullStringEntry()
         {
             Spreadsheet s = new Spreadsheet();
             string test = null;
             s.SetCellContents("x35", test);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(CircularException))]
+        public void TestSetCellWithCircularDependencyFormula()
+        {
+            Spreadsheet s = new Spreadsheet();
+            s.SetCellContents("c4", new Formula("x6 + 100"));
+            s.SetCellContents("x6", new Formula("c4+10"));
         }
 
         /// <summary>
@@ -91,7 +100,6 @@ namespace SpreadsheetTests
         {
             Spreadsheet s = new Spreadsheet();
             IEnumerator<string> test = s.GetNamesOfAllNonemptyCells().GetEnumerator();
-            Assert.IsFalse(test.MoveNext());
         }
 
         [TestMethod]

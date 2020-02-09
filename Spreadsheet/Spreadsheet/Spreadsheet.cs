@@ -93,6 +93,8 @@ namespace SS
             else if (formula == null) { throw new ArgumentNullException(); }
             else
             {
+                List<string> effectedCellList = CreateCell(name, formula);
+
                 ///To check for circular dependencies, gather any variables found within the formula that was passed in.
                 IEnumerable<string> variables = formula.GetVariables();
                 foreach(string variable in variables)
@@ -111,7 +113,6 @@ namespace SS
                     }
                 }
                 //If there were no circular dependencies found, it can be created normally.
-                List<string> effectedCellList = CreateCell(name, formula);
                 return effectedCellList;
             }
         }
