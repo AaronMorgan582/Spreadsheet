@@ -113,24 +113,37 @@ namespace SpreadsheetUtilities
         {
 
             tokens = GetTokens(formula).ToArray();
+
+            //If there's only 1 token, then it should be either a variable (in the proper format) or a double.
             if (tokens.Length == 1)
             {
-                if(double.TryParse(tokens[0], out double number))
+                if (double.TryParse(tokens[0], out double number))
                 {
                     expression = formula;
                 }
                 else
                 {
-                    throw new FormulaFormatException("Invalid Formula.");
+                    if (variables.IsMatch(tokens[0]))
+                    {
+                        expression = formula;
+                    }
+                    else
+                    {
+                        throw new FormulaFormatException("Invalid formula.");
+                    }
                 }
             }
+            //Anything else needs to be checked to see if it follows proper formatting rules.
             else
             {
                 ParsingRules(formula);
 
+                //If it passes all the checks, then normalize everything via the delegate (which in turn only truly
+                //affects variables).
                 for (int index = 0; index < tokens.Length; index++)
                 {
                     string token = normalize(tokens[index]);
+                    //If it matches a variable, then the isValid delegate needs to validate it.
                     if (variables.IsMatch(token))
                     {
                         if (isValid(token) == true)
@@ -142,11 +155,11 @@ namespace SpreadsheetUtilities
                             throw new FormulaFormatException("Invalid variable format.");
                         }
                     }
+                    //If it's anything else, it should be added to the expression normally.
                     else
                     {
                         expression += token;
                     }
-
                 }
             }     
         }
@@ -334,10 +347,13 @@ namespace SpreadsheetUtilities
         /// </summary>
         public IEnumerable<String> GetVariables()
         {
+
             //A HashSet should be used for potential duplicates (e.g. new Formula("x+X*z", N, s => true)).
             HashSet<string> variableSet = new HashSet<string>();
 
-            foreach (string token in tokens)
+            string[] normalizedTokens = GetTokens(expression).ToArray();
+
+            foreach (string token in normalizedTokens)
             {
                 if (variables.IsMatch(token))
                 {
@@ -431,6 +447,9 @@ namespace SpreadsheetUtilities
         /// </summary>
         public static bool operator ==(Formula f1, Formula f2)
         { 
+            if(f1 is null && f2 is null) { return true; }
+            if(f1 is null || f2 is null) { return false; }
+
             return f1.Equals(f2);
         }
 
@@ -441,6 +460,8 @@ namespace SpreadsheetUtilities
         /// </summary>
         public static bool operator !=(Formula f1, Formula f2)
         {
+            if (f1 is null && f2 is null) { return false; }
+            if (f1 is null || f2 is null) { return true; }
             return !f1.Equals(f2);
         }
 
@@ -494,8 +515,9 @@ namespace SpreadsheetUtilities
         /// aforementioned private helper methods if more information is required about the specific rules.
         /// </summary>
         /// <param name="formula">The formula that needs to be checked before a Formula object is created.</param>
-        private void ParsingRules(string formula)
+        private static void ParsingRules(string formula)
         {
+            string[] tokens = GetTokens(formula).ToArray();
             if (tokens.Length == 0) { throw new FormulaFormatException("Formula is empty."); }
 
             foreach (string token in tokens)
@@ -717,6 +739,44 @@ namespace SpreadsheetUtilities
                 operators.Pop();
                 double result = secondStackNumber - firstStackNumber;
                 values.Push(result);
+            }
+        }
+
+        private static void Operators(Stack<double> values, Stack<string> operators, double number)
+        {
+            if (operators.Peek() == "+")
+            {
+                double firstStackNumber = values.Pop();
+                double secondStackNumber = values.Pop();
+                //Operator needs to be removed since it will be applied to the above stack numbers.
+                operators.Pop();
+                double result = firstStackNumber + secondStackNumber;
+                values.Push(result);
+            }
+            else if (operators.Peek() == "-")
+            {
+                double firstStackNumber = values.Pop();
+                double secondStackNumber = values.Pop();
+                operators.Pop();
+                double result = secondStackNumber - firstStackNumber;
+                values.Push(result);
+            }
+
+            else if (operators.Peek() == "*")
+            {
+                double stackNumber = values.Pop();
+                operators.Pop();
+                double result = stackNumber * number;
+                values.Push(result);
+                CheckParentheses(operators);
+            }
+            else if (operators.Peek() == "/")
+            {
+                double stackNumber = values.Pop();
+                operators.Pop();
+                double result = stackNumber / number;
+                values.Push(result);
+                CheckParentheses(operators);
             }
         }
     }
