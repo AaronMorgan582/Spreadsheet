@@ -38,12 +38,28 @@ namespace SpreadsheetTests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(InvalidNameException))]
+        public void TestSetCellWithNullName()
+        {
+            Spreadsheet s = new Spreadsheet();
+            s.SetCellContents(null, 3433);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void TestSetCellWithNullStringEntry()
         {
             Spreadsheet s = new Spreadsheet();
             string test = null;
             s.SetCellContents("x35", test);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TestSetCellWithNullFormula()
+        {
+            Spreadsheet s = new Spreadsheet();
+            s.SetCellContents("x35", new Formula(null));
         }
 
         [TestMethod]
@@ -164,6 +180,21 @@ namespace SpreadsheetTests
         }
 
         [TestMethod]
+        public void TestIndirectDependency()
+        {
+            Spreadsheet s = new Spreadsheet();
+            s.SetCellContents("a1", new Formula("b1"));
+            s.SetCellContents("b1", new Formula("c1"));
+
+            IList<string> testList = s.SetCellContents("c1", 5);
+            Assert.AreEqual(3, testList.Count);
+            foreach (string dependent in testList)
+            {
+                Console.WriteLine(dependent);
+            }
+        }
+
+        [TestMethod]
         public void TestReplaceFormulaWithDouble()
         {
             Spreadsheet s = new Spreadsheet();
@@ -227,7 +258,7 @@ namespace SpreadsheetTests
                 Console.WriteLine(dependent);
             }
 
-            s.SetCellContents("b1", new Formula("c1+c2"));
+            s.SetCellContents("b1", new Formula("d1"));
             IList<string> newA1List = s.SetCellContents("a1", 5);
 
             //Setting b1 to a new Formula should sever the (a1, b1) dependency, but the c1 dependency should be intact.

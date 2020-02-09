@@ -95,15 +95,14 @@ namespace SS
 
         public override IList<string> SetCellContents(string name, Formula formula)
         {
+            
             if (name is null || !variable.IsMatch(name)) { throw new InvalidNameException(); }
             else if (formula == null) { throw new ArgumentNullException(); }
             else
             {
-  
-
                 ///To check for circular dependencies, gather any variables found within the formula that was passed in.
                 IEnumerable<string> variables = formula.GetVariables();
-                foreach(string variable in variables)
+                foreach (string variable in variables)
                 {
                     ///Each of them needs to be added to the dependency graph first, in order for GetCellsToRecalculate to run.
                     graph.AddDependency(variable, name);
@@ -119,25 +118,23 @@ namespace SS
                     }
                 }
                 //If there were no circular dependencies found, it can be created normally.
-                List<string> effectedCellList = CreateCell(name, formula);
-                return effectedCellList;
+                List<string> effectedCells = CreateCell(name, formula);
+
+                return effectedCells;
             }
         }
 
         protected override IEnumerable<string> GetDirectDependents(string name)
         {
-            IEnumerable<string> gatheredDependents = graph.GetDependents(name);
-            HashSet<string> dependents = new HashSet<string>();
-            foreach(string dependent in gatheredDependents) { dependents.Add(dependent); }
+            HashSet<string> dependents = new HashSet<string>(graph.GetDependents(name));
 
             return dependents;
         }
 
         private List<string> CreateEffectedCellsList(string name)
         {
-            IEnumerable<string> dependents = graph.GetDependents(name);
+            IEnumerable<string> dependents = GetCellsToRecalculate(name);
             List<string> effectedCells = new List<string>();
-            effectedCells.Add(name);
 
             foreach (string dependent in dependents)
             {
@@ -151,11 +148,11 @@ namespace SS
             if (cellDictionary.TryGetValue(name, out Cell cell))
             {
                 cell.Contents = input;
-                if(input is string || input is double)
+                if (input is string || input is double)
                 {
                     graph.ReplaceDependees(name, new HashSet<string>());
                 }
-                else if(input is Formula)
+                else if (input is Formula)
                 {
                     Formula formula = (Formula)input;
                     graph.ReplaceDependees(name, formula.GetVariables());
@@ -174,5 +171,6 @@ namespace SS
                 return effectedCells;
             }
         }
+
     }
 }
