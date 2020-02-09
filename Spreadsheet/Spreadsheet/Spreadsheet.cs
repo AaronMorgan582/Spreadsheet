@@ -89,7 +89,31 @@ namespace SS
 
         public override IList<string> SetCellContents(string name, Formula formula)
         {
-            throw new NotImplementedException();
+            if (name is null || !variable.IsMatch(name)) { throw new InvalidNameException(); }
+            else if (formula == null) { throw new ArgumentNullException(); }
+            else
+            {
+                ///To check for circular dependencies, gather any variables found within the formula that was passed in.
+                IEnumerable<string> variables = formula.GetVariables();
+                foreach(string variable in variables)
+                {
+                    ///Each of them needs to be added to the dependency graph first, in order for GetCellsToRecalculate to run.
+                    graph.AddDependency(name, variable);
+                    try
+                    {
+                        GetCellsToRecalculate(variable);
+                    }
+                    //If it catches the exception, it needs to remove the dependency, then throw the exception again.
+                    catch (CircularException)
+                    {
+                        graph.RemoveDependency(name, variable);
+                        throw new CircularException();
+                    }
+                }
+                //If there were no circular dependencies found, it can be created normally.
+                List<string> effectedCellList = CreateCell(name, formula);
+                return effectedCellList;
+            }
         }
 
         protected override IEnumerable<string> GetDirectDependents(string name)

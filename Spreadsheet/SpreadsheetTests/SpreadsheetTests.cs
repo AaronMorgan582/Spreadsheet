@@ -2,6 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using SS;
 using System.Collections.Generic;
+using SpreadsheetUtilities;
 
 namespace SpreadsheetTests
 {
@@ -76,6 +77,16 @@ namespace SpreadsheetTests
         }
 
         [TestMethod]
+        public void TestSetContentsWithFormula()
+        {
+            Spreadsheet s = new Spreadsheet();
+            IList<string> testList = s.SetCellContents("b3", new Formula("x1+5"));
+            Formula testFormula = new Formula("x1+5");
+            Assert.AreEqual(testFormula, s.GetCellContents("b3"));
+            Assert.AreEqual("b3", testList[0]);
+        }
+
+        [TestMethod]
         public void TestGetNamesOfNonEmptyCellsWithEmptySpreadSheet()
         {
             Spreadsheet s = new Spreadsheet();
@@ -102,7 +113,6 @@ namespace SpreadsheetTests
             Assert.AreEqual("a1", testList[0]);
             Assert.AreEqual("a2", testList[1]);
             Assert.AreEqual("a3", testList[2]);
-
         }
 
     }
