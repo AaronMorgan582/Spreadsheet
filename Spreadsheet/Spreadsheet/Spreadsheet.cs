@@ -99,14 +99,14 @@ namespace SS
             else if (formula == null) { throw new ArgumentNullException(); }
             else
             {
-                List<string> effectedCellList = CreateCell(name, formula);
+  
 
                 ///To check for circular dependencies, gather any variables found within the formula that was passed in.
                 IEnumerable<string> variables = formula.GetVariables();
                 foreach(string variable in variables)
                 {
                     ///Each of them needs to be added to the dependency graph first, in order for GetCellsToRecalculate to run.
-                    graph.AddDependency(name, variable);
+                    graph.AddDependency(variable, name);
                     try
                     {
                         GetCellsToRecalculate(variable);
@@ -119,6 +119,7 @@ namespace SS
                     }
                 }
                 //If there were no circular dependencies found, it can be created normally.
+                List<string> effectedCellList = CreateCell(name, formula);
                 return effectedCellList;
             }
         }
@@ -150,6 +151,16 @@ namespace SS
             if (cellDictionary.TryGetValue(name, out Cell cell))
             {
                 cell.Contents = input;
+                if(input is string || input is double)
+                {
+                    graph.ReplaceDependees(name, new HashSet<string>());
+                }
+                else if(input is Formula)
+                {
+                    Formula formula = (Formula)input;
+                    graph.ReplaceDependees(name, formula.GetVariables());
+                }
+
                 List<string> effectedCells = CreateEffectedCellsList(name);
 
                 return effectedCells;
@@ -158,7 +169,6 @@ namespace SS
             {
                 Cell newCell = new Cell(input);
                 cellDictionary.Add(name, newCell);
-                graph.ReplaceDependents(name, new HashSet<string>());
                 List<string> effectedCells = CreateEffectedCellsList(name);
 
                 return effectedCells;

@@ -69,6 +69,17 @@ namespace SpreadsheetTests
             s.SetCellContents("c1", new Formula("a1"));
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(CircularException))]
+        public void TestReplaceWithCircularDependency()
+        {
+            Spreadsheet s = new Spreadsheet();
+            s.SetCellContents("a1", new Formula("b1 + b2"));
+            s.SetCellContents("b1", new Formula("c1+c2"));
+
+            s.SetCellContents("b1", new Formula("a1"));
+        }
+
         /// <summary>
         /// Method testing. Refer to the test name for what each test is validating.
         /// </summary>
@@ -137,5 +148,94 @@ namespace SpreadsheetTests
             Assert.AreEqual("a3", testList[2]);
         }
 
+        [TestMethod]
+        public void TestMultipleDependentCells()
+        {
+            Spreadsheet s = new Spreadsheet();
+            s.SetCellContents("b1", new Formula("a1*2"));
+            s.SetCellContents("c1", new Formula("b1+a1"));
+
+            IList<string> testList = s.SetCellContents("a1", 5);
+            Assert.AreEqual(3, testList.Count);
+            foreach(string dependent in testList)
+            {
+                Console.WriteLine(dependent);
+            }
+        }
+
+        [TestMethod]
+        public void TestReplaceFormulaWithDouble()
+        {
+            Spreadsheet s = new Spreadsheet();
+            s.SetCellContents("b1", new Formula("a1*2"));
+            IList<string> testList = s.SetCellContents("a1", 5);
+            Assert.AreEqual(2, testList.Count);
+
+            //Current dependents of a1 are itself and b1.
+            foreach (string dependent in testList)
+            {
+                Console.WriteLine(dependent);
+            }
+            s.SetCellContents("b1", 10);
+            IList<string> newA1List = s.SetCellContents("a1", 10);
+
+            //Setting b1 to 10 should have severed the dependency, thus only a1 should be in the list.
+            Assert.AreEqual(1, newA1List.Count);
+            foreach(string dependent in newA1List)
+            {
+                Console.WriteLine(dependent);
+            }
+        }
+
+        [TestMethod]
+        public void TestReplaceFormulaWithString()
+        {
+            Spreadsheet s = new Spreadsheet();
+            s.SetCellContents("b1", new Formula("a1*2"));
+            IList<string> testList = s.SetCellContents("a1", 5);
+
+            //Current dependents of a1 are itself and b1.
+            Assert.AreEqual(2, testList.Count);
+            foreach (string dependent in testList)
+            {
+                Console.WriteLine(dependent);
+            }
+
+            s.SetCellContents("b1", "hello");
+            IList<string> newA1List = s.SetCellContents("a1", 10);
+
+            //Setting cell b1 to "hello" should have severed the dependency, thus only a1 should be in the list.
+            Assert.AreEqual(1, newA1List.Count);
+            foreach (string dependent in newA1List)
+            {
+                Console.WriteLine(dependent);
+            }
+        }
+
+        [TestMethod]
+        public void TestReplaceFormulaWithNewFormula()
+        {
+            Spreadsheet s = new Spreadsheet();
+            s.SetCellContents("b1", new Formula("a1*2"));
+            s.SetCellContents("c1", new Formula("a1+5"));
+            IList<string> a1List = s.SetCellContents("a1", 5);
+
+            //Current dependents of a1 are b1 and c1.
+            Assert.AreEqual(3, a1List.Count);
+            foreach (string dependent in a1List)
+            {
+                Console.WriteLine(dependent);
+            }
+
+            s.SetCellContents("b1", new Formula("c1+c2"));
+            IList<string> newA1List = s.SetCellContents("a1", 5);
+
+            //Setting b1 to a new Formula should sever the (a1, b1) dependency, but the c1 dependency should be intact.
+            Assert.AreEqual(2, newA1List.Count);
+            foreach (string dependent in newA1List)
+            {
+                Console.WriteLine(dependent);
+            }
+        }
     }
 }
