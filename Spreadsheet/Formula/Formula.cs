@@ -267,7 +267,14 @@ namespace SpreadsheetUtilities
                     else if (operators.Count != 0 && operators.Peek() == "/")
                     {
                         double firstStackNumber = values.Pop();
-                        MultOrDivide(values, operators, firstStackNumber);
+                        if(firstStackNumber == 0)
+                        {
+                            return new FormulaError("Cannot divide by zero.");
+                        }
+                        else
+                        {
+                            MultOrDivide(values, operators, firstStackNumber);
+                        }
                     }
                 }
                 //If the token is anything else, it should be a variable that needs to be looked up via the delegate.
@@ -299,7 +306,7 @@ namespace SpreadsheetUtilities
                     }
                     catch (ArgumentException)
                     {
-                        throw new FormulaFormatException("Unknown variable");
+                        return new FormulaError("Unknown variable");
                     }
 
                 }
