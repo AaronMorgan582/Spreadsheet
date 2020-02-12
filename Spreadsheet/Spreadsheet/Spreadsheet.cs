@@ -130,6 +130,9 @@ namespace SS
         private Dictionary<string, Cell> cellMap;
         private static Regex variable = new Regex("^[a-zA-Z_]+[0-9]*$"); //Static Regex to define variables: Starting with upper/lower case, or underscore, followed by any number of the digits 0-9.
 
+        /// <summary>
+        /// Empty argument constructor.
+        /// </summary>
         public Spreadsheet()
         {
             graph = new DependencyGraph();
