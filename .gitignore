@@ -258,3 +258,7 @@ coverage.opencover.xml
 # Assignment Test Files
 EvaluatorTests
 AssignmentThreeGradingTests.cs
+
+# Starter Code
+AbstractSpreadsheet AS4.cs
+AbstractSpreadsheet AS5.cs

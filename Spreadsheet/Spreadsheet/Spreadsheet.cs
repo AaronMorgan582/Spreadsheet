@@ -126,17 +126,36 @@ namespace SS
             }
         }
 
+        private bool fileChange;
         private DependencyGraph graph;
         private Dictionary<string, Cell> cellMap;
         private static Regex variable = new Regex("^[a-zA-Z_]+[0-9]*$"); //Static Regex to define variables: Starting with upper/lower case, or underscore, followed by any number of the digits 0-9.
 
+        public override bool Changed { get => throw new NotImplementedException(); protected set => throw new NotImplementedException(); }
+
         /// <summary>
         /// Empty argument constructor.
         /// </summary>
-        public Spreadsheet()
+        public Spreadsheet():base()
         {
             graph = new DependencyGraph();
             cellMap = new Dictionary<string, Cell>();
+        }
+
+        public Spreadsheet(Func<string, bool> isValid, Func<string, string> normalize, string version) : base(isValid, normalize, version)
+        {
+            this.IsValid = isValid;
+            this.Normalize = normalize;
+            this.Version = version;
+            fileChange = false;
+        }
+
+        public Spreadsheet(string filepath, Func<string, string> normalize, Func<string, bool> isValid, string version) :base(isValid, normalize, version)
+        {
+            this.IsValid = IsValid;
+            this.Normalize = Normalize;
+            this.Version = version;
+            fileChange = false;
         }
 
         /// <summary>
@@ -201,14 +220,10 @@ namespace SS
         ///      set {A1, B1, C1} is returned.
         ///   </para>
         /// </returns>
-        public override IList<string> SetCellContents(string name, double number)
+        protected override IList<string> SetCellContents(string name, double number)
         {
-            if (name is null || !variable.IsMatch(name)) { throw new InvalidNameException(); }
-            else
-            {
-                List<string> effectedCellList = CreateCell(name, number);
-                return effectedCellList;
-            }
+            List<string> effectedCellList = CreateCell(name, number);
+            return effectedCellList;
         }
 
         /// <summary>
@@ -236,10 +251,9 @@ namespace SS
         ///     set {A1, B1, C1} is returned.
         ///   </para>
         /// </returns>
-        public override IList<string> SetCellContents(string name, string text)
+        protected override IList<string> SetCellContents(string name, string text)
         {
-            if (name is null || !variable.IsMatch(name)) { throw new InvalidNameException(); }
-            else if(text == null) { throw new ArgumentNullException(); }
+            if(text == null) { throw new ArgumentNullException(); }
             else
             {
                 List<string> effectedCellList = CreateCell(name, text);
@@ -279,11 +293,9 @@ namespace SS
         ///   </para>
         /// 
         /// </returns>
-        public override IList<string> SetCellContents(string name, Formula formula)
-        {
-            
-            if (name is null || !variable.IsMatch(name)) { throw new InvalidNameException(); }
-            else if (formula == null) { throw new ArgumentNullException(); }
+        protected override IList<string> SetCellContents(string name, Formula formula)
+        {   
+            if (formula == null) { throw new ArgumentNullException(); }
             else
             {
                 ///To check for circular dependencies, gather any variables found within the formula that was passed in.
@@ -434,5 +446,41 @@ namespace SS
             }
         }
 
+        public override IList<string> SetContentsOfCell(string name, string content)
+        {
+            if (name is null || !variable.IsMatch(name)) { throw new InvalidNameException(); }
+            else
+            {
+                if(double.TryParse(content, out double number))
+                {
+                    return SetCellContents(name, number);
+                }
+                else if(content[0] == '=')
+                {
+                    string formulaString = content.Substring(1);
+                    Formula formula = new Formula(formulaString);
+                    return SetCellContents(name, formula);
+                }
+                else
+                {
+                    return SetCellContents(name, content);
+                }
+            }
+        }
+
+        public override string GetSavedVersion(string filename)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Save(string filename)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override object GetCellValue(string name)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
