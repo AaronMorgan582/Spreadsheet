@@ -24,6 +24,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
 
 namespace SS
 {
@@ -129,14 +130,14 @@ namespace SS
         private bool fileChange;
         private DependencyGraph graph;
         private Dictionary<string, Cell> cellMap;
-        private static Regex variable = new Regex("^[a-zA-Z_]+[0-9]*$"); //Static Regex to define variables: Starting with upper/lower case, or underscore, followed by any number of the digits 0-9.
+        private static Regex cellName = new Regex("^[a-zA-Z]+[0-9]*$"); //Static Regex to define variables: Starting with upper/lower case, or underscore, followed by any number of the digits 0-9.
 
-        public override bool Changed { get => throw new NotImplementedException(); protected set => throw new NotImplementedException(); }
+        public override bool Changed { get => this.fileChange; protected set => this.fileChange = true; }
 
         /// <summary>
         /// Empty argument constructor.
         /// </summary>
-        public Spreadsheet():base()
+        public Spreadsheet() : base(s => true, s => s, "default")
         {
             graph = new DependencyGraph();
             cellMap = new Dictionary<string, Cell>();
@@ -144,6 +145,8 @@ namespace SS
 
         public Spreadsheet(Func<string, bool> isValid, Func<string, string> normalize, string version) : base(isValid, normalize, version)
         {
+            graph = new DependencyGraph();
+            cellMap = new Dictionary<string, Cell>();
             this.IsValid = isValid;
             this.Normalize = normalize;
             this.Version = version;
@@ -152,6 +155,8 @@ namespace SS
 
         public Spreadsheet(string filepath, Func<string, string> normalize, Func<string, bool> isValid, string version) :base(isValid, normalize, version)
         {
+            graph = new DependencyGraph();
+            cellMap = new Dictionary<string, Cell>();
             this.IsValid = IsValid;
             this.Normalize = Normalize;
             this.Version = version;
@@ -174,7 +179,7 @@ namespace SS
         /// </returns>
         public override object GetCellContents(string name)
         {
-            if (name is null || !variable.IsMatch(name)) { throw new InvalidNameException(); }
+            if (name is null || !cellName.IsMatch(name)) { throw new InvalidNameException(); }
             else
             {
                 if(cellMap.TryGetValue(name, out Cell cell))
@@ -349,7 +354,7 @@ namespace SS
         /// </returns>
         protected override IEnumerable<string> GetDirectDependents(string name)
         {
-            if (name is null || !variable.IsMatch(name)) { throw new InvalidNameException(); }
+            if (name is null || !cellName.IsMatch(name)) { throw new InvalidNameException(); }
 
             HashSet<string> dependents = new HashSet<string>(graph.GetDependents(name));
 
@@ -446,20 +451,48 @@ namespace SS
             }
         }
 
+        private void WriteCellContents(XmlWriter writer)
+        {
+            writer.WriteStartElement("Cell");
+            IEnumerable<string> usedCells = this.GetNamesOfAllNonemptyCells();
+            foreach(string cell in usedCells)
+            {
+                writer.WriteElementString("Name", cell);
+                if(GetCellContents(cell) is Formula)
+                {
+                    string formula = "=" + GetCellContents(cell).ToString();
+                    writer.WriteElementString("Value", formula);
+                }
+                else
+                {
+                    writer.WriteElementString("Value", GetCellContents(cell).ToString());
+                }
+            }
+        }
+
         public override IList<string> SetContentsOfCell(string name, string content)
         {
-            if (name is null || !variable.IsMatch(name)) { throw new InvalidNameException(); }
+            if (name is null || !cellName.IsMatch(name)) { throw new InvalidNameException(); }
             else
             {
-                if(double.TryParse(content, out double number))
+                this.Changed = true;
+                if (double.TryParse(content, out double number))
                 {
                     return SetCellContents(name, number);
                 }
-                else if(content[0] == '=')
+                else if (content[0] == '=')
                 {
                     string formulaString = content.Substring(1);
-                    Formula formula = new Formula(formulaString);
-                    return SetCellContents(name, formula);
+                    string normalizedFormula = this.Normalize(formulaString);
+                    if (this.IsValid(normalizedFormula) == true)
+                    {
+                        Formula formula = new Formula(formulaString);
+                        return SetCellContents(name, formula);
+                    }
+                    else
+                    {
+                        throw new FormulaFormatException("Invalid formula.");
+                    }
                 }
                 else
                 {
@@ -475,7 +508,15 @@ namespace SS
 
         public override void Save(string filename)
         {
-            throw new NotImplementedException();
+            this.Changed = false;
+
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.IndentChars = "  ";
+
+            using(XmlWriter writer = XmlWriter.Create(filename, settings){
+
+            }
         }
 
         public override object GetCellValue(string name)
