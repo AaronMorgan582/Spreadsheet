@@ -1,5 +1,39 @@
 Author:     Aaron Morgan
 Partner:    None
+Date:       2/14/2020
+Course:     CS 3500, University of Utah, School of Computing
+Assignment: Assignment #5 - Spreadsheet 2.0
+Copyright:  CS 3500 and Aaron Morgan - This work may not be copied for use in Academic Coursework.
+
+1. Comments to Evaluators:
+
+    None at this time.
+
+2. Assignment Specific Topics
+
+    Expected Time to Complete: 15 hours.
+
+    Time spent on Analysis: 6 hours.
+    Time spent on Implementation: 2 hours.
+    Time spent Debugging: 0 hours.
+    Time spent Testing: 0 hours.
+    Total Time: 8 hours.
+
+3. Consulted Peers:
+
+    1. Alejandro Serrano: Discussion of how to use the :base in the Constructors, as well as reading/writing XML.
+    2. Xavier Davis: Discussion of reading/writing XML, when to use Evaluate, and the "whiteboard" section of the assignment.
+
+4. References:
+    
+    1. C# Corner: Reading and Writing XML in C# https://www.c-sharpcorner.com/article/reading-and-writing-xml-in-C-Sharp/
+    2. Microsoft: base(C# reference) https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/base
+
+5. My Software Practices:
+
+
+Author:     Aaron Morgan
+Partner:    None
 Date:       2/1/2020
 Course:     CS 3500, University of Utah, School of Computing
 Assignment: Assignment #4 - Spreadsheet

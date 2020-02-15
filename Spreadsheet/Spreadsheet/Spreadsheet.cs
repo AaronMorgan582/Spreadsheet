@@ -468,6 +468,7 @@ namespace SS
                     writer.WriteElementString("Value", GetCellContents(cell).ToString());
                 }
             }
+            writer.WriteEndElement();
         }
 
         public override IList<string> SetContentsOfCell(string name, string content)
@@ -514,8 +515,16 @@ namespace SS
             settings.Indent = true;
             settings.IndentChars = "  ";
 
-            using(XmlWriter writer = XmlWriter.Create(filename, settings){
+            using (XmlWriter writer = XmlWriter.Create(filename, settings))
+            {
+                writer.WriteStartDocument();
+                writer.WriteStartElement("Spreadsheet");
+                writer.WriteAttributeString("Version", this.Version);
 
+                this.WriteCellContents(writer);
+
+                writer.WriteEndElement();
+                writer.WriteEndDocument();
             }
         }
 
