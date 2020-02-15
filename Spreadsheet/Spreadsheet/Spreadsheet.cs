@@ -114,11 +114,6 @@ namespace SS
                 {
                     cellValue = input;
                 }
-                else if (input is Formula) 
-                {
-                    Formula formula = (Formula)input;
-                    formula.Evaluate(input);
-                }
             }
 
             public object Contents{ 
@@ -364,15 +359,15 @@ namespace SS
 
         private double LookUp(string cellName)
         {
-            if (cellMap.TryGetValue(cellName, out Cell cell))
+            if (cellMap.ContainsKey(cellName))
             {
-               if(cell.Contents is double)
+                if (this.GetCellValue(cellName) is double)
                 {
-                    return (double)cell.Contents;
+                    return (double)this.GetCellValue(cellName);
                 }
                 else
                 {
-                    throw new FormatException
+                    throw new ArgumentException();
                 }
             }
             else
@@ -524,7 +519,21 @@ namespace SS
 
         public override string GetSavedVersion(string filename)
         {
-            throw new NotImplementedException();
+            using(XmlReader reader = XmlReader.Create(filename))
+            {
+                while (reader.Read())
+                {
+                    if (reader.IsStartElement())
+                    {
+                        switch (reader.Name)
+                        {
+                            case "spreadsheet":
+                                return reader.GetAttribute("version");
+                        }
+                    }
+                }
+            }
+            throw new SpreadsheetReadWriteException("Bad file name.");
         }
 
         public override void Save(string filename)
@@ -550,6 +559,18 @@ namespace SS
 
         public override object GetCellValue(string name)
         {
+            if (name is null || !cellName.IsMatch(name)) { throw new InvalidNameException(); }
+            else
+            {
+                if (cellMap.TryGetValue(name, out Cell cell))
+                {
+                    return cell.Value;
+                }
+                else
+                {
+                    return "";
+                }
+            }
         }
     }
 }
