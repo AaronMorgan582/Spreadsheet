@@ -114,6 +114,11 @@ namespace SS
                 {
                     cellValue = input;
                 }
+                else if (input is Formula) 
+                {
+                    Formula formula = (Formula)input;
+                    formula.Evaluate(input);
+                }
             }
 
             public object Contents{ 
@@ -126,13 +131,11 @@ namespace SS
                 set { this.cellValue = value; }
             }
         }
-
-        private bool fileChange;
         private DependencyGraph graph;
         private Dictionary<string, Cell> cellMap;
         private static Regex cellName = new Regex("^[a-zA-Z]+[0-9]*$"); //Static Regex to define variables: Starting with upper/lower case, or underscore, followed by any number of the digits 0-9.
 
-        public override bool Changed { get => this.fileChange; protected set => this.fileChange = true; }
+        public override bool Changed { get; protected set; }
 
         /// <summary>
         /// Empty argument constructor.
@@ -150,7 +153,6 @@ namespace SS
             this.IsValid = isValid;
             this.Normalize = normalize;
             this.Version = version;
-            fileChange = false;
         }
 
         public Spreadsheet(string filepath, Func<string, string> normalize, Func<string, bool> isValid, string version) :base(isValid, normalize, version)
@@ -160,7 +162,6 @@ namespace SS
             this.IsValid = IsValid;
             this.Normalize = Normalize;
             this.Version = version;
-            fileChange = false;
         }
 
         /// <summary>
@@ -361,6 +362,24 @@ namespace SS
             return dependents;
         }
 
+        private double LookUp(string cellName)
+        {
+            if (cellMap.TryGetValue(cellName, out Cell cell))
+            {
+               if(cell.Contents is double)
+                {
+                    return (double)cell.Contents;
+                }
+                else
+                {
+                    throw new FormatException
+                }
+            }
+            else
+            {
+                throw new InvalidNameException();
+            }
+        }
         /// <summary>
         /// <para>
         /// A private helper method utilized when setting the contents of a cell.
@@ -453,22 +472,23 @@ namespace SS
 
         private void WriteCellContents(XmlWriter writer)
         {
-            writer.WriteStartElement("Cell");
             IEnumerable<string> usedCells = this.GetNamesOfAllNonemptyCells();
             foreach(string cell in usedCells)
             {
-                writer.WriteElementString("Name", cell);
+                writer.WriteStartElement("cell");
+                writer.WriteElementString("name", cell);
                 if(GetCellContents(cell) is Formula)
                 {
                     string formula = "=" + GetCellContents(cell).ToString();
-                    writer.WriteElementString("Value", formula);
+                    writer.WriteElementString("value", formula);
                 }
                 else
                 {
-                    writer.WriteElementString("Value", GetCellContents(cell).ToString());
+                    writer.WriteElementString("value", GetCellContents(cell).ToString());
                 }
+                writer.WriteEndElement();
             }
-            writer.WriteEndElement();
+
         }
 
         public override IList<string> SetContentsOfCell(string name, string content)
@@ -518,8 +538,8 @@ namespace SS
             using (XmlWriter writer = XmlWriter.Create(filename, settings))
             {
                 writer.WriteStartDocument();
-                writer.WriteStartElement("Spreadsheet");
-                writer.WriteAttributeString("Version", this.Version);
+                writer.WriteStartElement("spreadsheet");
+                writer.WriteAttributeString("version", this.Version);
 
                 this.WriteCellContents(writer);
 
@@ -530,7 +550,6 @@ namespace SS
 
         public override object GetCellValue(string name)
         {
-            throw new NotImplementedException();
         }
     }
 }
