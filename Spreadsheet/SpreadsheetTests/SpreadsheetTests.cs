@@ -390,5 +390,23 @@ namespace SpreadsheetTests
             double value = 7;
             Assert.AreEqual(value, s.GetCellValue("a1"));
         }
+
+        [TestMethod]
+        public void StressTest()
+        {
+            Spreadsheet s = new Spreadsheet();
+            for(int count = 1; count < 10_000; count++)
+            {
+                string cellName = "a" + count;
+                string value = "" + count;
+                s.SetContentsOfCell(cellName, value);
+
+                double testValue = count;
+                Assert.AreEqual(testValue, s.GetCellValue(cellName));
+                Assert.AreEqual(testValue, s.GetCellContents(cellName));
+            }
+
+            s.Save("stressTest.xml");
+        }
     }
 }

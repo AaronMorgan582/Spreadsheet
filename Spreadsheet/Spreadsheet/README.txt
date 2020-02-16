@@ -17,7 +17,14 @@ Copyright:  CS 3500 and Aaron Morgan - This work may not be copied for use in Ac
     Time spent on Implementation: 5 hours.
     Time spent Debugging: 3 hours.
     Time spent Testing: 3 hours.
+
     Total Time: 19 hours.
+
+    I think that the estimation of my time has been mostly what I expected for each Assignment; although my actual time and expected
+    time have not matched up on occasion (such as this Assignment), that is mostly because I get stuck on one particular aspect of the
+    Assignment that I don't know how to solve. For this Assignment, it took me significantly longer than expected to figure out how
+    to use the XML Read/Write. It also wasn't very clear how Evaluate was supposed to work with this Assignment (instructions never
+    mentioned it, thus expected time didn't account for it), so it took me a while to figure out how to correctly evaluate a Formula.
 
 3. Consulted Peers:
 
@@ -32,7 +39,22 @@ Copyright:  CS 3500 and Aaron Morgan - This work may not be copied for use in Ac
 
 5. My Software Practices:
 
+    1. I used Regression Testing to ensure that all the previous tests that I had from Assignment 4 were still working correctly.
+    I thought it was important to do that with this Assignment, because the methods themselves haven't changed at all, but how
+    the Spreadsheet class uses them has changed.
 
+    2. I decided to break up setting a Cell's Value (if it's a Formula) into a private method called Recalculate. I think it's
+    a pretty small method that is easy to understand, and I felt it made sense because it has specific functionality (setting
+    the Value), which might be utilized in some other scenario.
+
+    3. I'm not sure what this would be considered (Abstraction maybe), but prior to this Assignment, it never occurred to me
+    the reason why we needed a delegate for Formula's Evaluate. It was kind of hinted at that "other developers may have different a
+    variable", which I understood, but I didn't know how that was applied. When I wrote the LookUp method in Spreadsheet, I 
+    realized that variables for a Spreadsheet specifically are the Cell names; we don't really have any functionality that
+    defines a Formula with "normal" Mathematical terms, such as "x+y", but there may be some other Class that may want to use
+    Formula, and that Class will internally define its own LookUp to be able to evaluate "x+y".
+
+=======Assignment #4=======
 Author:     Aaron Morgan
 Partner:    None
 Date:       2/1/2020
@@ -52,6 +74,7 @@ Copyright:  CS 3500 and Aaron Morgan - This work may not be copied for use in Ac
     Time spent on Implementation: 4 hours.
     Time spent Debugging: 2.5 hours.
     Time spent Testing: 2.5 hours.
+
     Total Time: 14.5 hours.
 
 3. Consulted Peers:

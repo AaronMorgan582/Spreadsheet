@@ -191,6 +191,10 @@ namespace SS
             else { this.Version = version; }
 
             string cellname = "";
+
+            //If the Constructor with a filepath is used, this means that a Spreadsheet object (should) already have been written
+            //once. This means that the the file needs to be read and the Cell information retrieved needs to be added to the newly
+            //constructed Spreadsheet.
             using (XmlReader reader = XmlReader.Create(filepath))
             {
                 while (reader.Read())
@@ -361,12 +365,12 @@ namespace SS
                 {
                     //Normalize the formula with the normalize delegate.
                     string formulaString = content.Substring(1);
-                    string normalizedFormula = this.Normalize(formulaString);
+                    string normalizedFormulaString = this.Normalize(formulaString);
 
                     //The formula has to pass the given validation delegate.
-                    if (this.IsValid(normalizedFormula) == true)
+                    if (this.IsValid(normalizedFormulaString) == true)
                     {
-                        Formula formula = new Formula(normalizedFormula);
+                        Formula formula = new Formula(normalizedFormulaString);
                         IList<string> cellsToEvaluate = SetCellContents(normalizedCell, formula);
 
                         //To recalculate any dependents, as the above comment mentioned (with doubles).
@@ -447,6 +451,7 @@ namespace SS
         {
             this.Changed = false;
 
+            //Format settings for readability.
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
             settings.IndentChars = "  ";
@@ -459,6 +464,7 @@ namespace SS
                     writer.WriteStartElement("spreadsheet");
                     writer.WriteAttributeString("version", this.Version);
 
+                    //Writes the contents of each cell found within the Spreadsheet. WriteCellContents is found within Spreadsheet, not XmlWriter.
                     this.WriteCellContents(writer);
 
                     writer.WriteEndElement();
@@ -469,7 +475,6 @@ namespace SS
             {
                 throw new SpreadsheetReadWriteException("Invalid filepath.");
             }
-
         }
 
         ///<summary>
