@@ -317,6 +317,25 @@ namespace SpreadsheetTests
             Assert.AreEqual("default", s.GetSavedVersion("test.xml"));
         }
 
+        [TestMethod]
+        public void TestConstructorWithFilePath()
+        {
+            Spreadsheet s = new Spreadsheet();
+            s.SetContentsOfCell("a1", "5");
+            s.SetContentsOfCell("b1", "hello");
+            s.SetContentsOfCell("c1", "world");
+            s.SetContentsOfCell("d1", "=d4+a5");
+            s.Save("test.xml");
+
+            Spreadsheet read = new Spreadsheet("test.xml", s => s, s => true, "default");
+            double value = 5;
+            Assert.AreEqual(value, read.GetCellContents("a1"));
+            Assert.AreEqual("hello", read.GetCellContents("b1"));
+            Assert.AreEqual("world", read.GetCellContents("c1"));
+
+            read.SetContentsOfCell("e1", "=d4+a5");
+            Assert.AreEqual(read.GetCellContents("e1"), read.GetCellContents("d1"));
+        }
 
     }
 }

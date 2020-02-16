@@ -130,7 +130,6 @@ namespace SS
                 get { return cellValue; }
                 set { this.cellValue = value; }
             }
-
         }
 
         public override bool Changed { get; protected set; }
@@ -153,14 +152,18 @@ namespace SS
             this.Version = version;
         }
 
-        public Spreadsheet(string filepath, Func<string, string> normalize, Func<string, bool> isValid, string version) :base(isValid, normalize, version)
+        public Spreadsheet(string filepath, Func<string, string> normalize, Func<string, bool> isValid, string version) : base(isValid, normalize, version)
         {
             graph = new DependencyGraph();
             cellMap = new Dictionary<string, Cell>();
             this.IsValid = IsValid;
             this.Normalize = Normalize;
-            this.Version = version;
 
+            string readVersion = GetSavedVersion(filepath);
+            if (!readVersion.Equals(version)) { throw new SpreadsheetReadWriteException("Versions are not equivalent"); }
+            else { this.Version = version; }
+
+            string cellname = "";
             using (XmlReader reader = XmlReader.Create(filepath))
             {
                 while (reader.Read())
@@ -168,8 +171,15 @@ namespace SS
                     if (reader.IsStartElement())
                     {
                         switch (reader.Name)
-                        {
-                            case "cell":
+                        { 
+                            case "name":
+                                reader.Read();
+                                cellname = reader.Value;
+                                break;
+
+                            case "contents":
+                                reader.Read();
+                                SetContentsOfCell(cellname, reader.Value);
                                 break;
                         }
                     }
@@ -471,11 +481,11 @@ namespace SS
                 if(GetCellContents(cell) is Formula)
                 {
                     string formula = "=" + GetCellContents(cell).ToString();
-                    writer.WriteElementString("value", formula);
+                    writer.WriteElementString("contents", formula);
                 }
                 else
                 {
-                    writer.WriteElementString("value", GetCellContents(cell).ToString());
+                    writer.WriteElementString("contents", GetCellContents(cell).ToString());
                 }
                 writer.WriteEndElement();
             }
