@@ -97,6 +97,11 @@ namespace SS
     /// </summary>
     public class Spreadsheet : AbstractSpreadsheet
     {
+
+        private DependencyGraph graph;
+        private Dictionary<string, Cell> cellMap;
+        private static Regex cellName = new Regex("^[a-zA-Z]+[0-9]*$"); //Static Regex to define variables: Starting with upper/lower case, or underscore, followed by any number of the digits 0-9.
+
         /// <summary>
         /// Private class to hold the contents/values of each cell in the spreadsheet.
         /// 
@@ -125,10 +130,8 @@ namespace SS
                 get { return cellValue; }
                 set { this.cellValue = value; }
             }
+
         }
-        private DependencyGraph graph;
-        private Dictionary<string, Cell> cellMap;
-        private static Regex cellName = new Regex("^[a-zA-Z]+[0-9]*$"); //Static Regex to define variables: Starting with upper/lower case, or underscore, followed by any number of the digits 0-9.
 
         public override bool Changed { get; protected set; }
 
@@ -157,6 +160,21 @@ namespace SS
             this.IsValid = IsValid;
             this.Normalize = Normalize;
             this.Version = version;
+
+            using (XmlReader reader = XmlReader.Create(filepath))
+            {
+                while (reader.Read())
+                {
+                    if (reader.IsStartElement())
+                    {
+                        switch (reader.Name)
+                        {
+                            case "cell":
+                                break;
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -254,12 +272,8 @@ namespace SS
         /// </returns>
         protected override IList<string> SetCellContents(string name, string text)
         {
-            if(text == null) { throw new ArgumentNullException(); }
-            else
-            {
-                List<string> effectedCellList = CreateCell(name, text);
-                return effectedCellList;
-            }
+            List<string> effectedCellList = CreateCell(name, text);
+            return effectedCellList;
         }
 
         /// <summary>
@@ -357,24 +371,6 @@ namespace SS
             return dependents;
         }
 
-        private double LookUp(string cellName)
-        {
-            if (cellMap.ContainsKey(cellName))
-            {
-                if (this.GetCellValue(cellName) is double)
-                {
-                    return (double)this.GetCellValue(cellName);
-                }
-                else
-                {
-                    throw new ArgumentException();
-                }
-            }
-            else
-            {
-                throw new InvalidNameException();
-            }
-        }
         /// <summary>
         /// <para>
         /// A private helper method utilized when setting the contents of a cell.
@@ -486,33 +482,83 @@ namespace SS
 
         }
 
+        private double LookUp(string cellName)
+        {
+            if (cellMap.ContainsKey(cellName))
+            {
+                if (this.GetCellValue(cellName) is double)
+                {
+                    return (double)this.GetCellValue(cellName);
+                }
+                else
+                {
+                    throw new ArgumentException();
+                }
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+        }
+
+        private void Recalculate(string name)
+        {
+            if(cellMap.TryGetValue(name, out Cell cell))
+            {
+                if(cell.Contents is Formula)
+                {
+                    Formula formula = (Formula)cell.Contents;
+                    cell.Value = formula.Evaluate(LookUp);
+                }
+            }
+        }
+
         public override IList<string> SetContentsOfCell(string name, string content)
         {
             if (name is null || !cellName.IsMatch(name)) { throw new InvalidNameException(); }
+            else if(content == null) { throw new ArgumentNullException(); }
             else
             {
+                string normalizedCell = this.Normalize(name);
                 this.Changed = true;
                 if (double.TryParse(content, out double number))
                 {
-                    return SetCellContents(name, number);
+                    IList<string> cellsToEvaluate = SetCellContents(normalizedCell, number);
+                    
+                    //If the passed in cell had dependents, then each of those dependents need to be recalculated.
+                    foreach(string cell in cellsToEvaluate)
+                    {
+                        Recalculate(cell);
+                    }
+                    return cellsToEvaluate;
                 }
+
                 else if (content[0] == '=')
                 {
                     string formulaString = content.Substring(1);
                     string normalizedFormula = this.Normalize(formulaString);
                     if (this.IsValid(normalizedFormula) == true)
                     {
-                        Formula formula = new Formula(formulaString);
-                        return SetCellContents(name, formula);
+                        Formula formula = new Formula(normalizedFormula);
+                        IList<string> cellsToEvaluate = SetCellContents(normalizedCell, formula);
+
+                        //The same above comment for doubles also goes for Formulas.
+                        foreach(string cell in cellsToEvaluate)
+                        {
+                            Recalculate(cell);
+                        }
+                        return cellsToEvaluate;
                     }
                     else
                     {
                         throw new FormulaFormatException("Invalid formula.");
                     }
                 }
+
                 else
                 {
-                    return SetCellContents(name, content);
+                    //Recalculation is not necessary for strings.
+                    return SetCellContents(normalizedCell, content);
                 }
             }
         }
@@ -533,7 +579,7 @@ namespace SS
                     }
                 }
             }
-            throw new SpreadsheetReadWriteException("Bad file name.");
+            throw new SpreadsheetReadWriteException("Invalid file name.");
         }
 
         public override void Save(string filename)
