@@ -13,15 +13,16 @@ Copyright:  CS 3500 and Aaron Morgan - This work may not be copied for use in Ac
 
     Expected Time to Complete: 15 hours.
 
-    Time spent on Analysis: 6 hours.
-    Time spent on Implementation: 3 hours.
-    Time spent Debugging: 0 hours.
-    Time spent Testing: 0 hours.
+    Time spent on Analysis: 8 hours.
+    Time spent on Implementation: 5 hours.
+    Time spent Debugging: 2 hours.
+    Time spent Testing: 2 hours.
     Total Time: 9 hours.
 
 3. Consulted Peers:
 
-    1. Alejandro Serrano: Discussion of how to use the :base in the Constructors, as well as reading/writing XML. He also described how he used Evaluate.
+    1. Alejandro Serrano: Discussion of how to use the :base in the Constructors, as well as reading/writing XML. He also described how 
+    he used Evaluate.
     2. Xavier Davis: Discussion of reading/writing XML, when to use Evaluate, and the "whiteboard" section of the assignment.
 
 4. References:

@@ -108,6 +108,39 @@ namespace SpreadsheetTests
             s.SetContentsOfCell("b1", "=a1");
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(SpreadsheetReadWriteException))]
+        public void TestConstructorWithDifferentVersion()
+        {
+            Spreadsheet s = new Spreadsheet();
+            s.SetContentsOfCell("a1", "5");
+            s.SetContentsOfCell("b1", "hello");
+            s.SetContentsOfCell("c1", "world");
+            s.SetContentsOfCell("d1", "=d4+a5");
+            s.Save("test.xml");
+
+            Spreadsheet read = new Spreadsheet("test.xml", s => true, s => s, "1.0");
+            double value = 5;
+            Assert.AreEqual(value, read.GetCellContents("a1"));
+            Assert.AreEqual("hello", read.GetCellContents("b1"));
+            Assert.AreEqual("world", read.GetCellContents("c1"));
+
+            read.SetContentsOfCell("e1", "=d4+a5");
+            Assert.AreEqual(read.GetCellContents("e1"), read.GetCellContents("d1"));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(SpreadsheetReadWriteException))]
+        public void TestGetSavedVersionWithInvalidFilePath()
+        {
+            Spreadsheet s = new Spreadsheet();
+            s.SetContentsOfCell("a1", "5");
+            s.SetContentsOfCell("b1", "hello");
+            s.SetContentsOfCell("c1", "world");
+            s.SetContentsOfCell("d1", "=d4+a5");
+            s.Save("/ some / nonsense / path.xml");
+        }
+
         /// <summary>
         /// Method testing. Refer to the test name for what each test is validating.
         /// </summary>
@@ -327,7 +360,7 @@ namespace SpreadsheetTests
             s.SetContentsOfCell("d1", "=d4+a5");
             s.Save("test.xml");
 
-            Spreadsheet read = new Spreadsheet("test.xml", s => s, s => true, "default");
+            Spreadsheet read = new Spreadsheet("test.xml", s => true, s => s, "default");
             double value = 5;
             Assert.AreEqual(value, read.GetCellContents("a1"));
             Assert.AreEqual("hello", read.GetCellContents("b1"));
@@ -335,6 +368,12 @@ namespace SpreadsheetTests
 
             read.SetContentsOfCell("e1", "=d4+a5");
             Assert.AreEqual(read.GetCellContents("e1"), read.GetCellContents("d1"));
+        }
+
+        [TestMethod]
+        public void TestConstructorWithVersionOnly()
+        {
+            Spreadsheet s = new Spreadsheet(s => true, s => s, "1.0");
         }
 
     }
