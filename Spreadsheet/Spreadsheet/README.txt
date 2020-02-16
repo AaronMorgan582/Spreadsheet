@@ -15,9 +15,9 @@ Copyright:  CS 3500 and Aaron Morgan - This work may not be copied for use in Ac
 
     Time spent on Analysis: 8 hours.
     Time spent on Implementation: 5 hours.
-    Time spent Debugging: 2 hours.
-    Time spent Testing: 2 hours.
-    Total Time: 9 hours.
+    Time spent Debugging: 3 hours.
+    Time spent Testing: 3 hours.
+    Total Time: 19 hours.
 
 3. Consulted Peers:
 

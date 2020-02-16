@@ -1,7 +1,7 @@
-/// <summary> 
+///<summary> 
 /// Author:    Aaron Morgan
 /// Partner:   None
-/// Date:      2/9/2020
+/// Date:      2/16/2020
 /// Course:    CS 3500, University of Utah, School of Computing 
 /// Copyright: CS 3500 and Aaron Morgan
 /// 
@@ -12,7 +12,7 @@
 /// 
 /// This file contains the tests for the Spreadsheet class.
 /// 
-/// </summary>
+///</summary>
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -22,16 +22,16 @@ using SpreadsheetUtilities;
 
 namespace SpreadsheetTests
 {
-    /// <summary>
+    ///<summary>
     /// This is the test class for the Spreadsheet class and is intended
     /// to contain all the SpreadsheetTest Unit Tests.
-    /// </summary>
+    ///</summary>
     [TestClass]
     public class SpreadsheetTests
     {
-        /// <summary>
+        ///<summary>
         /// Error testing. Refer to the test name for what each test is validating.
-        /// </summary>
+        ///</summary>
 
         [TestMethod]
         [ExpectedException(typeof(InvalidNameException))]
@@ -120,18 +120,11 @@ namespace SpreadsheetTests
             s.Save("test.xml");
 
             Spreadsheet read = new Spreadsheet("test.xml", s => true, s => s, "1.0");
-            double value = 5;
-            Assert.AreEqual(value, read.GetCellContents("a1"));
-            Assert.AreEqual("hello", read.GetCellContents("b1"));
-            Assert.AreEqual("world", read.GetCellContents("c1"));
-
-            read.SetContentsOfCell("e1", "=d4+a5");
-            Assert.AreEqual(read.GetCellContents("e1"), read.GetCellContents("d1"));
         }
 
         [TestMethod]
         [ExpectedException(typeof(SpreadsheetReadWriteException))]
-        public void TestGetSavedVersionWithInvalidFilePath()
+        public void TestSaveWithInvalidFilePath()
         {
             Spreadsheet s = new Spreadsheet();
             s.SetContentsOfCell("a1", "5");
@@ -141,9 +134,20 @@ namespace SpreadsheetTests
             s.Save("/ some / nonsense / path.xml");
         }
 
-        /// <summary>
+        [TestMethod]
+        [ExpectedException(typeof(SpreadsheetReadWriteException))]
+        public void TestGetSavedVersionWithInvalidFilePath()
+        {
+            Spreadsheet s = new Spreadsheet();
+            s.SetContentsOfCell("a1", "5");
+            s.Save("versionTest.xml");
+
+            Spreadsheet read = new Spreadsheet("/ some / nonsense / path.xml", s => true, s => s, "1.0");
+        }
+
+        ///<summary>
         /// Method testing. Refer to the test name for what each test is validating.
-        /// </summary>
+        ///</summary>
 
         [TestMethod]
         public void TestGetContentsEmpty()
@@ -374,7 +378,17 @@ namespace SpreadsheetTests
         public void TestConstructorWithVersionOnly()
         {
             Spreadsheet s = new Spreadsheet(s => true, s => s, "1.0");
+            s.Save("secondTest.xml");
+            Assert.AreEqual("1.0", s.GetSavedVersion("secondTest.xml"));
         }
 
+        [TestMethod]
+        public void TestSimpleEvaluateWithNoVariable()
+        {
+            Spreadsheet s = new Spreadsheet();
+            s.SetContentsOfCell("a1", "=5+2");
+            double value = 7;
+            Assert.AreEqual(value, s.GetCellValue("a1"));
+        }
     }
 }

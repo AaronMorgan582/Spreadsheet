@@ -1,13 +1,17 @@
 ﻿///<summary>
 /// Author:    Aaron Morgan
 /// Partner:   None
-/// Date:      2/9/2020
+/// Date:      2/16/2020
 /// Course:    CS 3500, University of Utah, School of Computing 
 /// Copyright: CS 3500 and Aaron Morgan
 /// 
 /// I, Aaron Morgan, certify that I wrote this code from scratch and did not copy it in part
-/// or in whole from another source, with the exception of the header comments for the public and
-/// protected methods found within this file. 
+/// or in whole from another source, with the exception of:
+/// 
+/// <list type="bullet">
+///     <item>The header comments for public and protected methods found within this file.</item>
+///     <item>The code for reading and writing XML is mostly an adaptation of code provided by Professor Jim de St. Germain.</item>
+/// </list>
 /// 
 /// The header comments of the public and protected methods were written by Professor Jim de St. Germain,
 /// for the University of Utah's School of Computing's CS 3500 class, during the Spring 2020 term.
@@ -15,13 +19,13 @@
 /// File Contents
 /// 
 /// This file contains the Spreadsheet class and its respective methods.
-/// 
 ///</summary>
 
 using SpreadsheetUtilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -100,10 +104,10 @@ namespace SS
 
         private DependencyGraph graph;
         private Dictionary<string, Cell> cellMap;
-        private static Regex cellName = new Regex("^[a-zA-Z]+[0-9]*$"); //Static Regex to define variables: Starting with upper/lower case, or underscore, followed by any number of the digits 0-9.
+        private static Regex cellName = new Regex("^[a-zA-Z]+[0-9]*$"); //Static Regex to define Cell names: Starting with upper/lower case, or underscore, followed by any number of the digits 0-9.
 
         /// <summary>
-        /// Private class to hold the contents/values of each cell in the spreadsheet.
+        /// Private class to hold the contents/values of each cell in the Spreadsheet.
         /// 
         /// Getters and Setters are implemented for both the value and contents of the Cell.
         /// </summary>
@@ -131,8 +135,6 @@ namespace SS
                 set { this.cellValue = value; }
             }
         }
-
-        public override bool Changed { get; protected set; }
 
         /// <summary>
         /// Empty argument constructor.
@@ -211,6 +213,12 @@ namespace SS
                 }
             }
         }
+
+        /// <summary>
+        /// True if this spreadsheet has been modified since it was created or saved                  
+        /// (whichever happened most recently); false otherwise.
+        /// </summary>
+        public override bool Changed { get; protected set; }
 
         /// <summary>
         ///   Returns the contents (as opposed to the value) of the named cell.
@@ -361,7 +369,7 @@ namespace SS
                         Formula formula = new Formula(normalizedFormula);
                         IList<string> cellsToEvaluate = SetCellContents(normalizedCell, formula);
 
-                        //The same above comment for doubles also goes for Formulas.
+                        //To recalculate any dependents, as the above comment mentioned (with doubles).
                         foreach (string cell in cellsToEvaluate)
                         {
                             Recalculate(cell);
@@ -386,29 +394,55 @@ namespace SS
         /// Returns the version information of the spreadsheet saved in the named file.
         /// 
         /// <exception cref="SpreadsheetReadWriteException"> 
-        ///   If the filename doesn't exist, throw a SpreadsheetReadWriteException.
+        ///   If the filename doesn't exist, or if the version wasn't found,
+        ///   throw a SpreadsheetReadWriteException.
         /// </exception>
         /// 
         /// </summary>
         public override string GetSavedVersion(string filename)
         {
-            using (XmlReader reader = XmlReader.Create(filename))
+            try
             {
-                while (reader.Read())
+                using (XmlReader reader = XmlReader.Create(filename))
                 {
-                    if (reader.IsStartElement())
+                    while (reader.Read())
                     {
-                        switch (reader.Name)
+                        if (reader.IsStartElement())
                         {
-                            case "spreadsheet":
-                                return reader.GetAttribute("version");
+                            switch (reader.Name)
+                            {
+                                case "spreadsheet":
+                                    return reader.GetAttribute("version");
+                            }
                         }
                     }
                 }
+                throw new SpreadsheetReadWriteException("Version not found.");
             }
-            throw new SpreadsheetReadWriteException("Invalid file name.");
+            catch (DirectoryNotFoundException)
+            {
+                throw new SpreadsheetReadWriteException("Invalid filepath.");
+            }
+
         }
 
+        /// <summary>
+        /// Writes the contents of this spreadsheet to the named file using an XML format.
+        /// The XML elements should be structured as follows:
+        /// 
+        /// <spreadsheet version="version information goes here">
+        /// 
+        /// <cell>
+        /// <name>cell name goes here</name>
+        /// <contents>cell contents goes here</contents>    
+        /// </cell>
+        /// 
+        /// </spreadsheet>
+        /// 
+        ///<exception cref="SpreadsheetReadWriteException">
+        /// If the filename is not a valid path/name, a SpreadSheetReadWriteException is thrown.
+        ///</exception>
+        /// </summary>
         public override void Save(string filename)
         {
             this.Changed = false;
@@ -417,19 +451,42 @@ namespace SS
             settings.Indent = true;
             settings.IndentChars = "  ";
 
-            using (XmlWriter writer = XmlWriter.Create(filename, settings))
+            try
             {
-                writer.WriteStartDocument();
-                writer.WriteStartElement("spreadsheet");
-                writer.WriteAttributeString("version", this.Version);
+                using (XmlWriter writer = XmlWriter.Create(filename, settings))
+                {
+                    writer.WriteStartDocument();
+                    writer.WriteStartElement("spreadsheet");
+                    writer.WriteAttributeString("version", this.Version);
 
-                this.WriteCellContents(writer);
+                    this.WriteCellContents(writer);
 
-                writer.WriteEndElement();
-                writer.WriteEndDocument();
+                    writer.WriteEndElement();
+                    writer.WriteEndDocument();
+                }
             }
+            catch (DirectoryNotFoundException)
+            {
+                throw new SpreadsheetReadWriteException("Invalid filepath.");
+            }
+
         }
 
+        ///<summary>
+        /// <para>Retrieves the Value of a Cell (as opposed to the Contents).</para>
+        /// <para>
+        ///     For Cells containing doubles and strings, the Contents and Value are the same.
+        ///     For Cells containing Formulas, the Value is the calculated Formula.
+        /// </para>
+        /// 
+        /// <para>
+        ///     In the case where a Cell contains a Formula that is dependent on another Cell
+        ///     (such as A1*2), but A1 has nothing in it, then the Value is a SpreadsheetUtilities.FormulaError.
+        /// </para>
+        ///</summary>
+        /// 
+        /// <param name="name">The name of the Cell within the Spreadsheet.</param>
+        /// <returns>The Value of the Cell, which is a double, string, or a SpreadsheetUtilities.FormulaError.</returns>
         public override object GetCellValue(string name)
         {
             if (name is null || !cellName.IsMatch(name)) { throw new InvalidNameException(); }
@@ -570,17 +627,17 @@ namespace SS
             return dependents;
         }
 
-        /// <summary>
+        ///<summary>
         /// <para>
-        /// A private helper method utilized when setting the contents of a cell.
-        /// This is used in the private helper method CreateCell (which is called when
-        /// calling SetCellContents), mostly used to condense code.
+        ///     A private helper method utilized when setting the contents of a cell.
+        ///     This is used in the private helper method CreateCell (which is called when
+        ///     calling SetCellContents), mostly used to condense code.
         /// </para>
         /// 
         /// <para>
-        /// GetCellsToRecalculate (which is found in AbstractSpreadSheet) is used here,
-        /// because it is effectively recursive. Each SetCellContents returns a list
-        /// of dependents, which includes indirect dependents. For example:
+        ///     GetCellsToRecalculate (which is found in AbstractSpreadSheet) is used here,
+        ///     because it is effectively recursive. Each SetCellContents returns a list
+        ///     of dependents, which includes indirect dependents. For example:
         /// </para>
         ///
         /// <list type="bullet">
@@ -590,15 +647,16 @@ namespace SS
         /// </list>
         /// 
         /// <para>
-        /// In that example, C1 has a direct dependent of B1, and since B1 has a dependent
-        /// of A1, this indirectly means that C1 also has a dependent of A1.
+        ///     In that example, C1 has a direct dependent of B1, and since B1 has a dependent
+        ///     of A1, this indirectly means that C1 also has a dependent of A1.
         /// </para>
         /// 
         /// <para>
-        /// This means that each cell needs to be visited in order to establish all of the
-        /// dependencies that relate to the given cell (the parameter passed in).
+        ///     This means that each cell needs to be visited in order to establish all of the
+        ///     dependencies that relate to the given cell (the parameter passed in).
         /// </para>
-        /// </summary>
+        ///</summary>
+        ///
         /// <param name="name">The name of the cell in the spreadsheet.</param>
         /// <returns>A List of strings, which are the direct and indirect dependents of the given cell.</returns>
         private List<string> CreateEffectedCellsList(string name)
@@ -614,10 +672,11 @@ namespace SS
             return effectedCells;
         }
 
-        /// <summary>
+        ///<summary>
         /// This is a private helper method used in SetCellContents. Each SetCellContents
-        /// function is mostly doing the same thing, so this is primarily used to condense code.
-        /// </summary>
+        /// method is mostly doing the same thing, so this is primarily used to condense code.
+        ///</summary>
+        ///
         /// <param name="name">The name of the cell in the spreadsheet.</param>
         /// <param name="input">The object being entered. This should be a Formula, a double, or a string.</param>
         /// <returns>A List of strings, which are the direct and indirect dependents of the given cell. </returns>
@@ -660,6 +719,11 @@ namespace SS
             }
         }
 
+        ///<summary>
+        /// A private helper method that is used by the Save method to
+        /// write the information of each Cell found in the Spreadsheet.
+        ///</summary>
+        /// <param name="writer">The XML Writer object created in the Save method.</param>
         private void WriteCellContents(XmlWriter writer)
         {
             IEnumerable<string> usedCells = this.GetNamesOfAllNonemptyCells();
@@ -669,6 +733,7 @@ namespace SS
                 writer.WriteElementString("name", cell);
                 if(GetCellContents(cell) is Formula)
                 {
+                    //Formulas need to have the "=" sign prepended.
                     string formula = "=" + GetCellContents(cell).ToString();
                     writer.WriteElementString("contents", formula);
                 }
@@ -681,6 +746,21 @@ namespace SS
 
         }
 
+        ///<summary>
+        /// <para>The delegate that is used by Evaluate method for Formulas.</para>
+        /// <para>
+        ///     In a Spreadsheet, the variables in a Formula should be the given Cells
+        ///     found within the Spreadsheet.
+        /// </para>
+        /// 
+        /// <exception cref="ArgumentException"> 
+        ///   If the given Cell does not a have a value currently associated 
+        ///   with it, or if the value is not a double, throw an ArgumentException.
+        /// </exception>
+        /// </summary>
+        /// 
+        /// <param name="cellName">The name of the Cell within the Spreadsheet.</param>
+        /// <returns>The value (which should be a double) associated with the Cell.</returns>
         private double LookUp(string cellName)
         {
             if (cellMap.ContainsKey(cellName))
@@ -700,6 +780,12 @@ namespace SS
             }
         }
 
+        /// <summary>
+        /// This private helper method evaluates a given Cell
+        /// with the Formula's Evaluate method, then sets the Value
+        /// of that Cell to what it was evaluated to.
+        /// </summary>
+        /// <param name="name">The name of the Cell within the Spreadsheet.</param>
         private void Recalculate(string name)
         {
             if(cellMap.TryGetValue(name, out Cell cell))
