@@ -51,27 +51,28 @@ namespace SpreadsheetGrid_Framework
         {
             this.hScroll = new System.Windows.Forms.HScrollBar();
             this.vScroll = new System.Windows.Forms.VScrollBar();
-            this.drawingPanel = new SpreadsheetGrid_Framework.DrawingPanel(  );
+            this.drawingPanel = new SpreadsheetGrid_Framework.DrawingPanel();
             this.SuspendLayout();
             // 
-            // hScrollBar1
+            // hScroll
             // 
             this.hScroll.Location = new System.Drawing.Point(0, 483);
-            this.hScroll.Name = "hScrollBar1";
+            this.hScroll.Name = "hScroll";
             this.hScroll.Size = new System.Drawing.Size(483, 17);
             this.hScroll.TabIndex = 0;
             // 
-            // vScrollBar1
+            // vScroll
             // 
             this.vScroll.Location = new System.Drawing.Point(483, 0);
-            this.vScroll.Name = "vScrollBar1";
+            this.vScroll.Name = "vScroll";
             this.vScroll.Size = new System.Drawing.Size(17, 483);
             this.vScroll.TabIndex = 1;
             // 
-            // drawingPanel1
+            // drawingPanel
             // 
             this.drawingPanel.Location = new System.Drawing.Point(0, 0);
-            this.drawingPanel.Name = "drawingPanel1";
+            this.drawingPanel.Margin = new System.Windows.Forms.Padding(7, 7, 7, 7);
+            this.drawingPanel.Name = "drawingPanel";
             this.drawingPanel.Size = new System.Drawing.Size(483, 483);
             this.drawingPanel.TabIndex = 3;
             // 
@@ -82,7 +83,7 @@ namespace SpreadsheetGrid_Framework
             this.Controls.Add(this.vScroll);
             this.Controls.Add(this.hScroll);
             this.Name = "SpreadsheetGridWidget";
-            this.Size = new System.Drawing.Size(500, 500);
+            this.Size = new System.Drawing.Size(507, 507);
             this.ResumeLayout(false);
 
         }
