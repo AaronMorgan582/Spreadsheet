@@ -119,18 +119,20 @@ namespace SS
             public Cell(object input)
             {
                 cellContents = input;
-                if(input is double || input is string)
+                if (input is double || input is string)
                 {
                     cellValue = input;
                 }
             }
 
-            public object Contents{ 
+            public object Contents
+            {
                 get { return cellContents; }
                 set { this.cellContents = value; }
             }
 
-            public object Value { 
+            public object Value
+            {
                 get { return cellValue; }
                 set { this.cellValue = value; }
             }
@@ -159,9 +161,6 @@ namespace SS
         {
             graph = new DependencyGraph();
             cellMap = new Dictionary<string, Cell>();
-            this.IsValid = isValid;
-            this.Normalize = normalize;
-            this.Version = version;
         }
 
         /// <summary>
@@ -183,8 +182,6 @@ namespace SS
         {
             graph = new DependencyGraph();
             cellMap = new Dictionary<string, Cell>();
-            this.IsValid = IsValid;
-            this.Normalize = Normalize;
 
             string readVersion = GetSavedVersion(filepath);
             if (!readVersion.Equals(version)) { throw new SpreadsheetReadWriteException("Versions are not equivalent"); }
@@ -202,7 +199,7 @@ namespace SS
                     if (reader.IsStartElement())
                     {
                         switch (reader.Name)
-                        { 
+                        {
                             case "name":
                                 reader.Read();
                                 cellname = reader.Value;
@@ -243,7 +240,8 @@ namespace SS
             if (name is null || !cellName.IsMatch(name)) { throw new InvalidNameException(); }
             else
             {
-                if(cellMap.TryGetValue(name, out Cell cell))
+                string normalizedName = Normalize(name);
+                if (cellMap.TryGetValue(normalizedName, out Cell cell))
                 {
                     return cell.Contents;
                 }
@@ -344,6 +342,10 @@ namespace SS
             {
                 //Normalize the name of the cell with the normalize delegate.
                 string normalizedCell = this.Normalize(name);
+                if (!IsValid(normalizedCell))
+                {
+                    throw new InvalidNameException();
+                }
 
                 //Setting a cell's contents means the file has changed.
                 this.Changed = true;
@@ -361,29 +363,29 @@ namespace SS
                     return cellsToEvaluate;
                 }
 
-                else if (content[0] == '=')
+                else if (content.Length > 0 && content[0] == '=')
                 {
                     //Normalize the formula with the normalize delegate.
                     string formulaString = content.Substring(1);
                     string normalizedFormulaString = this.Normalize(formulaString);
 
-                    //The formula has to pass the given validation delegate.
-                    if (this.IsValid(normalizedFormulaString) == true)
-                    {
-                        Formula formula = new Formula(normalizedFormulaString);
-                        IList<string> cellsToEvaluate = SetCellContents(normalizedCell, formula);
+                    Formula formula = new Formula(normalizedFormulaString);
+                    IEnumerable<string> variables = formula.GetVariables();
 
-                        //To recalculate any dependents, as the above comment mentioned (with doubles).
-                        foreach (string cell in cellsToEvaluate)
-                        {
-                            Recalculate(cell);
-                        }
-                        return cellsToEvaluate;
-                    }
-                    else
+                    foreach (string variable in variables)
                     {
-                        throw new FormulaFormatException("Invalid formula.");
+                        if (!IsValid(variable)) { throw new FormulaFormatException("Invalid Formula."); }
                     }
+
+                    IList<string> cellsToEvaluate = SetCellContents(normalizedCell, formula);
+
+                    //To recalculate any dependents, as the above comment mentioned (with doubles).
+                    foreach (string cell in cellsToEvaluate)
+                    {
+                        Recalculate(cell);
+                    }
+
+                    return cellsToEvaluate;
                 }
 
                 else
@@ -424,6 +426,10 @@ namespace SS
                 throw new SpreadsheetReadWriteException("Version not found.");
             }
             catch (DirectoryNotFoundException)
+            {
+                throw new SpreadsheetReadWriteException("Invalid filepath.");
+            }
+            catch (XmlException)
             {
                 throw new SpreadsheetReadWriteException("Invalid filepath.");
             }
@@ -475,6 +481,7 @@ namespace SS
             {
                 throw new SpreadsheetReadWriteException("Invalid filepath.");
             }
+
         }
 
         ///<summary>
@@ -495,10 +502,15 @@ namespace SS
         public override object GetCellValue(string name)
         {
             if (name is null || !cellName.IsMatch(name)) { throw new InvalidNameException(); }
+
+            string normalizedName = Normalize(name);
+            if (cellMap.TryGetValue(normalizedName, out Cell cell))
+            {
+                return cell.Value;
+            }
             else
             {
-                Cell cell = cellMap[name];
-                return cell.Value;
+                return "";
             }
         }
 
@@ -574,28 +586,28 @@ namespace SS
         /// 
         /// </returns>
         protected override IList<string> SetCellContents(string name, Formula formula)
-        {   
-                ///To check for circular dependencies, gather any variables found within the formula that was passed in.
-                IEnumerable<string> variables = formula.GetVariables();
-                foreach (string variable in variables)
+        {
+            ///To check for circular dependencies, gather any variables found within the formula that was passed in.
+            IEnumerable<string> variables = formula.GetVariables();
+            foreach (string variable in variables)
+            {
+                ///Each of them needs to be added to the dependency graph first, in order for GetCellsToRecalculate to run.
+                graph.AddDependency(variable, name);
+                try
                 {
-                    ///Each of them needs to be added to the dependency graph first, in order for GetCellsToRecalculate to run.
-                    graph.AddDependency(variable, name);
-                    try
-                    {
-                        GetCellsToRecalculate(variable);
-                    }
-                    //If it catches the exception, it needs to remove the dependency, then throw the exception again.
-                    catch (CircularException)
-                    {
-                        graph.RemoveDependency(variable, name);
-                        throw new CircularException();
-                    }
+                    GetCellsToRecalculate(variable);
                 }
-                //If there were no circular dependencies found, it can be created normally.
-                List<string> effectedCells = CreateCell(name, formula);
+                //If it catches the exception, it needs to remove the dependency, then throw the exception again.
+                catch (CircularException)
+                {
+                    graph.RemoveDependency(variable, name);
+                    throw new CircularException();
+                }
+            }
+            //If there were no circular dependencies found, it can be created normally.
+            List<string> effectedCells = CreateCell(name, formula);
 
-                return effectedCells;
+            return effectedCells;
         }
 
         /// <summary>
@@ -666,7 +678,7 @@ namespace SS
         /// <returns>A List of strings, which are the direct and indirect dependents of the given cell.</returns>
         private List<string> CreateEffectedCellsList(string name)
         {
-            
+
             IEnumerable<string> dependents = GetCellsToRecalculate(name);
             List<string> effectedCells = new List<string>();
 
@@ -691,6 +703,7 @@ namespace SS
             {
                 //If the passed in name is already established as a Cell, just alter the contents directly.
                 cell.Contents = input;
+                if (input is double || input is string) { cell.Value = input; }
 
                 //However, this also indicates that the cell's contents is being replaced with new contents.
                 //If the new contents are a string or a double, then any prior dependencies need to be cleared,
@@ -732,11 +745,11 @@ namespace SS
         private void WriteCellContents(XmlWriter writer)
         {
             IEnumerable<string> usedCells = this.GetNamesOfAllNonemptyCells();
-            foreach(string cell in usedCells)
+            foreach (string cell in usedCells)
             {
                 writer.WriteStartElement("cell");
                 writer.WriteElementString("name", cell);
-                if(GetCellContents(cell) is Formula)
+                if (GetCellContents(cell) is Formula)
                 {
                     //Formulas need to have the "=" sign prepended.
                     string formula = "=" + GetCellContents(cell).ToString();
@@ -793,9 +806,9 @@ namespace SS
         /// <param name="name">The name of the Cell within the Spreadsheet.</param>
         private void Recalculate(string name)
         {
-            if(cellMap.TryGetValue(name, out Cell cell))
+            if (cellMap.TryGetValue(name, out Cell cell))
             {
-                if(cell.Contents is Formula)
+                if (cell.Contents is Formula)
                 {
                     Formula formula = (Formula)cell.Contents;
                     cell.Value = formula.Evaluate(LookUp);
