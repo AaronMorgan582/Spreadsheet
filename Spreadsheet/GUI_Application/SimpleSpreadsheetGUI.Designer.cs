@@ -143,7 +143,7 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.sample_button.Name = "sample_button";
             this.sample_button.Size = new System.Drawing.Size(75, 23);
             this.sample_button.TabIndex = 0;
-            this.sample_button.Text = "button1";
+            this.sample_button.Text = "Save";
             this.sample_button.UseVisualStyleBackColor = true;
             this.sample_button.Click += new System.EventHandler(this.sample_button_Click);
             // 

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SpreadsheetGRIDWidget\SpreadsheetGRIDWidget.csproj" />
+    <ProjectReference Include="..\Spreadsheet\Spreadsheet.csproj" />
   </ItemGroup>
 
 </Project>
