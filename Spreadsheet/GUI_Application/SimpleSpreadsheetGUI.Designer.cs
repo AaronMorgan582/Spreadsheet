@@ -165,6 +165,7 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.sample_textbox.Size = new System.Drawing.Size(100, 20);
             this.sample_textbox.TabIndex = 2;
             this.sample_textbox.TextChanged += new System.EventHandler(this.sample_textbox_TextChanged);
+            this.sample_textbox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.sample_textbox_KeyPress);
             // 
             // SimpleSpreadsheetGUI
             // 
@@ -200,7 +201,7 @@ namespace CS3500_Spreadsheet_GUI_Example
         private TableLayoutPanel tableLayoutPanel1;
         private Button sample_button;
         private CheckBox sample_checkbox;
-        private TextBox sample_textbox;
+        internal TextBox sample_textbox;
     }
 }
 

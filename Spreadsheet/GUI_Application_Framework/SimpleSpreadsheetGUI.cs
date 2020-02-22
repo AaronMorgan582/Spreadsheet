@@ -116,5 +116,10 @@ namespace CS3500_Spreadsheet_GUI_Example
             grid_widget.SetValue(2, 2, box.Text);
 
         }
+
+        private void sample_textbox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+
+        }
     }
 }

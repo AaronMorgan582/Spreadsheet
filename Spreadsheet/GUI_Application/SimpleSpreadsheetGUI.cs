@@ -60,7 +60,7 @@ namespace CS3500_Spreadsheet_GUI_Example
 
             string name = letters[col] + row;
             object toboloie = spreadsheet.GetCellValue(name);
-            //ss.SetValue(col, row, (string)toboloie);
+            sample_textbox.Text = spreadsheet.GetCellContents(name).ToString();
         }
 
         // Deals with the New menu
@@ -122,42 +122,18 @@ namespace CS3500_Spreadsheet_GUI_Example
 
         }
 
-/*        private void grid_widget_Click(object sender, EventArgs e)
+        private void sample_textbox_KeyPress(object sender, KeyPressEventArgs e)
         {
-            TextBox box = sender as TextBox;
-            int col, row;
-
-            grid_widget.GetSelection(out col, out row);
-            string cellName = letters[col] + row;
-            box.Text = (string)spreadsheet.GetCellContents(cellName);
-        }*/
-
-/*        private void sample_textbox_Enter(object sender, EventArgs e)
-        {
-            TextBox box = sender as TextBox;
-
-            int col, row;
-
-            grid_widget.GetSelection(out col, out row);
-
-            grid_widget.SetValue(col, row, box.Text);
-            string cellName = letters[col] + row;
-            spreadsheet.SetContentsOfCell(cellName, box.Text);
-        }*/
-
-        private void sample_textbox_KeyPress(object sender, KeyEventArgs e)
-        {
-            if(e.KeyCode == Keys.Enter)
+            if(e.KeyChar == (char)Keys.Return)
             {
                 TextBox box = sender as TextBox;
 
                 int col, row;
 
                 grid_widget.GetSelection(out col, out row);
-
-                grid_widget.SetValue(col, row, box.Text);
                 string cellName = letters[col] + row;
                 spreadsheet.SetContentsOfCell(cellName, box.Text);
+                grid_widget.SetValue(col, row, spreadsheet.GetCellValue(cellName).ToString());
             }
         }
     }
