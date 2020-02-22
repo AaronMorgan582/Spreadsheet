@@ -50,6 +50,9 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+
+            this.saveAsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+
             this.MainControlArea = new System.Windows.Forms.FlowLayoutPanel();
             this.grid_widget = new SpreadsheetGrid_Framework.SpreadsheetGridWidget();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -75,6 +78,7 @@ namespace CS3500_Spreadsheet_GUI_Example
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newToolStripMenuItem,
+            this.saveAsMenuItem,
             this.closeToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -93,6 +97,13 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.closeToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.CloseToolStripMenuItem_Click);
+            // 
+            // saveAsMenuItem
+            // 
+            this.saveAsMenuItem.Name = "saveAsMenuItem";
+            this.saveAsMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.saveAsMenuItem.Text = "Save As...";
+            this.saveAsMenuItem.Click += new System.EventHandler(this.saveAsMenuItem_Click);
             // 
             // MainControlArea
             // 
@@ -196,12 +207,18 @@ namespace CS3500_Spreadsheet_GUI_Example
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
+        
+        //Save as menu item
+        private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
 
         private FlowLayoutPanel MainControlArea;
         private TableLayoutPanel tableLayoutPanel1;
         private Button sample_button;
         private CheckBox sample_checkbox;
         internal TextBox sample_textbox;
+
+        //Save as
+        private ToolStripMenuItem saveAsMenuItem;
     }
 }
 

@@ -1,3 +1,46 @@
+Author:     Aaron Morgan and Xavier Davis
+Partner:    None
+Date:       2/22/2020
+Course:     CS 3500, University of Utah, School of Computing
+Assignment: Assignment #6 - Spreadsheet GUI
+Copyright:  CS 3500, Xavier Davis and Aaron Morgan - This work may not be copied for use in Academic Coursework.
+
+1. Comments to Evaluators:
+
+    None at this time.
+
+2. Assignment Specific Topics
+
+    Expected Time to Complete: 15 hours.
+
+    Time spent on Analysis: 3 hours.
+    Time spent on Implementation: 1.5 hours.
+    Time spent Debugging: 0 hours.
+    Time spent Testing: 0 hours.
+
+    Total Time:  hours.
+
+
+3. Consulted Peers:
+
+    1.
+
+4. References:
+    
+    1. Microsoft: KeyPressEventArgs.KeyChar Property https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.keypresseventargs.keychar?view=netframework-4.8#System_Windows_Forms_KeyPressEventArgs_KeyChar
+    2. C Sharp Corner: Dialog Boxes In C# https://www.c-sharpcorner.com/article/dialog-boxes-in-c-sharp/
+    3. Stack Overflow: SaveFileDialog setting default path and file type? https://stackoverflow.com/questions/5136254/savefiledialog-setting-default-path-and-file-type
+ 
+
+5. My Software Practices:
+
+    1.
+
+    2.
+
+    3. 
+
+=======Version 5.0=======
 Author:     Aaron Morgan
 Partner:    None
 Date:       2/14/2020

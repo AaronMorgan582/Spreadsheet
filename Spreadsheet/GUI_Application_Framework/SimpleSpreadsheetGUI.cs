@@ -117,9 +117,5 @@ namespace CS3500_Spreadsheet_GUI_Example
 
         }
 
-        private void sample_textbox_KeyPress(object sender, KeyPressEventArgs e)
-        {
-
-        }
     }
 }
