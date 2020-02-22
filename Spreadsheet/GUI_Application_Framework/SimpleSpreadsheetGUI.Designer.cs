@@ -70,7 +70,7 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Padding = new System.Windows.Forms.Padding(10, 4, 0, 4);
-            this.menuStrip.Size = new System.Drawing.Size(1363, 49);
+            this.menuStrip.Size = new System.Drawing.Size(1363, 51);
             this.menuStrip.TabIndex = 1;
             this.menuStrip.Text = "menuStrip1";
             // 
@@ -156,7 +156,7 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.grid_widget.Margin = new System.Windows.Forms.Padding(7, 7, 7, 7);
             this.grid_widget.MaximumSize = new System.Drawing.Size(4900, 4462);
             this.grid_widget.Name = "grid_widget";
-            this.grid_widget.Size = new System.Drawing.Size(1349, 519);
+            this.grid_widget.Size = new System.Drawing.Size(1349, 517);
             this.grid_widget.TabIndex = 0;
             // 
             // tableLayoutPanel1
@@ -167,13 +167,13 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.tableLayoutPanel1.Controls.Add(this.MainControlArea, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.grid_widget, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 49);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 51);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(7, 7, 7, 7);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 223F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 45F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1363, 756);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1363, 754);
             this.tableLayoutPanel1.TabIndex = 6;
             // 
             // SimpleSpreadsheetGUI

@@ -131,7 +131,7 @@ namespace CS3500_Spreadsheet_GUI_Example
                 int col, row;
 
                 grid_widget.GetSelection(out col, out row);
-                string cellName = letters[col] + row;
+                string cellName = letters[col] + (row + 1);
                 spreadsheet.SetContentsOfCell(cellName, box.Text);
                 grid_widget.SetValue(col, row, spreadsheet.GetCellValue(cellName).ToString());
             }
