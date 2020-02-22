@@ -52,6 +52,7 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 
             this.saveAsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 
             this.MainControlArea = new System.Windows.Forms.FlowLayoutPanel();
             this.grid_widget = new SpreadsheetGrid_Framework.SpreadsheetGridWidget();
@@ -78,6 +79,7 @@ namespace CS3500_Spreadsheet_GUI_Example
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newToolStripMenuItem,
+            this.openMenuItem,
             this.saveAsMenuItem,
             this.closeToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -104,6 +106,13 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.saveAsMenuItem.Size = new System.Drawing.Size(224, 26);
             this.saveAsMenuItem.Text = "Save As...";
             this.saveAsMenuItem.Click += new System.EventHandler(this.saveAsMenuItem_Click);
+            // 
+            // openMenuItem
+            // 
+            this.openMenuItem.Name = "openMenuItem";
+            this.openMenuItem.Size = new System.Drawing.Size(403, 48);
+            this.openMenuItem.Text = "Open";
+            this.openMenuItem.Click += new System.EventHandler(this.openMenuItem_Click);
             // 
             // MainControlArea
             // 
@@ -219,6 +228,9 @@ namespace CS3500_Spreadsheet_GUI_Example
 
         //Save as
         private ToolStripMenuItem saveAsMenuItem;
+
+        //Open as
+        private ToolStripMenuItem openMenuItem;
     }
 }
 

@@ -117,5 +117,14 @@ namespace CS3500_Spreadsheet_GUI_Example
 
         }
 
+        private void sample_textbox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+
+        }
+
+        private void openMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
