@@ -64,14 +64,13 @@ namespace CS3500_Spreadsheet_GUI_Example
             // 
             // menuStrip
             // 
-            this.menuStrip.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.menuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Padding = new System.Windows.Forms.Padding(10, 4, 0, 4);
-            this.menuStrip.Size = new System.Drawing.Size(1363, 54);
+            this.menuStrip.Padding = new System.Windows.Forms.Padding(6, 2, 0, 2);
+            this.menuStrip.Size = new System.Drawing.Size(779, 28);
             this.menuStrip.TabIndex = 1;
             this.menuStrip.Text = "menuStrip1";
             // 
@@ -82,27 +81,27 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.closeToolStripMenuItem,
             this.openMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(80, 46);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 24);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // newToolStripMenuItem
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(232, 48);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.newToolStripMenuItem.Text = "New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.NewToolStripMenuItem_Click);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(232, 48);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.CloseToolStripMenuItem_Click);
             // 
             // openMenuItem
             // 
             this.openMenuItem.Name = "openMenuItem";
-            this.openMenuItem.Size = new System.Drawing.Size(232, 48);
+            this.openMenuItem.Size = new System.Drawing.Size(224, 26);
             this.openMenuItem.Text = "Open";
             this.openMenuItem.Click += new System.EventHandler(this.openMenuItem_Click);
             // 
@@ -116,19 +115,19 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.MainControlArea.Controls.Add(this.sample_textbox);
             this.MainControlArea.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.MainControlArea.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MainControlArea.Location = new System.Drawing.Point(7, 7);
-            this.MainControlArea.Margin = new System.Windows.Forms.Padding(7);
-            this.MainControlArea.MinimumSize = new System.Drawing.Size(233, 223);
+            this.MainControlArea.Location = new System.Drawing.Point(4, 4);
+            this.MainControlArea.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.MainControlArea.MinimumSize = new System.Drawing.Size(133, 123);
             this.MainControlArea.Name = "MainControlArea";
-            this.MainControlArea.Size = new System.Drawing.Size(1349, 223);
+            this.MainControlArea.Size = new System.Drawing.Size(771, 123);
             this.MainControlArea.TabIndex = 4;
             // 
             // sample_button
             // 
-            this.sample_button.Location = new System.Drawing.Point(7, 7);
-            this.sample_button.Margin = new System.Windows.Forms.Padding(7);
+            this.sample_button.Location = new System.Drawing.Point(4, 4);
+            this.sample_button.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.sample_button.Name = "sample_button";
-            this.sample_button.Size = new System.Drawing.Size(175, 51);
+            this.sample_button.Size = new System.Drawing.Size(100, 28);
             this.sample_button.TabIndex = 0;
             this.sample_button.Text = "button1";
             this.sample_button.UseVisualStyleBackColor = true;
@@ -137,10 +136,10 @@ namespace CS3500_Spreadsheet_GUI_Example
             // sample_checkbox
             // 
             this.sample_checkbox.AutoSize = true;
-            this.sample_checkbox.Location = new System.Drawing.Point(196, 7);
-            this.sample_checkbox.Margin = new System.Windows.Forms.Padding(7);
+            this.sample_checkbox.Location = new System.Drawing.Point(112, 4);
+            this.sample_checkbox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.sample_checkbox.Name = "sample_checkbox";
-            this.sample_checkbox.Size = new System.Drawing.Size(166, 33);
+            this.sample_checkbox.Size = new System.Drawing.Size(98, 21);
             this.sample_checkbox.TabIndex = 1;
             this.sample_checkbox.Text = "checkBox1";
             this.sample_checkbox.UseVisualStyleBackColor = true;
@@ -148,10 +147,10 @@ namespace CS3500_Spreadsheet_GUI_Example
             // 
             // sample_textbox
             // 
-            this.sample_textbox.Location = new System.Drawing.Point(376, 7);
-            this.sample_textbox.Margin = new System.Windows.Forms.Padding(7);
+            this.sample_textbox.Location = new System.Drawing.Point(218, 4);
+            this.sample_textbox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.sample_textbox.Name = "sample_textbox";
-            this.sample_textbox.Size = new System.Drawing.Size(228, 35);
+            this.sample_textbox.Size = new System.Drawing.Size(132, 22);
             this.sample_textbox.TabIndex = 2;
             this.sample_textbox.TextChanged += new System.EventHandler(this.sample_textbox_TextChanged);
             this.sample_textbox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.sample_textbox_KeyPress);
@@ -161,11 +160,11 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.grid_widget.AutoSize = true;
             this.grid_widget.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.grid_widget.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grid_widget.Location = new System.Drawing.Point(7, 230);
-            this.grid_widget.Margin = new System.Windows.Forms.Padding(7);
-            this.grid_widget.MaximumSize = new System.Drawing.Size(4900, 4462);
+            this.grid_widget.Location = new System.Drawing.Point(4, 127);
+            this.grid_widget.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.grid_widget.MaximumSize = new System.Drawing.Size(2800, 2462);
             this.grid_widget.Name = "grid_widget";
-            this.grid_widget.Size = new System.Drawing.Size(1349, 514);
+            this.grid_widget.Size = new System.Drawing.Size(771, 285);
             this.grid_widget.TabIndex = 0;
             this.grid_widget.Click += new System.EventHandler(this.grid_widget_Click);
             this.grid_widget.MouseClick += new System.Windows.Forms.MouseEventHandler(this.grid_widget_MouseClick);
@@ -178,26 +177,27 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.tableLayoutPanel1.Controls.Add(this.MainControlArea, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.grid_widget, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 54);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(7);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 28);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 223F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 45F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1363, 751);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 123F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(779, 416);
             this.tableLayoutPanel1.TabIndex = 6;
             // 
             // SimpleSpreadsheetGUI
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 29F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1363, 805);
+            this.ClientSize = new System.Drawing.Size(779, 444);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.menuStrip);
             this.MainMenuStrip = this.menuStrip;
-            this.Margin = new System.Windows.Forms.Padding(7);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "SimpleSpreadsheetGUI";
             this.Text = "Sample GUI - Copy/Modify/Profit";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SimpleSpreadsheetGUI_FormClosing);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.MainControlArea.ResumeLayout(false);

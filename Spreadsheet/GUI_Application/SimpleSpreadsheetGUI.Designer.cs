@@ -206,7 +206,7 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
-
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SimpleSpreadsheetGUI_FormClosing);
         }
 
         #endregion

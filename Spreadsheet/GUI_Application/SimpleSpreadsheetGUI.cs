@@ -79,10 +79,10 @@ namespace CS3500_Spreadsheet_GUI_Example
 
             string name = letters[col] + (row + 1);
             Point coordinate = new Point(col, row);
-            if (!coordSystem.ContainsKey(coordinate))
+/*            if (!coordSystem.ContainsKey(coordinate))
             {
                 coordSystem.Add(coordinate, name);
-            }
+            }*/
             sample_textbox.Text = spreadsheet.GetCellContents(name).ToString();
         }
 
@@ -110,7 +110,7 @@ namespace CS3500_Spreadsheet_GUI_Example
         // Deals with the Close menu
         private void CloseToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Close();
+           Close();
         }
 
         private void saveAsMenuItem_Click(object sender, EventArgs e)
@@ -144,9 +144,7 @@ namespace CS3500_Spreadsheet_GUI_Example
                 MessageBox.Show("Saved.");
             }
             else
-            {
-                Save();
-            }
+            { Save(); }
         }
 
         /// <summary>
@@ -210,6 +208,20 @@ namespace CS3500_Spreadsheet_GUI_Example
         private void grid_widget_MouseClick(object sender, MouseEventArgs e)
         {
             MessageBox.Show("ANGRY LEMON");
+        }
+
+        private void SimpleSpreadsheetGUI_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (spreadsheet.Changed)
+            {
+                if (MessageBox.Show("Do you want to save changes to your spreadsheet?", "Unsaved Changes", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    e.Cancel = true;
+                    Save();
+                }
+                else
+                { e.Cancel = false; }
+            }
         }
     }
 }

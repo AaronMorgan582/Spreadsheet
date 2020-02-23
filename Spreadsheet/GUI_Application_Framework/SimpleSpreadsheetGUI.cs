@@ -136,5 +136,10 @@ namespace CS3500_Spreadsheet_GUI_Example
         {
 
         }
+
+        private void SimpleSpreadsheetGUI_FormClosing(object sender, FormClosingEventArgs e)
+        {
+           
+        }
     }
 }
