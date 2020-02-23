@@ -50,13 +50,13 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainControlArea = new System.Windows.Forms.FlowLayoutPanel();
             this.sample_button = new System.Windows.Forms.Button();
             this.sample_checkbox = new System.Windows.Forms.CheckBox();
             this.sample_textbox = new System.Windows.Forms.TextBox();
             this.grid_widget = new SpreadsheetGrid_Framework.SpreadsheetGridWidget();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.openMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.MainControlArea.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -71,7 +71,7 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Padding = new System.Windows.Forms.Padding(10, 4, 0, 4);
-            this.menuStrip.Size = new System.Drawing.Size(1363, 51);
+            this.menuStrip.Size = new System.Drawing.Size(1363, 54);
             this.menuStrip.TabIndex = 1;
             this.menuStrip.Text = "menuStrip1";
             // 
@@ -82,22 +82,29 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.closeToolStripMenuItem,
             this.openMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(80, 43);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(80, 46);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // newToolStripMenuItem
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(403, 48);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(232, 48);
             this.newToolStripMenuItem.Text = "New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.NewToolStripMenuItem_Click);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(403, 48);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(232, 48);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.CloseToolStripMenuItem_Click);
+            // 
+            // openMenuItem
+            // 
+            this.openMenuItem.Name = "openMenuItem";
+            this.openMenuItem.Size = new System.Drawing.Size(232, 48);
+            this.openMenuItem.Text = "Open";
+            this.openMenuItem.Click += new System.EventHandler(this.openMenuItem_Click);
             // 
             // MainControlArea
             // 
@@ -158,8 +165,10 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.grid_widget.Margin = new System.Windows.Forms.Padding(7);
             this.grid_widget.MaximumSize = new System.Drawing.Size(4900, 4462);
             this.grid_widget.Name = "grid_widget";
-            this.grid_widget.Size = new System.Drawing.Size(1349, 517);
+            this.grid_widget.Size = new System.Drawing.Size(1349, 514);
             this.grid_widget.TabIndex = 0;
+            this.grid_widget.Click += new System.EventHandler(this.grid_widget_Click);
+            this.grid_widget.MouseClick += new System.Windows.Forms.MouseEventHandler(this.grid_widget_MouseClick);
             // 
             // tableLayoutPanel1
             // 
@@ -169,21 +178,14 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.tableLayoutPanel1.Controls.Add(this.MainControlArea, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.grid_widget, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 51);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 54);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(7);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 223F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 45F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1363, 754);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1363, 751);
             this.tableLayoutPanel1.TabIndex = 6;
-            // 
-            // openMenuItem
-            // 
-            this.openMenuItem.Name = "openMenuItem";
-            this.openMenuItem.Size = new System.Drawing.Size(403, 48);
-            this.openMenuItem.Text = "Open";
-            this.openMenuItem.Click += new System.EventHandler(this.openMenuItem_Click);
             // 
             // SimpleSpreadsheetGUI
             // 

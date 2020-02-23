@@ -126,5 +126,15 @@ namespace CS3500_Spreadsheet_GUI_Example
         {
 
         }
+
+        private void grid_widget_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void grid_widget_MouseClick(object sender, MouseEventArgs e)
+        {
+
+        }
     }
 }

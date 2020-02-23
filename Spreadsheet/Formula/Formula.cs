@@ -382,7 +382,7 @@ namespace SpreadsheetUtilities
         /// </summary>
         public override string ToString()
         {
-            return expression;
+            return "=" + expression;
         }
 
         /// <summary>
