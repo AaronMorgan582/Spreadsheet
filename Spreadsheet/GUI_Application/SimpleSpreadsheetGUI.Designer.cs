@@ -58,8 +58,8 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.grid_widget = new SpreadsheetGrid_Framework.SpreadsheetGridWidget();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.sample_button = new System.Windows.Forms.Button();
-            this.sample_checkbox = new System.Windows.Forms.CheckBox();
             this.sample_textbox = new System.Windows.Forms.TextBox();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.MainControlArea.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -68,7 +68,7 @@ namespace CS3500_Spreadsheet_GUI_Example
             // menuStrip
             // 
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem, this.helpToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Size = new System.Drawing.Size(584, 24);
@@ -85,6 +85,13 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
+            // 
+            // helpMeToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(139, 41);
+            this.helpToolStripMenuItem.Text = "Help";
+            this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
             // 
             // newToolStripMenuItem
             // 
@@ -120,7 +127,6 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.MainControlArea.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.MainControlArea.BackColor = System.Drawing.Color.Coral;
             this.MainControlArea.Controls.Add(this.sample_button);
-            this.MainControlArea.Controls.Add(this.sample_checkbox);
             this.MainControlArea.Controls.Add(this.sample_textbox);
             this.MainControlArea.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.MainControlArea.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -168,17 +174,6 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.sample_button.UseVisualStyleBackColor = true;
             this.sample_button.Click += new System.EventHandler(this.sample_button_Click);
             // 
-            // sample_checkbox
-            // 
-            this.sample_checkbox.AutoSize = true;
-            this.sample_checkbox.Location = new System.Drawing.Point(84, 3);
-            this.sample_checkbox.Name = "sample_checkbox";
-            this.sample_checkbox.Size = new System.Drawing.Size(80, 17);
-            this.sample_checkbox.TabIndex = 1;
-            this.sample_checkbox.Text = "checkBox1";
-            this.sample_checkbox.UseVisualStyleBackColor = true;
-            this.sample_checkbox.CheckedChanged += new System.EventHandler(this.sample_checkbox_CheckedChanged);
-            // 
             // sample_textbox
             // 
             this.sample_textbox.Location = new System.Drawing.Point(170, 3);
@@ -217,15 +212,15 @@ namespace CS3500_Spreadsheet_GUI_Example
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
-        
-        //Save as menu item
-        private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
 
         private FlowLayoutPanel MainControlArea;
         private TableLayoutPanel tableLayoutPanel1;
         private Button sample_button;
-        private CheckBox sample_checkbox;
         internal TextBox sample_textbox;
+
+        //Help menu
+        private ToolStripMenuItem helpToolStripMenuItem;
+
 
         //Save as
         private ToolStripMenuItem saveAsMenuItem;

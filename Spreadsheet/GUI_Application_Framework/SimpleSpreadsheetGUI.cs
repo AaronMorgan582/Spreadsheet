@@ -141,5 +141,10 @@ namespace CS3500_Spreadsheet_GUI_Example
         {
            
         }
+
+        private void helpMeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
