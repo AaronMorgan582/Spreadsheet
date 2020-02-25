@@ -192,7 +192,7 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.Controls.Add(this.menuStrip);
             this.MainMenuStrip = this.menuStrip;
             this.Name = "SimpleSpreadsheetGUI";
-            this.Text = "Sample GUI - Copy/Modify/Profit";
+            this.Text = "Spreadsheet";
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.MainControlArea.ResumeLayout(false);
@@ -207,7 +207,7 @@ namespace CS3500_Spreadsheet_GUI_Example
         #endregion
 
         
-        private SpreadsheetGridWidget grid_widget;
+        internal SpreadsheetGridWidget grid_widget;
         private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;

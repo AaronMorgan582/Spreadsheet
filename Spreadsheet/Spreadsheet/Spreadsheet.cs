@@ -749,16 +749,7 @@ namespace SS
             {
                 writer.WriteStartElement("cell");
                 writer.WriteElementString("name", cell);
-                if (GetCellContents(cell) is Formula)
-                {
-                    //Formulas need to have the "=" sign prepended.
-                    string formula = "=" + GetCellContents(cell).ToString();
-                    writer.WriteElementString("contents", formula);
-                }
-                else
-                {
-                    writer.WriteElementString("contents", GetCellContents(cell).ToString());
-                }
+                writer.WriteElementString("contents", GetCellContents(cell).ToString());
                 writer.WriteEndElement();
             }
 
