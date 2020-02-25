@@ -26,6 +26,7 @@ using System.Windows.Forms;
 using Microsoft.VisualBasic;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using SpreadsheetUtilities;
 
 namespace CS3500_Spreadsheet_GUI_Example
 {
@@ -59,17 +60,17 @@ namespace CS3500_Spreadsheet_GUI_Example
         private void DisplaySelection(SpreadsheetGridWidget ss)
         {
             int row, col;
-
-            string value;
             ss.GetSelection(out col, out row);
-            ss.GetValue(col, row, out value);
-
             string name = letters[col] + (row + 1);
+            
+            //If the user clicks on a cell, add that cell to the Dictionary that maps the grid (x,y) to its proper "letter/number" name.
             Point coordinate = new Point(col, row);
             if (!coordSystem.ContainsKey(coordinate))
             {
                 coordSystem.Add(coordinate, name);
             }
+
+            ss.SetValue(col, row, spreadsheet.GetCellValue(name).ToString());
             sample_textbox.Text = spreadsheet.GetCellContents(name).ToString();
 
         }
@@ -96,9 +97,9 @@ namespace CS3500_Spreadsheet_GUI_Example
                 Regex alphabet = new Regex(@"([a-zA-Z]+)(\d+)");
                 foreach (string cell in usedCells)
                 {
-                    string[] cellChars = alphabet.Split(cell);
-                    int col = Array.IndexOf(letters, cellChars[1]);
-                    int row = Int32.Parse(cellChars[2]);
+                    string[] cellNameSeparated = alphabet.Split(cell);
+                    int col = Array.IndexOf(letters, cellNameSeparated[1]);
+                    int row = Int32.Parse(cellNameSeparated[2]);
                     this.grid_widget.SetValue(col, row - 1, spreadsheet.GetCellValue(cell).ToString());
                 }
 
@@ -151,14 +152,12 @@ namespace CS3500_Spreadsheet_GUI_Example
         /// <param name="e">not used</param>
         private void sample_textbox_TextChanged(object sender, EventArgs e)
         {
-            TextBox box = sender as TextBox;
+/*            TextBox box = sender as TextBox;
             int col, row;
-            string value;
 
             grid_widget.GetSelection(out col, out row);
-            //grid_widget.GetValue(col, row, out value);
 
-            grid_widget.SetValue(col, row, box.Text);
+            grid_widget.SetValue(col, row, box.Text);*/
         }
 
         private void sample_textbox_KeyPress(object sender, KeyPressEventArgs e)
@@ -181,13 +180,16 @@ namespace CS3500_Spreadsheet_GUI_Example
             {
                 coordSystem.Add(coordinate, cellName);
             }
-            spreadsheet.SetContentsOfCell(coordSystem[coordinate], box.Text);
+            try
+            {
+                spreadsheet.SetContentsOfCell(coordSystem[coordinate], box.Text);
+            }
+            catch(FormulaFormatException)
+            {
+                MessageBox.Show("Invalid formula format.");
+            }
+            
             grid_widget.SetValue(col, row, spreadsheet.GetCellValue(coordSystem[coordinate]).ToString());
-        }
-
-        private void grid_widget_MouseClick(object sender, MouseEventArgs e)
-        {
-            MessageBox.Show("ANGRY LEMON");
         }
 
         private void SimpleSpreadsheetGUI_FormClosing(object sender, FormClosingEventArgs e)

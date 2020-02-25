@@ -146,7 +146,6 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.grid_widget.Name = "grid_widget";
             this.grid_widget.Size = new System.Drawing.Size(578, 231);
             this.grid_widget.TabIndex = 0;
-            this.grid_widget.MouseClick += new System.Windows.Forms.MouseEventHandler(this.grid_widget_MouseClick);
             // 
             // tableLayoutPanel1
             // 
