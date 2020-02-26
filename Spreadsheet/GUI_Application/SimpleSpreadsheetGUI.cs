@@ -38,10 +38,9 @@ namespace CS3500_Spreadsheet_GUI_Example
         string[] letters = new string[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
         private string saveFilePath;
         private Dictionary<Point, string> coordSystem;
-        private int prevRow;
-        private int prevCol;
         private System.Windows.Forms.Timer countDown;
-        private BackgroundWorker worker1;
+        private string input;
+        private IEnumerable<string> dependencies;
 
         public SimpleSpreadsheetGUI()
         {
@@ -75,10 +74,7 @@ namespace CS3500_Spreadsheet_GUI_Example
                 coordSystem.Add(coordinate, name);
             }
 
-            //ss.SetValue(col, row, spreadsheet.GetCellValue(name).ToString());
-            sample_textbox.Text = spreadsheet.GetCellContents(name).ToString();
-
-            
+            sample_textbox.Text = spreadsheet.GetCellContents(name).ToString();            
         }
 
         // Deals with the New menu
@@ -100,14 +96,7 @@ namespace CS3500_Spreadsheet_GUI_Example
                 this.grid_widget.Clear();
 
                 IEnumerable<string> usedCells = spreadsheet.GetNamesOfAllNonemptyCells();
-                Regex alphabet = new Regex(@"([a-zA-Z]+)(\d+)");
-                foreach (string cell in usedCells)
-                {
-                    string[] cellNameSeparated = alphabet.Split(cell);
-                    int col = Array.IndexOf(letters, cellNameSeparated[1]);
-                    int row = Int32.Parse(cellNameSeparated[2]);
-                    this.grid_widget.SetValue(col, row - 1, spreadsheet.GetCellValue(cell).ToString());
-                }
+                GetCellCoordsAndSet(usedCells);
 
                 saveFilePath = file;
             }
@@ -151,76 +140,20 @@ namespace CS3500_Spreadsheet_GUI_Example
             { Save(); }
         }
 
-        /// <summary>
-        /// Textbox handler
-        /// </summary>
-        /// <param name="sender"> the textbox </param>
-        /// <param name="e">not used</param>
-        private void sample_textbox_TextChanged(object sender, EventArgs e)
-        {
-/*            TextBox box = sender as TextBox;
-            int col, row;
-
-            grid_widget.GetSelection(out col, out row);
-
-            grid_widget.SetValue(col, row, box.Text);*/
-        }
-
         private void sample_textbox_KeyPress(object sender, KeyPressEventArgs e)
         {
+            TextBox box = sender as TextBox;
             if (e.KeyChar == (char)Keys.Return)
             {
-                IEnumerable<string> dependents = SetCell(sender);
-
-                IEnumerable<string> changedCells = spreadsheet.GetNamesOfAllNonemptyCells();
-                Dictionary<Point, string>.KeyCollection nonEmptyCells = coordSystem.Keys;
-/*                foreach(string dependent in dependents)
-                {
-                    grid_widget.SetValue(0, 0, spreadsheet.GetCellValue(dependent).ToString());
-
-                    foreach (Point coordinate in nonEmptyCells)
-                    {
-                        if (coordSystem.ContainsValue(dependent))
-                        {
-                            grid_widget.SetValue(coordinate.X, coordinate.Y, spreadsheet.GetCellValue(dependent).ToString());
-                        }
-                    }
-                }*/
-
-                Regex alphabet = new Regex(@"([a-zA-Z]+)(\d+)");
-                foreach (string dependent in dependents)
-                {
-                    string[] cellNameSeparated = alphabet.Split(dependent);
-                    int col = Array.IndexOf(letters, cellNameSeparated[1]);
-                    int row = Int32.Parse(cellNameSeparated[2]);
-                    this.grid_widget.SetValue(col, row - 1, spreadsheet.GetCellValue(dependent).ToString());
-                }
-
-                /*                foreach (string changedCell in changedCells)
-                                {
-                                    if (spreadsheet.GetCellContents(changedCell) is Formula)
-                                    {
-                                        foreach (Point coordinate in nonEmptyCells)
-                                        {
-                                            if()
-                                            grid_widget.SetValue(coordinate.X, coordinate.Y, spreadsheet.GetCellValue(changedCell).ToString());
-                                        }
-                                    }
-                                }*/
+                input = box.Text;
+                thread1.RunWorkerAsync();
             }
-
         }
 
-        private IEnumerable<string> SetCell(object sender)
+        private void SetCell(object sender, DoWorkEventArgs e)
         {
-            worker1 = new BackgroundWorker();
-
-            TextBox box = sender as TextBox;
-            IEnumerable<string> dependencies = new HashSet<string>();
             int col, row;
             grid_widget.GetSelection(out col, out row);
-            prevRow = row;
-            prevCol = col;
             Point coordinate = new Point(col, row);
             string cellName = letters[col] + (row + 1);
             if (!coordSystem.ContainsKey(coordinate))
@@ -229,7 +162,7 @@ namespace CS3500_Spreadsheet_GUI_Example
             }
             try
             {
-                dependencies = spreadsheet.SetContentsOfCell(coordSystem[coordinate], box.Text);
+                dependencies = spreadsheet.SetContentsOfCell(coordSystem[coordinate], input);
             }
             catch(FormulaFormatException)
             {
@@ -239,9 +172,16 @@ namespace CS3500_Spreadsheet_GUI_Example
             {
                 MessageBox.Show("Circular Dependency found.");
             }
-            
-            grid_widget.SetValue(col, row, spreadsheet.GetCellValue(coordSystem[coordinate]).ToString());
-            return dependencies;
+
+            e.Result = spreadsheet.GetCellValue(coordSystem[coordinate].ToString());
+        }
+
+        private void SetCellDone(object sender, RunWorkerCompletedEventArgs e)
+        {
+            int col, row;
+            grid_widget.GetSelection(out col, out row);
+            grid_widget.SetValue(col, row, e.Result.ToString());
+            GetCellCoordsAndSet(dependencies);
         }
 
         private void SimpleSpreadsheetGUI_FormClosing(object sender, FormClosingEventArgs e)
@@ -271,6 +211,18 @@ namespace CS3500_Spreadsheet_GUI_Example
         private void AutoSave()
         {
             System.Windows.Forms.Timer countDown;
+        }
+
+        private void GetCellCoordsAndSet(IEnumerable<string> usedCells)
+        {
+            Regex alphabet = new Regex(@"([a-zA-Z]+)(\d+)");
+            foreach (string dependent in usedCells)
+            {
+                string[] cellNameSeparated = alphabet.Split(dependent);
+                int gridCol = Array.IndexOf(letters, cellNameSeparated[1]);
+                int gridRow = Int32.Parse(cellNameSeparated[2]);
+                this.grid_widget.SetValue(gridCol, gridRow - 1, spreadsheet.GetCellValue(dependent).ToString());
+            }
         }
 
     }

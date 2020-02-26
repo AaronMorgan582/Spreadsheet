@@ -142,7 +142,8 @@ namespace CS3500_Spreadsheet_GUI_Example
             //
             // thread1
             //
-
+            this.thread1.DoWork += SetCell;
+            this.thread1.RunWorkerCompleted += SetCellDone;
 
             // 
             // grid_widget
@@ -188,7 +189,6 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.sample_textbox.Name = "sample_textbox";
             this.sample_textbox.Size = new System.Drawing.Size(100, 20);
             this.sample_textbox.TabIndex = 2;
-            this.sample_textbox.TextChanged += new System.EventHandler(this.sample_textbox_TextChanged);
             this.sample_textbox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.sample_textbox_KeyPress);
             // 
             // SimpleSpreadsheetGUI
