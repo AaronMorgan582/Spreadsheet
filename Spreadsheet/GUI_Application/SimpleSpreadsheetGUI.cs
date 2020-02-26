@@ -27,6 +27,8 @@ using Microsoft.VisualBasic;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using SpreadsheetUtilities;
+using System.ComponentModel;
+using System.Threading;
 
 namespace CS3500_Spreadsheet_GUI_Example
 {
@@ -38,6 +40,8 @@ namespace CS3500_Spreadsheet_GUI_Example
         private Dictionary<Point, string> coordSystem;
         private int prevRow;
         private int prevCol;
+        private System.Windows.Forms.Timer countDown;
+        private BackgroundWorker worker1;
 
         public SimpleSpreadsheetGUI()
         {
@@ -51,7 +55,6 @@ namespace CS3500_Spreadsheet_GUI_Example
             // Add event handler and select a start cell
             grid_widget.SelectionChanged += DisplaySelection;
             grid_widget.SetSelection(0, 0, false);
-
         }
 
         /// <summary>
@@ -75,6 +78,7 @@ namespace CS3500_Spreadsheet_GUI_Example
             //ss.SetValue(col, row, spreadsheet.GetCellValue(name).ToString());
             sample_textbox.Text = spreadsheet.GetCellContents(name).ToString();
 
+            
         }
 
         // Deals with the New menu
@@ -209,6 +213,8 @@ namespace CS3500_Spreadsheet_GUI_Example
 
         private IEnumerable<string> SetCell(object sender)
         {
+            worker1 = new BackgroundWorker();
+
             TextBox box = sender as TextBox;
             IEnumerable<string> dependencies = new HashSet<string>();
             int col, row;
@@ -260,6 +266,11 @@ namespace CS3500_Spreadsheet_GUI_Example
                 "\n\nAdditional Features:" +
                 "\n   Dark Mode" +
                 "\n   Autosave", "Help Menu");
+        }
+
+        private void AutoSave()
+        {
+            System.Windows.Forms.Timer countDown;
         }
 
     }

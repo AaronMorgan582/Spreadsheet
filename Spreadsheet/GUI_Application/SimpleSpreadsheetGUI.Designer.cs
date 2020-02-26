@@ -13,6 +13,7 @@
 /// </summary>
 
 using SpreadsheetGrid_Framework;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -50,6 +51,8 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+
+            this.thread1 = new BackgroundWorker();
 
             this.saveAsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -135,6 +138,12 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.MainControlArea.Name = "MainControlArea";
             this.MainControlArea.Size = new System.Drawing.Size(578, 100);
             this.MainControlArea.TabIndex = 4;
+
+            //
+            // thread1
+            //
+
+
             // 
             // grid_widget
             // 
@@ -226,6 +235,9 @@ namespace CS3500_Spreadsheet_GUI_Example
 
         //Open as
         private ToolStripMenuItem openMenuItem;
+
+        //background worker
+        private BackgroundWorker thread1;
     }
 }
 
