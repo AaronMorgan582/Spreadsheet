@@ -13,10 +13,10 @@ Copyright:  CS 3500, Xavier Davis and Aaron Morgan - This work may not be copied
 
     Expected Time to Complete: 15 hours.
 
-    Time spent on Analysis: 6.5 hours.
-    Time spent on Implementation: 4.0 hours.
+    Time spent on Analysis: 7 hours.
+    Time spent on Implementation: 4.5 hours.
     Time spent Debugging: 2.0 hours.
-    Time spent Testing: 1.5 hours.
+    Time spent Testing: 2 hours.
 
     Total Time: 14 hours.
 
@@ -33,6 +33,7 @@ Copyright:  CS 3500, Xavier Davis and Aaron Morgan - This work may not be copied
     4. Stack Overflow: How to create an array of tuples? https://stackoverflow.com/questions/20490884/how-to-create-an-array-of-tuples
     5. C Sharp Corner: C# Message Box https://www.c-sharpcorner.com/uploadfile/mahesh/understanding-message-box-in-windows-forms-using-C-Sharp/
     6. Stack Overflow: Checking if a string array contains a value, and if so, getting its position https://stackoverflow.com/questions/7867377/checking-if-a-string-array-contains-a-value-and-if-so-getting-its-position
+    7. Microsoft: Form.Closing Event https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.form.closing?view=netframework-4.8
 
 5. My Software Practices:
 

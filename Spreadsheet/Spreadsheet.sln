@@ -28,7 +28,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Whiteboard", "Whiteboard\Wh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpreadsheetGridWidget", "SpreadsheetGridWidget\SpreadsheetGridWidget.csproj", "{424A71DF-EAFF-4FCF-9203-2E6072C83471}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GUI_Application", "GUI_Application\GUI_Application.csproj", "{C10E2D69-693E-45DE-B929-57146B5DFB26}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpreadsheetGUI", "GUI_Application\SpreadsheetGUI.csproj", "{C10E2D69-693E-45DE-B929-57146B5DFB26}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUI_Application_Framework", "GUI_Application_Framework\GUI_Application_Framework.csproj", "{7C4BCC7A-2050-4A02-A5A6-35189B975E86}"
 EndProject

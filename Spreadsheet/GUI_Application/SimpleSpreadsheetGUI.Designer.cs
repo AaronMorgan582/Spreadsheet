@@ -47,21 +47,19 @@ namespace CS3500_Spreadsheet_GUI_Example
         /// </summary>
         private void InitializeComponent()
         {
+            this.saveAsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bg_worker = new BackgroundWorker();
+
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-
-            this.thread1 = new BackgroundWorker();
-
-            this.saveAsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-
             this.MainControlArea = new System.Windows.Forms.FlowLayoutPanel();
             this.grid_widget = new SpreadsheetGrid_Framework.SpreadsheetGridWidget();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.sample_button = new System.Windows.Forms.Button();
-            this.sample_textbox = new System.Windows.Forms.TextBox();
+            this.Save_Button = new System.Windows.Forms.Button();
+            this.Input_Textbox = new System.Windows.Forms.TextBox();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.MainControlArea.SuspendLayout();
@@ -94,7 +92,7 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(139, 41);
             this.helpToolStripMenuItem.Text = "Help";
-            this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
+            this.helpToolStripMenuItem.Click += new System.EventHandler(this.HelpToolStripMenuItem_Click);
             // 
             // newToolStripMenuItem
             // 
@@ -115,22 +113,22 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.saveAsMenuItem.Name = "saveAsMenuItem";
             this.saveAsMenuItem.Size = new System.Drawing.Size(224, 26);
             this.saveAsMenuItem.Text = "Save As...";
-            this.saveAsMenuItem.Click += new System.EventHandler(this.saveAsMenuItem_Click);
+            this.saveAsMenuItem.Click += new System.EventHandler(this.SaveAsMenuItem_Click);
             // 
             // openMenuItem
             // 
             this.openMenuItem.Name = "openMenuItem";
             this.openMenuItem.Size = new System.Drawing.Size(403, 48);
             this.openMenuItem.Text = "Open";
-            this.openMenuItem.Click += new System.EventHandler(this.openMenuItem_Click);
+            this.openMenuItem.Click += new System.EventHandler(this.OpenMenuItem_Click);
             // 
             // MainControlArea
             // 
             this.MainControlArea.AutoSize = true;
             this.MainControlArea.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.MainControlArea.BackColor = System.Drawing.Color.Coral;
-            this.MainControlArea.Controls.Add(this.sample_button);
-            this.MainControlArea.Controls.Add(this.sample_textbox);
+            this.MainControlArea.Controls.Add(this.Save_Button);
+            this.MainControlArea.Controls.Add(this.Input_Textbox);
             this.MainControlArea.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.MainControlArea.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainControlArea.Location = new System.Drawing.Point(3, 3);
@@ -138,13 +136,11 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.MainControlArea.Name = "MainControlArea";
             this.MainControlArea.Size = new System.Drawing.Size(578, 100);
             this.MainControlArea.TabIndex = 4;
-
             //
-            // thread1
+            // Background Worker
             //
-            this.thread1.DoWork += SetCell;
-            this.thread1.RunWorkerCompleted += SetCellDone;
-
+            this.bg_worker.DoWork += SetCell;
+            this.bg_worker.RunWorkerCompleted += SetCellDone;
             // 
             // grid_widget
             // 
@@ -173,23 +169,23 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.tableLayoutPanel1.Size = new System.Drawing.Size(584, 337);
             this.tableLayoutPanel1.TabIndex = 6;
             // 
-            // sample_button
+            // Save_Button
             // 
-            this.sample_button.Location = new System.Drawing.Point(3, 3);
-            this.sample_button.Name = "sample_button";
-            this.sample_button.Size = new System.Drawing.Size(75, 23);
-            this.sample_button.TabIndex = 0;
-            this.sample_button.Text = "Save";
-            this.sample_button.UseVisualStyleBackColor = true;
-            this.sample_button.Click += new System.EventHandler(this.sample_button_Click);
+            this.Save_Button.Location = new System.Drawing.Point(3, 3);
+            this.Save_Button.Name = "Save_Button";
+            this.Save_Button.Size = new System.Drawing.Size(75, 23);
+            this.Save_Button.TabIndex = 0;
+            this.Save_Button.Text = "Save";
+            this.Save_Button.UseVisualStyleBackColor = true;
+            this.Save_Button.Click += new System.EventHandler(this.Save_Button_Click);
             // 
-            // sample_textbox
+            // Input_Textbox
             // 
-            this.sample_textbox.Location = new System.Drawing.Point(170, 3);
-            this.sample_textbox.Name = "sample_textbox";
-            this.sample_textbox.Size = new System.Drawing.Size(100, 20);
-            this.sample_textbox.TabIndex = 2;
-            this.sample_textbox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.sample_textbox_KeyPress);
+            this.Input_Textbox.Location = new System.Drawing.Point(170, 3);
+            this.Input_Textbox.Name = "Input_Textbox";
+            this.Input_Textbox.Size = new System.Drawing.Size(100, 20);
+            this.Input_Textbox.TabIndex = 2;
+            this.Input_Textbox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Input_Textbox_KeyPress);
             // 
             // SimpleSpreadsheetGUI
             // 
@@ -223,21 +219,13 @@ namespace CS3500_Spreadsheet_GUI_Example
 
         private FlowLayoutPanel MainControlArea;
         private TableLayoutPanel tableLayoutPanel1;
-        private Button sample_button;
-        internal TextBox sample_textbox;
+        private Button Save_Button;
+        internal TextBox Input_Textbox;
 
-        //Help menu
         private ToolStripMenuItem helpToolStripMenuItem;
-
-
-        //Save as
         private ToolStripMenuItem saveAsMenuItem;
-
-        //Open as
         private ToolStripMenuItem openMenuItem;
-
-        //background worker
-        private BackgroundWorker thread1;
+        private BackgroundWorker bg_worker;
 
     }
 }
