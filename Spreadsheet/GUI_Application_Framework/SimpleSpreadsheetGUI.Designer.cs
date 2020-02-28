@@ -56,9 +56,9 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.sample_button = new System.Windows.Forms.Button();
             this.sample_checkbox = new System.Windows.Forms.CheckBox();
             this.sample_textbox = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.grid_widget = new SpreadsheetGrid_Framework.SpreadsheetGridWidget();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.label1 = new System.Windows.Forms.Label();
             this.menuStrip.SuspendLayout();
             this.MainControlArea.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -167,6 +167,16 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.sample_textbox.TextChanged += new System.EventHandler(this.sample_textbox_TextChanged);
             this.sample_textbox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.sample_textbox_KeyPress);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(614, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(79, 29);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "label1";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
+            // 
             // grid_widget
             // 
             this.grid_widget.AutoSize = true;
@@ -197,16 +207,6 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 45F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(1363, 756);
             this.tableLayoutPanel1.TabIndex = 6;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(614, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(79, 29);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "label1";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // SimpleSpreadsheetGUI
             // 
