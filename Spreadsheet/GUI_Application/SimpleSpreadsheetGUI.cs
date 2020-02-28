@@ -80,8 +80,8 @@ namespace CS3500_Spreadsheet_GUI_Example
             // Add event handler and select a start cell
             grid_widget.SelectionChanged += DisplaySelection;
             grid_widget.SetSelection(0, 0, false);
-            CellName_Textbox.Text = "A1";
-            CellValue_Textbox.Text = spreadsheet.GetCellValue("A1").ToString();
+            cellName_Textbox.Text = "A1";
+            cellValue_Textbox.Text = spreadsheet.GetCellValue("A1").ToString();
         }
 
         //
@@ -107,10 +107,10 @@ namespace CS3500_Spreadsheet_GUI_Example
                 coordinateMap.Add(coordinate, name);
             }
             // Cell Name and Cell Value are displayed in respective text boxes
-            CellName_Textbox.Text = coordinateMap[coordinate];
-            CellValue_Textbox.Text = spreadsheet.GetCellValue(name).ToString();
+            cellName_Textbox.Text = coordinateMap[coordinate];
+            cellValue_Textbox.Text = spreadsheet.GetCellValue(name).ToString();
             //Cell contents are displayed in the textbox when the user selects the cell.
-            Input_Textbox.Text = spreadsheet.GetCellContents(name).ToString();
+            input_Textbox.Text = spreadsheet.GetCellContents(name).ToString();
         }
 
         /// <summary>
@@ -333,7 +333,7 @@ namespace CS3500_Spreadsheet_GUI_Example
                 Point coordinate = new Point(col, row);
                 grid_widget.SetValue(col, row, e.Result.ToString());
                 GetCellCoordsAndSet(dependencies);
-                CellValue_Textbox.Text = spreadsheet.GetCellValue(coordinateMap[coordinate]).ToString();
+                cellValue_Textbox.Text = spreadsheet.GetCellValue(coordinateMap[coordinate]).ToString();
             }
         }
 

@@ -390,8 +390,13 @@ namespace SS
 
                 else
                 {
-                    //Recalculation is not necessary for strings.
-                    return SetCellContents(normalizedCell, content);
+                    IList<string> cellsToEvaluate = SetCellContents(normalizedCell, content);
+
+                    foreach (string cell in cellsToEvaluate)
+                    {
+                        Recalculate(cell);
+                    }
+                    return cellsToEvaluate;
                 }
             }
         }

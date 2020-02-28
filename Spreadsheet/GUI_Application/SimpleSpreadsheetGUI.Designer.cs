@@ -75,10 +75,10 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.MainControlArea = new System.Windows.Forms.FlowLayoutPanel();
             this.grid_widget = new SpreadsheetGrid_Framework.SpreadsheetGridWidget();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.Save_Button = new System.Windows.Forms.Button();
-            this.Input_Textbox = new System.Windows.Forms.TextBox();
-            this.CellName_Textbox = new System.Windows.Forms.TextBox();
-            this.CellValue_Textbox = new System.Windows.Forms.TextBox();
+            this.save_Button = new System.Windows.Forms.Button();
+            this.input_Textbox = new System.Windows.Forms.TextBox();
+            this.cellName_Textbox = new System.Windows.Forms.TextBox();
+            this.cellValue_Textbox = new System.Windows.Forms.TextBox();
             this.menuStrip.SuspendLayout();
             this.MainControlArea.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -146,12 +146,12 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.MainControlArea.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.MainControlArea.BackColor = System.Drawing.Color.Pink;
             this.MainControlArea.Controls.Add(this.cellNameLabel);
-            this.MainControlArea.Controls.Add(this.CellName_Textbox);
+            this.MainControlArea.Controls.Add(this.cellName_Textbox);
             this.MainControlArea.Controls.Add(this.cellValueLabel);
-            this.MainControlArea.Controls.Add(this.CellValue_Textbox);
-            this.MainControlArea.Controls.Add(this.Input_Textbox);
+            this.MainControlArea.Controls.Add(this.cellValue_Textbox);
+            this.MainControlArea.Controls.Add(this.input_Textbox);
             this.MainControlArea.Controls.Add(this.autoSaveLabel);
-            this.MainControlArea.Controls.Add(this.Save_Button);
+            this.MainControlArea.Controls.Add(this.save_Button);
             this.MainControlArea.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.MainControlArea.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainControlArea.Location = new System.Drawing.Point(3, 3);
@@ -193,15 +193,15 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.tableLayoutPanel1.Size = new System.Drawing.Size(584, 337);
             this.tableLayoutPanel1.TabIndex = 6;
             // 
-            // Save_Button
+            // save_Button
             // 
-            this.Save_Button.Location = new System.Drawing.Point(3, 3);
-            this.Save_Button.Name = "Save_Button";
-            this.Save_Button.Size = new System.Drawing.Size(75, 23);
-            this.Save_Button.TabIndex = 0;
-            this.Save_Button.Text = "Save";
-            this.Save_Button.UseVisualStyleBackColor = true;
-            this.Save_Button.Click += new System.EventHandler(this.Save_Button_Click);
+            this.save_Button.Location = new System.Drawing.Point(3, 3);
+            this.save_Button.Name = "Save_Button";
+            this.save_Button.Size = new System.Drawing.Size(75, 23);
+            this.save_Button.TabIndex = 0;
+            this.save_Button.Text = "Save";
+            this.save_Button.UseVisualStyleBackColor = true;
+            this.save_Button.Click += new System.EventHandler(this.Save_Button_Click);
             // 
             // autoSaveLabel
             // 
@@ -232,29 +232,29 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.cellValueLabel.TabIndex = 3;
             this.cellValueLabel.Text = "Cell Value:";
             // 
-            // Input_Textbox
+            // input_Textbox
             // 
-            this.Input_Textbox.Location = new System.Drawing.Point(170, 3);
-            this.Input_Textbox.Name = "Input_Textbox";
-            this.Input_Textbox.Size = new System.Drawing.Size(100, 20);
-            this.Input_Textbox.TabIndex = 2;
-            this.Input_Textbox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Input_Textbox_KeyPress);
+            this.input_Textbox.Location = new System.Drawing.Point(170, 3);
+            this.input_Textbox.Name = "Input_Textbox";
+            this.input_Textbox.Size = new System.Drawing.Size(100, 20);
+            this.input_Textbox.TabIndex = 2;
+            this.input_Textbox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Input_Textbox_KeyPress);
             // 
-            // CellName_Textbox
+            // cellName_Textbox
             // 
-            this.CellName_Textbox.Location = new System.Drawing.Point(170, 3);
-            this.CellName_Textbox.Name = "CellName_TextBox";
-            this.CellName_Textbox.Size = new System.Drawing.Size(29, 20);
-            this.CellName_Textbox.TabIndex = 2;
-            this.CellName_Textbox.Enabled = false;
+            this.cellName_Textbox.Location = new System.Drawing.Point(170, 3);
+            this.cellName_Textbox.Name = "CellName_TextBox";
+            this.cellName_Textbox.Size = new System.Drawing.Size(29, 20);
+            this.cellName_Textbox.TabIndex = 2;
+            this.cellName_Textbox.Enabled = false;
             // 
-            // CellValue_Textbox
+            // cellValue_Textbox
             // 
-            this.CellValue_Textbox.Location = new System.Drawing.Point(170, 3);
-            this.CellValue_Textbox.Name = "CellName_TextBox";
-            this.CellValue_Textbox.Size = new System.Drawing.Size(165, 20);
-            this.CellValue_Textbox.TabIndex = 2;
-            this.CellValue_Textbox.Enabled = false;
+            this.cellValue_Textbox.Location = new System.Drawing.Point(170, 3);
+            this.cellValue_Textbox.Name = "CellName_TextBox";
+            this.cellValue_Textbox.Size = new System.Drawing.Size(175, 20);
+            this.cellValue_Textbox.TabIndex = 2;
+            this.cellValue_Textbox.Enabled = false;
             // 
             // SimpleSpreadsheetGUI
             // 
@@ -288,10 +288,10 @@ namespace CS3500_Spreadsheet_GUI_Example
 
         private FlowLayoutPanel MainControlArea;
         private TableLayoutPanel tableLayoutPanel1;
-        private Button Save_Button;
-        internal TextBox Input_Textbox;
-        internal TextBox CellName_Textbox;
-        internal TextBox CellValue_Textbox;
+        private Button save_Button;
+        internal TextBox input_Textbox;
+        internal TextBox cellName_Textbox;
+        internal TextBox cellValue_Textbox;
 
         private ToolStripMenuItem helpToolStripMenuItem;
         private ToolStripMenuItem saveAsMenuItem;
