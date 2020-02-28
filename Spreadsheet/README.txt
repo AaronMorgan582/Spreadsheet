@@ -14,11 +14,11 @@ Copyright:  CS 3500, Xavier Davis and Aaron Morgan - This work may not be copied
     Expected Time to Complete: 15 hours.
 
     Time spent on Analysis: 7 hours.
-    Time spent on Implementation: 4.5 hours.
-    Time spent Debugging: 2.0 hours.
-    Time spent Testing: 2 hours.
+    Time spent on Implementation: 5.5 hours.
+    Time spent Debugging: 2.5 hours.
+    Time spent Testing: 2.5 hours.
 
-    Total Time: 14 hours.
+    Total Time: 17.5 hours.
 
 
 3. Consulted Peers:

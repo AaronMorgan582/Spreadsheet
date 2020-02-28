@@ -65,10 +65,10 @@ namespace CS3500_Spreadsheet_GUI_Example
             timer = new Timer();
             timer.Interval = 30_000; //30 seconds defined for the interval.
             timer.Enabled = true;
+            timer.Tick += new System.EventHandler(AutoSave);
 
             // Add event handler and select a start cell
             grid_widget.SelectionChanged += DisplaySelection;
-            timer.Tick += new System.EventHandler(AutoSave);
             grid_widget.SetSelection(0, 0, false);
         }
 
@@ -142,11 +142,14 @@ namespace CS3500_Spreadsheet_GUI_Example
             Close();
         }
 
+        // Event when "File -> Save As..." is clicked.
         private void SaveAsMenuItem_Click(object sender, EventArgs e)
         {
             Save();
         }
 
+
+        // Event when the "Help" button is clicked.
         private void HelpToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show("To edit a cell, click on the desired cell and then enter information via the textbox, " +
@@ -159,8 +162,7 @@ namespace CS3500_Spreadsheet_GUI_Example
                 "\n   previously saved.", "Help Menu");
         }
 
-
-
+        //Event when the spreadsheet GUI is closed, whether it's closed by "File -> Close" or via the close "X".
         private void SimpleSpreadsheetGUI_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (spreadsheet.Changed)
@@ -214,7 +216,7 @@ namespace CS3500_Spreadsheet_GUI_Example
             {
                 autoSaveLabel.Visible = true;
                 spreadsheet.Save(saveFilePath);
-                labelTimer.Interval = 2_000; // it will Tick in 3 seconds
+                labelTimer.Interval = 2_000; // it will Tick in 2 seconds
                 labelTimer.Tick += WriteLabel;
                 labelTimer.Start();
             }
@@ -274,6 +276,11 @@ namespace CS3500_Spreadsheet_GUI_Example
         //Private helper methods.
         //
 
+
+        /// <summary>
+        /// A private helper method that converts the spreadsheet's used cells into an (x, y) point.
+        /// </summary>
+        /// <param name="usedCells">The list of non-empty cells in the spreadsheet.</param>
         private void GetCellCoordsAndSet(IEnumerable<string> usedCells)
         {
             Regex alphabet = new Regex(@"([a-zA-Z]+)(\d+)");
@@ -286,6 +293,9 @@ namespace CS3500_Spreadsheet_GUI_Example
             }
         }
 
+        /// <summary>
+        /// A private helper method that initiates a SaveFileDialog box to save the spreadsheet.
+        /// </summary>
         private void Save()
         {
             SaveFileDialog save = new SaveFileDialog();
