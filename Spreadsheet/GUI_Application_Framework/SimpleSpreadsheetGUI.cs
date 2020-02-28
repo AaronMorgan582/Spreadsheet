@@ -146,5 +146,10 @@ namespace CS3500_Spreadsheet_GUI_Example
         {
 
         }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

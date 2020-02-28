@@ -58,6 +58,7 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.sample_textbox = new System.Windows.Forms.TextBox();
             this.grid_widget = new SpreadsheetGrid_Framework.SpreadsheetGridWidget();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.label1 = new System.Windows.Forms.Label();
             this.menuStrip.SuspendLayout();
             this.MainControlArea.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -123,6 +124,7 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.MainControlArea.Controls.Add(this.sample_button);
             this.MainControlArea.Controls.Add(this.sample_checkbox);
             this.MainControlArea.Controls.Add(this.sample_textbox);
+            this.MainControlArea.Controls.Add(this.label1);
             this.MainControlArea.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.MainControlArea.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainControlArea.Location = new System.Drawing.Point(7, 7);
@@ -196,6 +198,16 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.tableLayoutPanel1.Size = new System.Drawing.Size(1363, 756);
             this.tableLayoutPanel1.TabIndex = 6;
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(614, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(79, 29);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "label1";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
+            // 
             // SimpleSpreadsheetGUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 29F);
@@ -235,6 +247,7 @@ namespace CS3500_Spreadsheet_GUI_Example
         private TextBox sample_textbox;
         private ToolStripMenuItem openMenuItem;
         private ToolStripMenuItem helpMeToolStripMenuItem;
+        private Label label1;
     }
 }
 

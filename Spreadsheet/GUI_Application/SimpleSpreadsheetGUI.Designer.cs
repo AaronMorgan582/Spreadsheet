@@ -50,7 +50,7 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.saveAsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bg_worker = new BackgroundWorker();
-
+            this.autoSaveLabel = new System.Windows.Forms.Label();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -129,6 +129,7 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.MainControlArea.BackColor = System.Drawing.Color.Coral;
             this.MainControlArea.Controls.Add(this.Save_Button);
             this.MainControlArea.Controls.Add(this.Input_Textbox);
+            this.MainControlArea.Controls.Add(this.autoSaveLabel);
             this.MainControlArea.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.MainControlArea.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainControlArea.Location = new System.Drawing.Point(3, 3);
@@ -179,6 +180,17 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.Save_Button.UseVisualStyleBackColor = true;
             this.Save_Button.Click += new System.EventHandler(this.Save_Button_Click);
             // 
+            // autoSaveLabel
+            // 
+            this.autoSaveLabel.AutoSize = true;
+            this.autoSaveLabel.Visible = false;
+            //this.autoSaveLabel.Location = new System.Drawing.Point(614, 0);
+            this.autoSaveLabel.Location = new System.Drawing.Point(200, 200);
+            this.autoSaveLabel.Name = "autoSaveLabel";
+            this.autoSaveLabel.Size = new System.Drawing.Size(79, 29);
+            this.autoSaveLabel.TabIndex = 3;
+            this.autoSaveLabel.Text = "Autosaving...";
+            // 
             // Input_Textbox
             // 
             this.Input_Textbox.Location = new System.Drawing.Point(170, 3);
@@ -226,6 +238,7 @@ namespace CS3500_Spreadsheet_GUI_Example
         private ToolStripMenuItem saveAsMenuItem;
         private ToolStripMenuItem openMenuItem;
         private BackgroundWorker bg_worker;
+        private Label autoSaveLabel;
 
     }
 }
