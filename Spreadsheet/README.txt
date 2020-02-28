@@ -16,12 +16,12 @@ Github Repository: https://github.com/uofu-cs3500-spring20/assignment-six-comple
 
     Time spent on Analysis: 7 hours.
     Time spent on Implementation: 5.5 hours.
-    Time spent Debugging: 2.5 hours.
-    Time spent Testing: 2.5 hours.
+    Time spent Debugging: 3.0 hours.
+    Time spent Testing: 3.0 hours.
 
     Aaron's time spent on comments/variable names/organization: 1.5
 
-    Total Time: 19 hours.
+    Total Time: 20 hours.
 
     Our estimate was too optimistic, but our longer time was primarily due to a single bug that we were encountering when opening an existing spreadsheet. It
     took us a significant amount of time to figure out what the bug was, but it was very easy to change once we identified it.
