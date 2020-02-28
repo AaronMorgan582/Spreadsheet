@@ -1,4 +1,17 @@
 ﻿/// <summary>
+/// Author:    Aaron Morgan and Xavier Davis
+/// Partner:   None
+/// Date:      2/28/2020
+/// Course:    CS 3500, University of Utah, School of Computing 
+/// Copyright: CS 3500, Aaron Morgan and Xavier Davis
+/// 
+/// We, Aaron Morgan and Xavier Davis, certify that we wrote the code that provided the additions for the Background Worker,
+/// the "Save As" button, the "Open" button, the "Help" button, and the "Autosave Label" from scratch and did not copy it in part
+/// or in whole from another source. We also renamed some of the provided names (such as sample_textbox and sample_button) to names
+/// that were more descriptive.
+/// 
+/// All other code was provided by:
+/// 
 ///   Original Author: Joe Zachary
 ///   Further Authors: H. James de St. Germain
 ///   
@@ -51,6 +64,8 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.openMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bg_worker = new BackgroundWorker();
             this.autoSaveLabel = new System.Windows.Forms.Label();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -60,7 +75,7 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.Save_Button = new System.Windows.Forms.Button();
             this.Input_Textbox = new System.Windows.Forms.TextBox();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+
             this.menuStrip.SuspendLayout();
             this.MainControlArea.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -186,7 +201,7 @@ namespace CS3500_Spreadsheet_GUI_Example
             this.autoSaveLabel.Visible = false;
             //this.autoSaveLabel.Location = new System.Drawing.Point(614, 0);
             this.autoSaveLabel.Location = new System.Drawing.Point(200, 200);
-            this.autoSaveLabel.Name = "autoSaveLabel";
+            this.autoSaveLabel.Name = "AutoSaveLabel";
             this.autoSaveLabel.Size = new System.Drawing.Size(79, 29);
             this.autoSaveLabel.TabIndex = 3;
             this.autoSaveLabel.Text = "Autosaving...";

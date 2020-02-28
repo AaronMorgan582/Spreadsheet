@@ -4,6 +4,7 @@ Date:       2/22/2020
 Course:     CS 3500, University of Utah, School of Computing
 Assignment: Assignment #6 - Spreadsheet GUI
 Copyright:  CS 3500, Xavier Davis and Aaron Morgan - This work may not be copied for use in Academic Coursework.
+Github Repository: https://github.com/uofu-cs3500-spring20/assignment-six-completed-spreadsheet-see-sharp-run
 
 1. Comments to Evaluators:
 
@@ -18,12 +19,21 @@ Copyright:  CS 3500, Xavier Davis and Aaron Morgan - This work may not be copied
     Time spent Debugging: 2.5 hours.
     Time spent Testing: 2.5 hours.
 
-    Total Time: 17.5 hours.
+    Aaron's time spent on comments/variable names/organization: 1.5
+
+    Total Time: 19 hours.
+
+    Our estimate was too optimistic, but our longer time was primarily due to a single bug that we were encountering when opening an existing spreadsheet. It
+    took us a significant amount of time to figure out what the bug was, but it was very easy to change once we identified it.
+
+    We think our abilities in estimating are about the same as previous work (not really getting better or worse), but we noticed we struggle the most identifying how 
+    to properly utilize the tools that we were expected to use (specifically, in this assignment, how to work with events). Once we figured out how the tools worked, 
+    we mostly didn't have a problem with implementation.
 
 
 3. Consulted Peers:
 
-    1.
+    None.
 
 4. References:
     
@@ -34,14 +44,81 @@ Copyright:  CS 3500, Xavier Davis and Aaron Morgan - This work may not be copied
     5. C Sharp Corner: C# Message Box https://www.c-sharpcorner.com/uploadfile/mahesh/understanding-message-box-in-windows-forms-using-C-Sharp/
     6. Stack Overflow: Checking if a string array contains a value, and if so, getting its position https://stackoverflow.com/questions/7867377/checking-if-a-string-array-contains-a-value-and-if-so-getting-its-position
     7. Microsoft: Form.Closing Event https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.form.closing?view=netframework-4.8
+    8. Stack Overflow: Show label text as warning message and hide it after a few seconds? https://stackoverflow.com/questions/15951689/show-label-text-as-warning-message-and-hide-it-after-a-few-seconds
 
 5. My Software Practices:
 
-    1.
+    1. Versioning: We have multiples commits (around 20 we believe), with expressive descriptions that detail important changes. This was facilitated by how
+       our Pair Programming strategy worked; we wanted to switch off writing code every hour.
 
-    2.
+    2. Interface: We think the interface for the spreadsheet is simple and intuitive, because we thought about the layout of the buttons and the textbox; we
+       wanted to ensure that the spreadsheet button layout (in the Menu buttons) were similar to Excel or Google Sheets. When we were implementing the "Autosave"
+       label that's drawn on the grid when the program autosaves, we thought it would be best to leave it to the right of the textbox, rather than putting it
+       in front of the textbox or the Save Button.
 
-    3. 
+    3. Code Complexity/Separation of Concerns: We knew that the saving functionality was going to occur in multiple places (using the Save Button, clicking Save As...,
+       upon closing the application), so we decided to make a private method called "Save" to display the SaveDialogBox, and call the method whenever it was 
+       necessary.
+
+6. Partnership:
+
+    All code was created via Pair Programming. Aaron did work on his own once or twice for a little less than an hour, simply writing comments, renaming a couple
+    of variables, and organizing some of the code.
+
+7. Additional Features and Design Decisions:
+
+    We decided to not use the "TextChanged" event for the textbox because it was making the display of the contents/values difficult. We originally thought it would
+    be ideal to keep the grid updated as the user typed along the textbox, but then thought it looked better if it didn't; it forces the user to remember to press
+    "Enter" to enter the value on the grid.
+
+    We chose pressing "Enter" to be the event to enter values to the grid because we were both accustomed to pressing Enter when using Excel or Google Sheets. We
+    thought about using a Click event, but considering the user may not have access to a mouse, we thought Enter would be a safer bet.
+
+    We organized some of the Menu Buttons to be the exact same way as other applications (File -> Open, Save As..., Close) because that order is what we were
+    both most familiar with.
+
+    When we implemented the "Help" Menu Button, we chose not to have a drop-down menu associated with it, because it seemed a little pointless to only have a 
+    drop-down with a single item. Instead, we chose to implement a simple message box displaying the necessary information.
+
+    Additional Feature:
+
+    We implemented an autosave feature in our spreadsheet. When saved, a timer will begin so that every 30 seconds the file is automatically saved. There is
+    a label that displays "Autosaving..." when the spreadsheet has been autosaved.
+    
+8. Best Team Practices:
+
+    The partnership was most effective when we were working on one computer instead of trying to work separately. One person was giving advice and checking code
+    (for consistency and errors), while the other was writing the code, which resulted in cleaner code. We switched off roughly once an hour, which proved effective
+    because it allowed us to keep focus for longer periods of time.
+
+    We didn't assign specific tasks to either of us individually (since we worked together throughout the majority of it), but the "Issue" system in Github was
+    useful because it allowed us to see what we still needed to accomplish for the assignment.
+
+    We have been working together as partners ever since CS 2420, and at this time, we can't think of any way to improve our partnership. We're both familiar
+    with each other's working habits, and there hasn't been any problems that have arisen in any of the assignments that we've worked on
+    together (including this one).
+
+9. Testing:
+
+    When initially setting to the grid, we knew that the GetSelection method was returning a (x, y) coordinate that started at (0,0). To ensure that values
+    were being set in the appropriate cells, we made sure to test that the cells at the edges (A1, A99, Z1, and Z99) were displaying correctly.
+
+    We considered dependent formulas, and wanted to make sure that multiple dependencies were correctly being set on the grid, and that the values were being updated
+    immediately whenever possible. For example, if the A1 cell had "=B1" in it, and B1 had "=C1" and C1 had "=D1", if "5" was entered in D1, we wanted to ensure
+    that A1, B1, and C1 were immediately set to the value of 5.
+
+    There were errors that we needed to account for, and we wanted to display a message when they occured. For example, we ensured there was a message box when
+    trying to enter a formula with a circular dependency; we display a message when the formula has an improper format (such as 5@2); we also a display a message
+    when the user tries to open an improper file type.
+
+    We tested Open, all the Save functionality (via the Save Button, Save As..., and upon close) multiple times. For Open, we also made sure that the "edge case" cells
+    (A1, Z99, etc.) were all getting set correctly when opened. We tested to ensure that when opening a new window, closing the original window did not close all
+    the other windows.
+
+    We tested to see if there was a warning when trying to overwrite a previously saved file, as well as trying to open a file with an invalid file path.
+
+    We tested to ensure that the "Autosave" label was appearing correctly after saving, every 30 seconds. We also made sure that it wasn't appearing if the spreadsheet
+    hasn't been saved.
 
 =======Version 5.0=======
 Author:     Aaron Morgan

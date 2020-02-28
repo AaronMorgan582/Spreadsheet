@@ -1,4 +1,14 @@
 ﻿/// <summary>
+/// 
+/// Author:    Aaron Morgan and Xavier Davis
+/// Partner:   None
+/// Date:      2/28/2020
+/// Course:    CS 3500, University of Utah, School of Computing 
+/// Copyright: CS 3500, Aaron Morgan and Xavier Davis
+/// 
+/// We, Aaron Morgan and Xavier Davis, certify that we wrote this code from scratch and did not copy it in part
+/// or in whole from another source, with the exception of the original starter code, which was provided by:
+/// 
 ///   Original Author: Joe Zachary
 ///   Further Authors: H. James de St. Germain
 ///   
@@ -14,7 +24,7 @@
 ///
 ///   See the SimpleSpreadsheetGUIExample.Designer.cs for "auto-generated" code.
 ///   
-///   This code relies on the SpreadsheetPanel "widget"
+///   This code relies on the SpreadsheetGridWidget "widget"
 ///  
 /// </summary>
 
@@ -121,9 +131,11 @@ namespace CS3500_Spreadsheet_GUI_Example
                     this.spreadsheet = new Spreadsheet(file, s => true, s => s.ToUpper(), "six");
                     this.grid_widget.Clear();
 
+                    //If the spreadsheet has been saved, then there should be cells used, which need to be gathered to fill in to the new spreadsheet.
                     IEnumerable<string> usedCells = spreadsheet.GetNamesOfAllNonemptyCells();
                     GetCellCoordsAndSet(usedCells);
 
+                    //The given file that was opened is now the new saveFilePath for the spreadsheet GUI.
                     saveFilePath = file;
 
                     spreadsheet.Save(saveFilePath);
@@ -153,9 +165,9 @@ namespace CS3500_Spreadsheet_GUI_Example
         private void HelpToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show("To edit a cell, click on the desired cell and then enter information via the textbox, " +
-                "then press 'Enter' to set it within the grid." +
+                "then press the 'Enter' key to set it within the grid." +
 
-                "\n\nFor formulas: \n   Begin with '=' followed by the equation." +
+                "\n\nFor formulas: \n   Begin with '=' followed by the formula." +
 
                 "\n\nAdditional Features:" +
                 "\n   Autosave is implemented to run every 30 seconds, if the spreadsheet has been" +
