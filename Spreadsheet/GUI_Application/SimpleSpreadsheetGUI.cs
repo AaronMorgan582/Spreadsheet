@@ -109,22 +109,30 @@ namespace CS3500_Spreadsheet_GUI_Example
         //Event when "File -> Open" is clicked.
         private void OpenMenuItem_Click(object sender, EventArgs e)
         {
-            OpenFileDialog open = new OpenFileDialog();
-            open.Filter = "Spreadsheet Files (*.sprd) | *.sprd |All files (*.*) | *.*";
-
-            if (open.ShowDialog() == DialogResult.OK)
+            try
             {
-                string file = open.FileName;
-                this.spreadsheet = new Spreadsheet(file, s => true, s => s.ToUpper(), "six");
-                this.grid_widget.Clear();
+                OpenFileDialog open = new OpenFileDialog();
+                open.Filter = "Spreadsheet Files (*.sprd) | *.sprd |All files (*.*) | *.*";
 
-                IEnumerable<string> usedCells = spreadsheet.GetNamesOfAllNonemptyCells();
-                GetCellCoordsAndSet(usedCells);
+                if (open.ShowDialog() == DialogResult.OK)
+                {
+                    string file = open.FileName;
+                    this.spreadsheet = new Spreadsheet(file, s => true, s => s.ToUpper(), "six");
+                    this.grid_widget.Clear();
 
-                saveFilePath = file;
+                    IEnumerable<string> usedCells = spreadsheet.GetNamesOfAllNonemptyCells();
+                    GetCellCoordsAndSet(usedCells);
 
-                spreadsheet.Save(saveFilePath);
+                    saveFilePath = file;
+
+                    spreadsheet.Save(saveFilePath);
+                }
             }
+            catch(SpreadsheetReadWriteException)
+            {
+                MessageBox.Show("Invalid file type.");
+            }
+
         }
 
         // Event when "File -> Close" is clicked.
